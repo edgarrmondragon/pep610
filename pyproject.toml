@@ -1,0 +1,171 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs",
+  "hatchling",
+]
+
+[project]
+name = "pep610"
+description = "Python helpers for PEP 610"
+readme = "README.md"
+keywords = [
+]
+license = "Apache-2.0"
+authors = [{ name = "Edgar Ramírez Mondragón", email = "edgarrm358@gmail.com" }]
+requires-python = ">=3.8"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+]
+[project.optional-dependencies]
+dev = [
+  "hypothesis",
+  "pytest",
+]
+[project.urls]
+Documentation = "https://github.com/unknown/pep610#readme"
+Issues = "https://github.com/unknown/pep610/issues"
+Source = "https://github.com/unknown/pep610"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.envs.test]
+dependencies = [
+  "hypothesis",
+  "hypothesis-jsonschema",
+  "pytest",
+]
+[tool.hatch.envs.test.scripts]
+run = "pytest {args:tests}"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "black>=23.1.0",
+  "mypy>=1.0.0",
+  "hypothesis",
+  "hypothesis-jsonschema",
+  "pytest",
+  "ruff>=0.0.243",
+]
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:src/pep610 tests}"
+style = ["ruff {args:.}", "black --check --diff {args:.}"]
+fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
+all = ["style", "typing"]
+
+[tool.black]
+target-version = ["py38"]
+line-length = 100
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+select = [
+  "F",
+  "E",
+  "W",
+  "C90",
+  "I",
+  "N",
+  "D",
+  "UP",
+  "YTT",
+  "ANN",
+  "S",
+  "BLE",
+  "FBT",
+  "B",
+  "A",
+  "COM",
+  "C4",
+  "DTZ",
+  "T10",
+  "EM",
+  "FA",
+  "ISC",
+  "ICN",
+  "G",
+  "INP",
+  "PIE",
+  "T20",
+  "PT",
+  "Q",
+  "RSE",
+  "RET",
+  "SLF",
+  "SIM",
+  "TID",
+  "TCH",
+  "INT",
+  "ARG",
+  "PTH",
+  "TD",
+  "FIX",
+  "ERA",
+  "PGH",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "TRY",
+  "FLY",
+  "PERF",
+  "FURB",
+  "RUF",
+]
+unfixable = [
+  "ERA", # commented-out-code
+]
+
+[tool.ruff.isort]
+known-first-party = ["pep610"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+"tests/**/*" = [
+  "PLR2004", # magic-value-comparison
+  "S101", # assert
+  "TID252", # relative-imports
+  "D100", # undocumented-public-module
+  "D104",	# undocumented-public-package
+  "ANN201", # missing-return-type-undocumented-public-function
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+addopts = "-v"
+
+[tool.coverage.run]
+source_pkgs = ["pep610", "tests"]
+branch = true
+parallel = true
+
+[tool.coverage.paths]
+pep610 = ["src/pep610", "*/pep610/src/pep610"]
+tests = ["tests", "*/pep610/tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]

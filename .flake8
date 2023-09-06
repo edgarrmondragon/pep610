@@ -1,0 +1,5 @@
+[flake8]
+select = DAR
+docstring_style=google
+max-line-length = 88
+strictness = short
