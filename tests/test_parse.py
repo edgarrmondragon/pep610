@@ -5,7 +5,17 @@ from pathlib import Path
 
 import pytest
 
-from pep610 import ArchiveData, ArchiveInfo, DirData, DirInfo, HashData, VCSData, VCSInfo, parse
+from pep610 import (
+    ArchiveData,
+    ArchiveInfo,
+    DirData,
+    DirInfo,
+    HashData,
+    VCSData,
+    VCSInfo,
+    parse,
+    to_dict,
+)
 
 
 @pytest.mark.parametrize(
@@ -15,7 +25,7 @@ from pep610 import ArchiveData, ArchiveInfo, DirData, DirInfo, HashData, VCSData
             {"url": "file:///home/user/project", "dir_info": {"editable": True}},
             DirData(
                 url="file:///home/user/project",
-                dir_info=DirInfo(editable=True),
+                dir_info=DirInfo(_editable=True),
             ),
             id="local_editable",
         ),
@@ -23,7 +33,7 @@ from pep610 import ArchiveData, ArchiveInfo, DirData, DirInfo, HashData, VCSData
             {"url": "file:///home/user/project", "dir_info": {"editable": False}},
             DirData(
                 url="file:///home/user/project",
-                dir_info=DirInfo(editable=False),
+                dir_info=DirInfo(_editable=False),
             ),
             id="local_not_editable",
         ),
@@ -31,7 +41,7 @@ from pep610 import ArchiveData, ArchiveInfo, DirData, DirInfo, HashData, VCSData
             {"url": "file:///home/user/project", "dir_info": {}},
             DirData(
                 url="file:///home/user/project",
-                dir_info=DirInfo(editable=False),
+                dir_info=DirInfo(_editable=None),
             ),
             id="local_no_editable_info",
         ),
@@ -92,4 +102,8 @@ def test_parse(data: dict, expected: object, tmp_path: Path):
     filepath = tmp_path.joinpath("direct_url.json")
     with filepath.open("w") as f:
         json.dump(data, f)
-    assert parse(filepath) == expected
+
+    result = parse(filepath)
+    assert result == expected
+
+    assert to_dict(result) == data

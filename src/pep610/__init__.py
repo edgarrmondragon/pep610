@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 import typing as t
 from dataclasses import dataclass
 from importlib.metadata import version
@@ -11,6 +12,11 @@ from pathlib import Path
 if t.TYPE_CHECKING:
     from importlib.metadata import Distribution
     from os import PathLike
+
+    if sys.version_info <= (3, 10):
+        from typing_extensions import Self
+    else:
+        from typing import Self
 
 __version__ = version(__package__)
 
@@ -31,10 +37,16 @@ class VCSInfo:
 
 
 @dataclass
-class VCSData:
-    """VCS direct URL data."""
+class _BaseData:
+    """Base direct URL data."""
 
     url: str
+
+
+@dataclass
+class VCSData(_BaseData):
+    """VCS direct URL data."""
+
     vcs_info: VCSInfo
 
 
@@ -53,10 +65,9 @@ class ArchiveInfo:
 
 
 @dataclass
-class ArchiveData:
+class ArchiveData(_BaseData):
     """Archive direct URL data."""
 
-    url: str
     archive_info: ArchiveInfo
 
 
@@ -64,14 +75,23 @@ class ArchiveData:
 class DirInfo:
     """Local directory information."""
 
-    editable: bool
+    _editable: bool | None
+
+    @property
+    def editable(self: Self) -> bool:
+        """Whether the directory is editable."""
+        return self._editable is True
+
+    @editable.setter
+    def editable(self: Self, value: bool | None) -> None:
+        """Set whether the directory is editable."""
+        self._editable = value
 
 
 @dataclass
-class DirData:
+class DirData(_BaseData):
     """Local directory direct URL data."""
 
-    url: str
     dir_info: DirInfo
 
 
@@ -101,6 +121,44 @@ def parse(path: PathLike[str]) -> VCSData | ArchiveData | DirData:
     return result
 
 
+def to_dict(data: VCSData | ArchiveData | DirData) -> dict[str, t.Any]:
+    """Convert the parsed data to a dictionary.
+
+    Args:
+        data: The parsed data.
+
+    Returns:
+        The data as a dictionary.
+    """
+    result: dict[str, t.Any] = {"url": data.url}
+    if isinstance(data, VCSData):
+        vcs_info = {
+            "vcs": data.vcs_info.vcs,
+            "commit_id": data.vcs_info.commit_id,
+        }
+        if data.vcs_info.requested_revision is not None:
+            vcs_info["requested_revision"] = data.vcs_info.requested_revision
+        if data.vcs_info.resolved_revision is not None:
+            vcs_info["resolved_revision"] = data.vcs_info.resolved_revision
+        if data.vcs_info.resolved_revision_type is not None:
+            vcs_info["resolved_revision_type"] = data.vcs_info.resolved_revision_type
+        result["vcs_info"] = vcs_info
+
+    elif isinstance(data, ArchiveData):
+        result["archive_info"] = {}
+        if data.archive_info.hash is not None:
+            result["archive_info"][
+                "hash"
+            ] = f"{data.archive_info.hash.algorithm}={data.archive_info.hash.value}"
+
+    elif isinstance(data, DirData):
+        result["dir_info"] = {}
+        if data.dir_info._editable is not None:  # noqa: SLF001
+            result["dir_info"]["editable"] = data.dir_info._editable  # noqa: SLF001
+
+    return result
+
+
 def _parse(content: str) -> VCSData | ArchiveData | DirData | None:
     data = json.loads(content)
 
@@ -116,7 +174,7 @@ def _parse(content: str) -> VCSData | ArchiveData | DirData | None:
         return DirData(
             url=data["url"],
             dir_info=DirInfo(
-                editable=data["dir_info"].get("editable", False),
+                _editable=data["dir_info"].get("editable"),
             ),
         )
 
