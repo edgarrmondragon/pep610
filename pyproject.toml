@@ -45,15 +45,26 @@ source = "vcs"
 
 [tool.hatch.envs.test]
 dependencies = [
+  "coverage[toml]>=6.5",
   "hypothesis",
   "hypothesis-jsonschema",
   "pytest",
 ]
 [tool.hatch.envs.test.scripts]
-run = "pytest {args:tests}"
+test = "pytest {args:tests}"
+cov = "coverage run -m pytest {args:tests}"
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+[tool.hatch.envs.coverage]
+dependencies = [
+  "coverage[toml]>=6.5",
+]
+[tool.hatch.envs.coverage.scripts]
+json = "coverage json"
+xml = "coverage xml"
+report = ["coverage combine", "coverage report --show-missing"]
 
 [tool.hatch.envs.lint]
 detached = true
@@ -63,7 +74,7 @@ dependencies = [
   "hypothesis",
   "hypothesis-jsonschema",
   "pytest",
-  "ruff>=0.0.243",
+  "ruff>=0.0.287",
 ]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/pep610 tests}"
