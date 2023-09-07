@@ -10,9 +10,10 @@ name = "pep610"
 description = "Python helpers for PEP 610"
 readme = "README.md"
 keywords = [
+  "pep",
 ]
-license = "Apache-2.0"
-authors = [{ name = "Edgar Ramírez Mondragón", email = "edgarrm358@gmail.com" }]
+license = {file = "LICENSE"}
+authors = [{ name = "Edgar Ramírez Mondragón", email = "edgarrmondragon@hey.com" }]
 requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -179,4 +180,8 @@ pep610 = ["src/pep610", "*/pep610/src/pep610"]
 tests = ["tests", "*/pep610/tests"]
 
 [tool.coverage.report]
-exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if t.TYPE_CHECKING:",
+]
