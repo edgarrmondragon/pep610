@@ -107,3 +107,32 @@ def test_parse(data: dict, expected: object, tmp_path: Path):
     assert result == expected
 
     assert to_dict(result) == data
+
+
+def test_local_directory(tmp_path: Path):
+    """Test that a local directory is read back as a local directory."""
+    data = {
+        "url": "file:///home/user/project",
+        "dir_info": {"editable": True},
+    }
+    filepath = tmp_path.joinpath("direct_url.json")
+    with filepath.open("w") as f:
+        json.dump(data, f)
+
+    result = parse(filepath)
+    assert isinstance(result, DirData)
+    assert result.url == "file:///home/user/project"
+    assert result.dir_info.editable is True
+    assert to_dict(result) == data
+
+    result.dir_info.editable = False
+    assert to_dict(result) == {
+        "url": "file:///home/user/project",
+        "dir_info": {"editable": False},
+    }
+
+    result.dir_info.editable = None
+    assert to_dict(result) == {
+        "url": "file:///home/user/project",
+        "dir_info": {},
+    }
