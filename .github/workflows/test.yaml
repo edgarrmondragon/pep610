@@ -45,7 +45,7 @@ jobs:
               env:
                 HATCH_ENV: lint
               run: |
-                hatch run style-gh
+                hatch run style
 
     typing:
       name: Typing
