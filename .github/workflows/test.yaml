@@ -109,7 +109,7 @@ jobs:
         needs: test
         env:
           PYTHON: "3.11"
-          HATCH_ENV: coverage.py.3.11
+          HATCH_ENV: coverage
         steps:
             - uses: actions/checkout@v3
             - uses: actions/setup-python@v4
