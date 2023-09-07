@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import json
-import sys
 import typing as t
 from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
 
 if t.TYPE_CHECKING:
+    import sys
     from importlib.metadata import Distribution
     from os import PathLike
 
