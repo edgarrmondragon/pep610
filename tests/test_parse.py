@@ -11,6 +11,7 @@ from pep610 import (
     DirData,
     DirInfo,
     HashData,
+    PEP610Error,
     VCSData,
     VCSInfo,
     parse,
@@ -95,6 +96,49 @@ from pep610 import (
             ),
             id="vcs_git",
         ),
+        pytest.param(
+            {
+                "url": "https://github.com/pypa/pip.git",
+                "vcs_info": {
+                    "vcs": "git",
+                    "resolved_revision_type": "tag",
+                    "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
+                },
+            },
+            VCSData(
+                url="https://github.com/pypa/pip.git",
+                vcs_info=VCSInfo(
+                    vcs="git",
+                    requested_revision=None,
+                    resolved_revision_type="tag",
+                    commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
+                ),
+            ),
+            id="vcs_git_no_requested_revision",
+        ),
+        pytest.param(
+            {
+                "url": "https://github.com/pypa/pip.git",
+                "vcs_info": {
+                    "vcs": "git",
+                    "requested_revision": "1.3.1",
+                    "resolved_revision": "1.3.1",
+                    "resolved_revision_type": "tag",
+                    "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
+                },
+            },
+            VCSData(
+                url="https://github.com/pypa/pip.git",
+                vcs_info=VCSInfo(
+                    vcs="git",
+                    requested_revision="1.3.1",
+                    resolved_revision="1.3.1",
+                    resolved_revision_type="tag",
+                    commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
+                ),
+            ),
+            id="vcs_git_resolved_revision",
+        ),
     ],
 )
 def test_parse(data: dict, expected: object, tmp_path: Path):
@@ -136,3 +180,17 @@ def test_local_directory(tmp_path: Path):
         "url": "file:///home/user/project",
         "dir_info": {},
     }
+
+
+def test_unknown_type(tmp_path: Path):
+    """Test that an unknown type is read back as a dict."""
+    data = {
+        "url": "unknown:///home/user/project",
+        "unknown_info": {},
+    }
+    filepath = tmp_path.joinpath("direct_url.json")
+    with filepath.open("w") as f:
+        json.dump(data, f)
+
+    with pytest.raises(PEP610Error, match="Unknown PEP 610 file format"):
+        parse(filepath)
