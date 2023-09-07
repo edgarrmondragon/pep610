@@ -78,7 +78,7 @@ class DirInfo:
     _editable: bool | None
 
     @property
-    def editable(self: Self) -> bool:
+    def editable(self: Self) -> bool | None:
         """Whether the directory is editable."""
         return self._editable is True
 
