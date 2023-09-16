@@ -186,4 +186,6 @@ def write_to_distribution(dist: PathDistribution, data: dict) -> int:
     Returns:
         The number of bytes written.
     """
-    return dist._path.joinpath("direct_url.json").write_text(json.dumps(data))  # noqa: SLF001
+    return dist._path.joinpath(  # type: ignore[attr-defined]  # noqa: SLF001
+        "direct_url.json",
+    ).write_text(json.dumps(data))
