@@ -1,7 +1,9 @@
 """Test the PEP 610 parser."""
 
-import json
-from pathlib import Path
+from __future__ import annotations
+
+import typing as t
+from importlib.metadata import PathDistribution
 
 import pytest
 
@@ -11,12 +13,15 @@ from pep610 import (
     DirData,
     DirInfo,
     HashData,
-    PEP610Error,
     VCSData,
     VCSInfo,
-    parse,
+    read_from_distribution,
     to_dict,
+    write_to_distribution,
 )
+
+if t.TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.mark.parametrize(
@@ -143,11 +148,10 @@ from pep610 import (
 )
 def test_parse(data: dict, expected: object, tmp_path: Path):
     """Test the parse function."""
-    filepath = tmp_path.joinpath("direct_url.json")
-    with filepath.open("w") as f:
-        json.dump(data, f)
+    dist = PathDistribution(tmp_path)
+    write_to_distribution(dist, data)
 
-    result = parse(filepath)
+    result = read_from_distribution(dist)
     assert result == expected
 
     assert to_dict(result) == data
@@ -159,11 +163,10 @@ def test_local_directory(tmp_path: Path):
         "url": "file:///home/user/project",
         "dir_info": {"editable": True},
     }
-    filepath = tmp_path.joinpath("direct_url.json")
-    with filepath.open("w") as f:
-        json.dump(data, f)
+    dist = PathDistribution(tmp_path)
+    write_to_distribution(dist, data)
 
-    result = parse(filepath)
+    result = read_from_distribution(dist)
     assert isinstance(result, DirData)
     assert result.url == "file:///home/user/project"
     assert result.dir_info.editable is True
@@ -182,15 +185,12 @@ def test_local_directory(tmp_path: Path):
     }
 
 
-def test_unknown_type(tmp_path: Path):
-    """Test that an unknown type is read back as a dict."""
+def test_unknown_url_type(tmp_path: Path):
+    """Test that an unknown URL type is read back as None."""
     data = {
         "url": "unknown:///home/user/project",
         "unknown_info": {},
     }
-    filepath = tmp_path.joinpath("direct_url.json")
-    with filepath.open("w") as f:
-        json.dump(data, f)
-
-    with pytest.raises(PEP610Error, match="Unknown PEP 610 file format"):
-        parse(filepath)
+    dist = PathDistribution(tmp_path)
+    write_to_distribution(dist, data)
+    assert read_from_distribution(dist) is None

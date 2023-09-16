@@ -6,12 +6,10 @@ import json
 import typing as t
 from dataclasses import dataclass
 from importlib.metadata import version
-from pathlib import Path
 
 if t.TYPE_CHECKING:
     import sys
-    from importlib.metadata import Distribution
-    from os import PathLike
+    from importlib.metadata import Distribution, PathDistribution
 
     if sys.version_info <= (3, 10):
         from typing_extensions import Self
@@ -19,10 +17,6 @@ if t.TYPE_CHECKING:
         from typing import Self
 
 __version__ = version(__package__)
-
-
-class PEP610Error(Exception):
-    """Base exception for PEP 610 errors."""
 
 
 @dataclass
@@ -93,32 +87,6 @@ class DirData(_BaseData):
     """Local directory direct URL data."""
 
     dir_info: DirInfo
-
-
-def parse(path: PathLike[str]) -> VCSData | ArchiveData | DirData:
-    """Parse a PEP 610 file.
-
-    Args:
-        path: The path to the PEP 610 file.
-
-    Returns:
-        The parsed PEP 610 file.
-
-    Raises:
-        PEP610Error: If the PEP 610 file is invalid.
-    """
-    with Path(path).open() as f:
-        try:
-            result = _parse(f.read())
-        except json.JSONDecodeError as e:
-            msg = f"Failed to parse {path}"
-            raise PEP610Error(msg) from e
-
-    if result is None:
-        errmsg = f"Unknown PEP 610 file format: {path}"
-        raise PEP610Error(errmsg)
-
-    return result
 
 
 def to_dict(data: VCSData | ArchiveData | DirData) -> dict[str, t.Any]:
@@ -206,3 +174,16 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
         return _parse(contents)
 
     return None
+
+
+def write_to_distribution(dist: PathDistribution, data: dict) -> int:
+    """Write the direct URL data to a distribution.
+
+    Args:
+        dist: The distribution.
+        data: The direct URL data.
+
+    Returns:
+        The number of bytes written.
+    """
+    return dist._path.joinpath("direct_url.json").write_text(json.dumps(data))  # noqa: SLF001

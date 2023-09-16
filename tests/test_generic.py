@@ -1,10 +1,10 @@
-import json
+from importlib.metadata import PathDistribution
 
 import pytest
 from hypothesis import given
 from hypothesis_jsonschema import from_schema
 
-from pep610 import parse
+from pep610 import read_from_distribution, write_to_distribution
 
 
 @given(
@@ -73,8 +73,7 @@ from pep610 import parse
 )
 def test_generic(tmp_path_factory: pytest.TempPathFactory, value: dict):
     """Test parsing a local directory."""
-    filepath = tmp_path_factory.mktemp("pep610").joinpath("direct_url.json")
-    with filepath.open("w") as f:
-        f.write(json.dumps(value))
-
-    parse(filepath)
+    dist_path = tmp_path_factory.mktemp("pep610")
+    dist = PathDistribution(dist_path)
+    write_to_distribution(dist, value)
+    assert read_from_distribution(dist) is not None
