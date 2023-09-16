@@ -33,7 +33,9 @@ dependencies = [
 ]
 [project.optional-dependencies]
 dev = [
+  "coverage[toml]>=6.5",
   "hypothesis",
+  "hypothesis-jsonschema",
   "pytest",
 ]
 [project.urls]
@@ -47,10 +49,8 @@ source = "vcs"
 [tool.hatch.envs.test]
 dependencies = [
   "coverage[toml]>=6.5",
-  "hypothesis",
-  "hypothesis-jsonschema",
-  "pytest",
 ]
+features = ["dev"]
 [tool.hatch.envs.test.scripts]
 test = "pytest {args:tests}"
 cov = "coverage run -m pytest {args:tests}"

@@ -144,6 +144,28 @@ if t.TYPE_CHECKING:
             ),
             id="vcs_git_resolved_revision",
         ),
+        pytest.param(
+            {
+                "url": "https://github.com/pypa/pip.git",
+                "vcs_info": {
+                    "vcs": "git",
+                    "requested_revision": "1.3.1",
+                    "resolved_revision": "1.3.1",
+                    "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
+                },
+            },
+            VCSData(
+                url="https://github.com/pypa/pip.git",
+                vcs_info=VCSInfo(
+                    vcs="git",
+                    requested_revision="1.3.1",
+                    resolved_revision="1.3.1",
+                    resolved_revision_type=None,
+                    commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
+                ),
+            ),
+            id="vcs_no_resolved_revision",
+        ),
     ],
 )
 def test_parse(data: dict, expected: object, tmp_path: Path):
@@ -193,4 +215,10 @@ def test_unknown_url_type(tmp_path: Path):
     }
     dist = PathDistribution(tmp_path)
     write_to_distribution(dist, data)
+    assert read_from_distribution(dist) is None
+
+
+def test_no_file(tmp_path: Path):
+    """Test that a missing file is read back as None."""
+    dist = PathDistribution(tmp_path)
     assert read_from_distribution(dist) is None
