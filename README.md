@@ -3,6 +3,10 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/pep610.svg)](https://pypi.org/project/pep610)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pep610.svg)](https://pypi.org/project/pep610)
 
+[PEP 610][pep610] specifies how the Direct URL Origin of installed distributions should be recorded.
+
+The up-to-date, [canonical specification][pep610-pypa] is maintained on the [PyPA specs page][pypa-specs].
+
 -----
 
 **Table of Contents**
@@ -45,3 +49,7 @@ match data:
 ## License
 
 `pep610` is distributed under the terms of the [Apache License 2.0](LICENSE).
+
+[pep610]: https://www.python.org/dev/peps/pep-0610/
+[pep610-pypa]: https://packaging.python.org/en/latest/specifications/direct-url/#direct-url
+[pypa-specs]: https://packaging.python.org/en/latest/specifications/
