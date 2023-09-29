@@ -178,6 +178,10 @@ addopts = "-v"
 [tool.coverage.run]
 source_pkgs = ["pep610", "tests"]
 branch = true
+omit = [
+  # omit type definitions
+  "*/pep610/_types.py",
+]
 parallel = true
 
 [tool.coverage.paths]
