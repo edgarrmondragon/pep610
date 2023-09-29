@@ -79,7 +79,11 @@ dependencies = [
 ]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/pep610 tests}"
-style = ["ruff {args:.}", "black --check --diff {args:.}"]
+style = [
+  "ruff check --preview {args:.}",
+  "ruff format {args:.}",
+  "black --check --diff {args:.}",
+]
 fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
 all = ["style", "typing"]
 

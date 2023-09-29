@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import typing as t
 from dataclasses import dataclass
+from functools import singledispatch
 from importlib.metadata import version
 
 if t.TYPE_CHECKING:
@@ -15,6 +16,29 @@ if t.TYPE_CHECKING:
         from typing_extensions import Self
     else:
         from typing import Self
+
+    from pep610._types import (
+        ArchiveDict,
+        ArchiveInfoDict,
+        DirectoryDict,
+        DirectoryInfoDict,
+        VCSDict,
+        VCSInfoDict,
+    )
+
+__all__ = [
+    "VCSInfo",
+    "VCSData",
+    "HashData",
+    "ArchiveInfo",
+    "ArchiveData",
+    "DirInfo",
+    "DirData",
+    "to_dict",
+    "read_from_distribution",
+    "write_to_distribution",
+    "__version__",
+]
 
 __version__ = version(__package__)
 
@@ -89,42 +113,51 @@ class DirData(_BaseData):
     dir_info: DirInfo
 
 
-def to_dict(data: VCSData | ArchiveData | DirData) -> dict[str, t.Any]:
+@singledispatch
+def to_dict(data) -> dict[str, t.Any]:  # noqa: ANN001
     """Convert the parsed data to a dictionary.
 
     Args:
         data: The parsed data.
 
-    Returns:
-        The data as a dictionary.
+    Raises:
+        NotImplementedError: If the data type is not supported.
     """
-    result: dict[str, t.Any] = {"url": data.url}
-    if isinstance(data, VCSData):
-        vcs_info = {
-            "vcs": data.vcs_info.vcs,
-            "commit_id": data.vcs_info.commit_id,
-        }
-        if data.vcs_info.requested_revision is not None:
-            vcs_info["requested_revision"] = data.vcs_info.requested_revision
-        if data.vcs_info.resolved_revision is not None:
-            vcs_info["resolved_revision"] = data.vcs_info.resolved_revision
-        if data.vcs_info.resolved_revision_type is not None:
-            vcs_info["resolved_revision_type"] = data.vcs_info.resolved_revision_type
-        result["vcs_info"] = vcs_info
+    message = f"Cannot serialize unknown direct URL data of type {type(data)}"
+    raise NotImplementedError(message)
 
-    elif isinstance(data, ArchiveData):
-        result["archive_info"] = {}
-        if data.archive_info.hash is not None:
-            result["archive_info"][
-                "hash"
-            ] = f"{data.archive_info.hash.algorithm}={data.archive_info.hash.value}"
 
-    elif isinstance(data, DirData):
-        result["dir_info"] = {}
-        if data.dir_info._editable is not None:  # noqa: SLF001
-            result["dir_info"]["editable"] = data.dir_info._editable  # noqa: SLF001
+@to_dict.register(VCSData)
+def _(data: VCSData) -> VCSDict:
+    vcs_info: VCSInfoDict = {
+        "vcs": data.vcs_info.vcs,
+        "commit_id": data.vcs_info.commit_id,
+    }
+    if data.vcs_info.requested_revision is not None:
+        vcs_info["requested_revision"] = data.vcs_info.requested_revision
+    if data.vcs_info.resolved_revision is not None:
+        vcs_info["resolved_revision"] = data.vcs_info.resolved_revision
+    if data.vcs_info.resolved_revision_type is not None:
+        vcs_info["resolved_revision_type"] = data.vcs_info.resolved_revision_type
 
-    return result
+    return {"url": data.url, "vcs_info": vcs_info}
+
+
+@to_dict.register(ArchiveData)
+def _(data: ArchiveData) -> ArchiveDict:
+    archive_info: ArchiveInfoDict = {}
+    if data.archive_info.hash is not None:
+        archive_info["hash"] = f"{data.archive_info.hash.algorithm}={data.archive_info.hash.value}"
+
+    return {"url": data.url, "archive_info": archive_info}
+
+
+@to_dict.register(DirData)
+def _(data: DirData) -> DirectoryDict:
+    dir_info: DirectoryInfoDict = {}
+    if data.dir_info._editable is not None:  # noqa: SLF001
+        dir_info["editable"] = data.dir_info._editable  # noqa: SLF001
+    return {"url": data.url, "dir_info": dir_info}
 
 
 def _parse(content: str) -> VCSData | ArchiveData | DirData | None:

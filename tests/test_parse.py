@@ -179,6 +179,13 @@ def test_parse(data: dict, expected: object, tmp_path: Path):
     assert to_dict(result) == data
 
 
+def test_unknown_data_type():
+    """Test serialization from unknown data fails."""
+    data = object()
+    with pytest.raises(NotImplementedError, match="Cannot serialize unknown"):
+        to_dict(data)
+
+
 def test_local_directory(tmp_path: Path):
     """Test that a local directory is read back as a local directory."""
     data = {
