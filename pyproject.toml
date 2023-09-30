@@ -25,6 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
+  "Typing :: Typed",
 ]
 dynamic = [
   "version",
@@ -79,7 +80,11 @@ dependencies = [
 ]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/pep610 tests}"
-style = ["ruff {args:.}", "black --check --diff {args:.}"]
+style = [
+  "ruff check --preview {args:.}",
+  "ruff format {args:.}",
+  "black --check --diff {args:.}",
+]
 fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
 all = ["style", "typing"]
 
@@ -173,6 +178,10 @@ addopts = "-v"
 [tool.coverage.run]
 source_pkgs = ["pep610", "tests"]
 branch = true
+omit = [
+  # omit type definitions
+  "*/pep610/_types.py",
+]
 parallel = true
 
 [tool.coverage.paths]
