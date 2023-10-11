@@ -53,3 +53,8 @@ repos:
   rev: "1.2.0"
   hooks:
   - id: pyproject-fmt
+
+- repo: https://github.com/crate-ci/typos
+  rev: v1.16.18
+  hooks:
+  - id: typos
