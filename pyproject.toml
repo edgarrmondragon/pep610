@@ -72,31 +72,31 @@ report = ["coverage combine", "coverage report --show-missing"]
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
-  "black>=23.1.0",
   "mypy>=1.0.0",
   "hypothesis",
   "hypothesis-jsonschema",
   "pytest",
-  "ruff>=0.0.287",
+  "ruff>=0.1.0",
 ]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/pep610 tests}"
 style = [
-  "ruff check --preview {args:.}",
-  "ruff format {args:.}",
-  "black --check --diff {args:.}",
+  "ruff check {args:.}",
+  "ruff format --check --diff {args:.}",
 ]
-fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
+fmt = ["ruff check --fix {args:.}", "ruff format {args:.}", "style"]
 all = ["style", "typing"]
 
-[tool.black]
-target-version = ["py38"]
-line-length = 100
-skip-string-normalization = true
-
 [tool.ruff]
-target-version = "py38"
 line-length = 100
+preview = true
+target-version = "py38"
+
+[tool.ruff.lint]
+ignore = [
+  "COM812",  # missing-trailing-comma
+  "ISC001",  # single-line-implicit-string-concatenation
+]
 select = [
   "F",
   "E",
@@ -154,13 +154,13 @@ unfixable = [
   "ERA", # commented-out-code
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["pep610"]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/**/*" = [
   "PLR2004", # magic-value-comparison
   "S101", # assert
@@ -170,7 +170,7 @@ ban-relative-imports = "all"
   "ANN201", # missing-return-type-undocumented-public-function
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.pytest.ini_options]

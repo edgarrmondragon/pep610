@@ -6,7 +6,7 @@ ci:
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v4.5.0
   hooks:
   - id: check-added-large-files
   - id: check-json
@@ -26,16 +26,11 @@ repos:
   - id: check-readthedocs
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.292
+  rev: v0.1.3
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix, --show-fixes]
-
-- repo: https://github.com/psf/black
-  rev: 23.9.1
-  hooks:
-  - id: black
-    language_version: python3.11
+  - id: ruff-format
 
 - repo: https://github.com/pycqa/flake8
   rev: 6.1.0
@@ -45,16 +40,16 @@ repos:
     - darglint==1.8.1
 
 - repo: https://github.com/pre-commit/pre-commit
-  rev: v3.4.0
+  rev: v3.5.0
   hooks:
   - id: validate_manifest
 
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: "1.2.0"
+  rev: "1.3.0"
   hooks:
   - id: pyproject-fmt
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.16.18
+  rev: v1.16.21
   hooks:
   - id: typos
