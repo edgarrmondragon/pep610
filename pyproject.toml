@@ -33,17 +33,15 @@ dynamic = [
 ]
 dependencies = [
 ]
-[project.optional-dependencies]
-dev = [
+optional-dependencies.dev = [
   "coverage[toml]>=6.5",
   "hypothesis",
   "hypothesis-jsonschema",
   "pytest",
 ]
-[project.urls]
-Documentation = "https://github.com/unknown/pep610#readme"
-Issues = "https://github.com/unknown/pep610/issues"
-Source = "https://github.com/unknown/pep610"
+urls.Documentation = "https://github.com/unknown/pep610#readme"
+urls.Issues = "https://github.com/unknown/pep610/issues"
+urls.Source = "https://github.com/unknown/pep610"
 
 [tool.hatch.version]
 source = "vcs"
