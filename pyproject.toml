@@ -51,6 +51,10 @@ dependencies = [
   "coverage[toml]>=6.5",
 ]
 features = ["dev"]
+[tool.hatch.envs.test.overrides]
+matrix.python.env-vars = [
+  { key = "COVERAGE_CORE", value = "sysmon", if = ["3.12", "3.13"] }
+]
 [tool.hatch.envs.test.scripts]
 test = "pytest {args:tests}"
 cov = "coverage run -m pytest {args:tests}"

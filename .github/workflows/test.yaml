@@ -72,6 +72,8 @@ jobs:
   test:
     name: Pytest (Python ${{ matrix.python-version }}, ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      HATCH_VERBOSE: "3"
     strategy:
       fail-fast: false
       matrix:
