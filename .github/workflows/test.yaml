@@ -106,7 +106,7 @@ jobs:
           HATCH_ENV: "test"
         run: |
           hatch run +py=${{ matrix.python-version }} cov
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-data
           path: ".coverage.*"
