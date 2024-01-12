@@ -79,7 +79,7 @@ class HashData(t.NamedTuple):
 class ArchiveInfo:
     """Archive information."""
 
-    hash: HashData | None  # noqa: A003
+    hash: HashData | None
 
 
 @dataclass
