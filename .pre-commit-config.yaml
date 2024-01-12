@@ -26,14 +26,14 @@ repos:
   - id: check-readthedocs
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.1.9
+  rev: v0.1.13
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix, --show-fixes]
   - id: ruff-format
 
 - repo: https://github.com/pycqa/flake8
-  rev: 6.1.0
+  rev: 7.0.0
   hooks:
   - id: flake8
     additional_dependencies:
@@ -45,11 +45,12 @@ repos:
   - id: validate_manifest
 
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: "1.5.3"
+  rev: "1.6.0"
   hooks:
   - id: pyproject-fmt
+    args: ["--max-supported-python", "3.13"]
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.16.26
+  rev: v1.17.0
   hooks:
   - id: typos
