@@ -27,17 +27,17 @@ if t.TYPE_CHECKING:
     )
 
 __all__ = [
-    "VCSInfo",
-    "VCSData",
-    "HashData",
-    "ArchiveInfo",
     "ArchiveData",
-    "DirInfo",
+    "ArchiveInfo",
     "DirData",
-    "to_dict",
-    "read_from_distribution",
-    "write_to_distribution",
+    "DirInfo",
+    "HashData",
+    "VCSData",
+    "VCSInfo",
     "__version__",
+    "read_from_distribution",
+    "to_dict",
+    "write_to_distribution",
 ]
 
 __version__ = version(__package__)
