@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "pep610"
-description = "Python helpers for PEP 610"
+description = "PEP 610 Direct URL data parser"
 readme = "README.md"
 keywords = [
   "pep",

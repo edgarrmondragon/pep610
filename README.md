@@ -32,21 +32,13 @@ from importlib import metadata
 
 import pep610
 
-dist = metadata.distribution('pep610')
+dist = metadata.distribution("pep610")
 data = pep610.read_from_distribution(dist)
 
-if isinstance(data, pep610.DirData):
-    print(f"URL: {data.url}")
-    print(f"Editable: {data.dir_info.editable}")
-elif isinstance(data, pep610.VCSData):
-    print(f"URL: {data.url}")
-    print(f"VCS: {data.vcs_info.vcs}")
-    print(f"Commit: {data.vcs_info.commit_id}")
-elif isinstance(data, pep610.ArchiveData):
-    print(f"URL: {data.url}")
-    print(f"Hashes: {data.archive_info.hashes}")
+if isinstance(data, pep610.DirData) and data.dir_info.is_editable():
+    print("Editable install")
 else:
-    print("Unknown data")
+    print("Not editable install")
 ```
 
 Or, in Python 3.10+ using pattern matching:
@@ -56,22 +48,14 @@ from importlib import metadata
 
 import pep610
 
-dist = metadata.distribution('pep610')
+dist = metadata.distribution("pep610")
 data = pep610.read_from_distribution(dist)
 
 match data:
-    case pep610.DirData(url, dir_info):
-        print(f"URL: {url}")
-        print(f"Editable: {dir_info.editable}")
-    case pep610.VCSData(url, vcs_info):
-        print(f"URL: {url}")
-        print(f"VCS: {vcs_info.vcs}")
-        print(f"Commit: {vcs_info.commit_id}")
-    case pep610.ArchiveData(url, archive_info):
-        print(f"URL: {url}")
-        print(f"Hashes: {archive_info.hashes}")
+    case pep610.DirData(url, pep610.DirInfo(editable=True)):
+        print("Editable install")
     case _:
-        print("Unknown data")
+        print("Not editable install")
 ```
 
 ## License
