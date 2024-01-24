@@ -24,6 +24,32 @@ pip install pep610
 
 ## Usage
 
+You can use `pep610.read_from_distribution` to parse the [Direct URL Origin structure][pep610-structure] from a `Distribution` object:
+
+```python
+from importlib import metadata
+
+import pep610
+
+dist = metadata.distribution('pep610')
+data = pep610.read_from_distribution(dist)
+
+if isinstance(data, pep610.DirData):
+    print(f"URL: {data.url}")
+    print(f"Editable: {data.dir_info.editable}")
+elif isinstance(data, pep610.VCSData):
+    print(f"URL: {data.url}")
+    print(f"VCS: {data.vcs_info.vcs}")
+    print(f"Commit: {data.vcs_info.commit_id}")
+elif isinstance(data, pep610.ArchiveData):
+    print(f"URL: {data.url}")
+    print(f"Hashes: {data.archive_info.hashes}")
+else:
+    print("Unknown data")
+```
+
+Or, in Python 3.10+ using pattern matching:
+
 ```python
 from importlib import metadata
 
@@ -42,7 +68,7 @@ match data:
         print(f"Commit: {vcs_info.commit_id}")
     case pep610.ArchiveData(url, archive_info):
         print(f"URL: {url}")
-        print(f"Hash: {archive_info.hash}")
+        print(f"Hashes: {archive_info.hashes}")
     case _:
         print("Unknown data")
 ```
@@ -53,4 +79,5 @@ match data:
 
 [pep610]: https://www.python.org/dev/peps/pep-0610/
 [pep610-pypa]: https://packaging.python.org/en/latest/specifications/direct-url/#direct-url
+[pep610-structure]: https://packaging.python.org/en/latest/specifications/direct-url-data-structure/
 [pypa-specs]: https://packaging.python.org/en/latest/specifications/

@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 import json
+import sys
 import typing as t
 from dataclasses import dataclass
 from functools import singledispatch
 from importlib.metadata import version
 
+if sys.version_info < (3, 9):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
+
 if t.TYPE_CHECKING:
-    import sys
     from importlib.metadata import Distribution, PathDistribution
 
     if sys.version_info <= (3, 10):
@@ -40,6 +45,7 @@ __all__ = [
     "write_to_distribution",
 ]
 
+SCHEMA_FILE = importlib_resources.files(__package__) / "direct_url.schema.json"
 __version__ = version(__package__)
 
 
@@ -79,7 +85,11 @@ class HashData(t.NamedTuple):
 class ArchiveInfo:
     """Archive information."""
 
-    hash: HashData | None
+    hashes: dict[str, str] | None = None
+    """Dictionary mapping a hash name to a hex encoded digest of the file."""
+
+    hash: HashData | None = None
+    """The archive hash (deprecated)."""
 
 
 @dataclass
@@ -146,6 +156,9 @@ def _(data: VCSData) -> VCSDict:
 @to_dict.register(ArchiveData)
 def _(data: ArchiveData) -> ArchiveDict:
     archive_info: ArchiveInfoDict = {}
+    if data.archive_info.hashes is not None:
+        archive_info["hashes"] = data.archive_info.hashes
+
     if data.archive_info.hash is not None:
         archive_info["hash"] = f"{data.archive_info.hash.algorithm}={data.archive_info.hash.value}"
 
@@ -164,11 +177,14 @@ def _parse(content: str) -> VCSData | ArchiveData | DirData | None:
     data = json.loads(content)
 
     if "archive_info" in data:
-        hash_value = data["archive_info"].get("hash")
-        hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None
+        hashes = data["archive_info"].get("hashes")
+        hash_data = None
+        if hash_value := data["archive_info"].get("hash"):
+            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None
+
         return ArchiveData(
             url=data["url"],
-            archive_info=ArchiveInfo(hash=hash_data),
+            archive_info=ArchiveInfo(hashes=hashes, hash=hash_data),
         )
 
     if "dir_info" in data:

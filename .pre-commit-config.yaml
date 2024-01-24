@@ -45,10 +45,9 @@ repos:
   - id: validate_manifest
 
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: "1.6.0"
+  rev: "1.7.0"
   hooks:
   - id: pyproject-fmt
-    args: ["--max-supported-python", "3.13"]
 
 - repo: https://github.com/crate-ci/typos
   rev: v1.17.0

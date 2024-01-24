@@ -72,6 +72,7 @@ jobs:
   test:
     name: Pytest (Python ${{ matrix.python-version }}, ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     env:
       HATCH_VERBOSE: "3"
     strategy:
@@ -79,21 +80,27 @@ jobs:
       matrix:
         os: ["ubuntu-latest"]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        experimental: [false]
         include:
           - python-version: "3.13"
             os: "ubuntu-latest"
+            experimental: true
 
           - python-version: "pypy3.10"
             os: "ubuntu-latest"
+            experimental: false
 
           - python-version: "3.12"
             os: "windows-latest"
+            experimental: false
 
           - python-version: "3.12"
             os: "macos-latest"
+            experimental: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
           cache: pip
           python-version: ${{ matrix.python-version }}
@@ -102,12 +109,10 @@ jobs:
         env:
           PIP_CONSTRAINT: .github/workflows/constraints.txt
         run: |
-          pipx install hatch
+          pipx install --python=${{ steps.setup-python.outputs.python-path }} hatch
       - name: Run tests
-        env:
-          HATCH_ENV: "test"
         run: |
-          hatch run +py=${{ matrix.python-version }} cov
+          hatch run cov
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}
