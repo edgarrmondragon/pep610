@@ -25,7 +25,7 @@ match data:
 
 :::
 
-:::{tab-item} Python 3.9+
+:::{tab-item} Python 3.8+
 ```python
 from importlib import metadata
 
