@@ -1,5 +1,5 @@
 import json
-from importlib.metadata import PathDistribution
+from importlib.metadata import Distribution
 
 import pytest
 from hypothesis import HealthCheck, given, settings
@@ -15,6 +15,6 @@ SCHEMA = json.loads(SCHEMA_FILE.read_text())
 def test_generic(tmp_path_factory: pytest.TempPathFactory, value: dict):
     """Test parsing a local directory."""
     dist_path = tmp_path_factory.mktemp("pep610")
-    dist = PathDistribution(dist_path)
+    dist = Distribution.at(dist_path)
     write_to_distribution(dist, value)
     assert read_from_distribution(dist) is not None
