@@ -1,0 +1,96 @@
+{
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "url"
+      ]
+    },
+    {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "dir_info": {
+              "type": "object",
+              "properties": {
+                "editable": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "required": [
+            "dir_info"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "vcs_info": {
+              "type": "object",
+              "properties": {
+                "vcs": {
+                  "type": "string",
+                  "enum": [
+                    "git",
+                    "hg",
+                    "bzr",
+                    "svn"
+                  ]
+                },
+                "requested_revision": {
+                  "type": "string"
+                },
+                "commit_id": {
+                  "type": "string"
+                },
+                "resolved_revision": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "vcs",
+                "commit_id"
+              ]
+            }
+          },
+          "required": [
+            "vcs_info"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "archive_info": {
+              "type": "object",
+              "properties": {
+                "hash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]+=[a-f0-9]+$"
+                },
+                "hashes": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[a-f0-9]+$": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": [
+            "archive_info"
+          ]
+        }
+      ]
+    }
+  ]
+}

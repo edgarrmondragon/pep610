@@ -55,6 +55,27 @@ if t.TYPE_CHECKING:
             {
                 "url": "https://github.com/pypa/pip/archive/1.3.1.zip",
                 "archive_info": {
+                    "hashes": {
+                        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                    }
+                },
+            },
+            ArchiveData(
+                url="https://github.com/pypa/pip/archive/1.3.1.zip",
+                archive_info=ArchiveInfo(
+                    hashes={
+                        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                    },
+                ),
+            ),
+            id="archive_hashes",
+        ),
+        pytest.param(
+            {
+                "url": "https://github.com/pypa/pip/archive/1.3.1.zip",
+                "archive_info": {
                     "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
                 },
             },
@@ -67,7 +88,7 @@ if t.TYPE_CHECKING:
                     ),
                 ),
             ),
-            id="archive_sha256",
+            id="archive_sha256_legacy",
         ),
         pytest.param(
             {
@@ -78,7 +99,7 @@ if t.TYPE_CHECKING:
                 url="file://path/to/my.whl",
                 archive_info=ArchiveInfo(hash=None),
             ),
-            id="archive_no_hash",
+            id="archive_no_hashes",
         ),
         pytest.param(
             {

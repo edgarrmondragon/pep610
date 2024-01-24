@@ -37,6 +37,7 @@ class VCSDict(t.TypedDict):
 class ArchiveInfoDict(t.TypedDict, total=False):
     """Archive information."""
 
+    hashes: dict[str, str]
     hash: str
 
 
