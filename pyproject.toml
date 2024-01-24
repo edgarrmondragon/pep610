@@ -49,8 +49,8 @@ optional-dependencies.docs = [
   "sphinx_design==0.5",
 ]
 urls.Documentation = "https://pep610.readthedocs.io"
-urls.Issues = "https://github.com/unknown/pep610/issues"
-urls.Source = "https://github.com/unknown/pep610"
+urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
+urls.Source = "https://github.com/edgarrmondragon/pep610"
 
 [tool.hatch.version]
 source = "vcs"

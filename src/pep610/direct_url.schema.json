@@ -1,11 +1,71 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Direct URL Data",
+  "description": "Data structure that can represent URLs to python projects and distribution artifacts such as VCS source trees, local source trees, source distributions and wheels.",
+  "definitions": {
+    "URL": {
+      "type": "string",
+      "format": "uri"
+    },
+    "DirInfo": {
+      "type": "object",
+      "properties": {
+        "editable": {
+          "type": ["boolean", "null"]
+        }
+      }
+    },
+    "VCSInfo": {
+      "type": "object",
+      "properties": {
+        "vcs": {
+          "type": "string",
+          "enum": [
+            "git",
+            "hg",
+            "bzr",
+            "svn"
+          ]
+        },
+        "requested_revision": {
+          "type": "string"
+        },
+        "commit_id": {
+          "type": "string"
+        },
+        "resolved_revision": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "vcs",
+        "commit_id"
+      ]
+    },
+    "ArchiveInfo": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]+=[a-f0-9]+$"
+        },
+        "hashes": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-f0-9]+$": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
   "allOf": [
     {
       "type": "object",
       "properties": {
         "url": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/definitions/URL"
         }
       },
       "required": [
@@ -18,12 +78,7 @@
           "type": "object",
           "properties": {
             "dir_info": {
-              "type": "object",
-              "properties": {
-                "editable": {
-                  "type": "boolean"
-                }
-              }
+              "$ref": "#/definitions/DirInfo"
             }
           },
           "required": [
@@ -34,31 +89,7 @@
           "type": "object",
           "properties": {
             "vcs_info": {
-              "type": "object",
-              "properties": {
-                "vcs": {
-                  "type": "string",
-                  "enum": [
-                    "git",
-                    "hg",
-                    "bzr",
-                    "svn"
-                  ]
-                },
-                "requested_revision": {
-                  "type": "string"
-                },
-                "commit_id": {
-                  "type": "string"
-                },
-                "resolved_revision": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "vcs",
-                "commit_id"
-              ]
+              "$ref": "#/definitions/VCSInfo"
             }
           },
           "required": [
@@ -69,21 +100,7 @@
           "type": "object",
           "properties": {
             "archive_info": {
-              "type": "object",
-              "properties": {
-                "hash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]+=[a-f0-9]+$"
-                },
-                "hashes": {
-                  "type": "object",
-                  "patternProperties": {
-                    "^[a-f0-9]+$": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/ArchiveInfo"
             }
           },
           "required": [
