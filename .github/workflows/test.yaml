@@ -100,7 +100,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        id: setup-python
         with:
           cache: pip
           python-version: ${{ matrix.python-version }}
@@ -109,10 +108,12 @@ jobs:
         env:
           PIP_CONSTRAINT: .github/workflows/constraints.txt
         run: |
-          pipx install --python=${{ steps.setup-python.outputs.python-path }} hatch
+          pipx install hatch
       - name: Run tests
+        env:
+          HATCH_ENV: all
         run: |
-          hatch run cov
+          hatch run +py=${{ matrix.python-version }} cov
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import typing as t
-from importlib.metadata import PathDistribution
+from importlib.metadata import Distribution
 
 import pytest
 
@@ -31,7 +31,7 @@ if t.TYPE_CHECKING:
             {"url": "file:///home/user/project", "dir_info": {"editable": True}},
             DirData(
                 url="file:///home/user/project",
-                dir_info=DirInfo(_editable=True),
+                dir_info=DirInfo(editable=True),
             ),
             id="local_editable",
         ),
@@ -39,7 +39,7 @@ if t.TYPE_CHECKING:
             {"url": "file:///home/user/project", "dir_info": {"editable": False}},
             DirData(
                 url="file:///home/user/project",
-                dir_info=DirInfo(_editable=False),
+                dir_info=DirInfo(editable=False),
             ),
             id="local_not_editable",
         ),
@@ -47,7 +47,7 @@ if t.TYPE_CHECKING:
             {"url": "file:///home/user/project", "dir_info": {}},
             DirData(
                 url="file:///home/user/project",
-                dir_info=DirInfo(_editable=None),
+                dir_info=DirInfo(editable=None),
             ),
             id="local_no_editable_info",
         ),
@@ -191,7 +191,7 @@ if t.TYPE_CHECKING:
 )
 def test_parse(data: dict, expected: object, tmp_path: Path):
     """Test the parse function."""
-    dist = PathDistribution(tmp_path)
+    dist = Distribution.at(tmp_path)
     write_to_distribution(dist, data)
 
     result = read_from_distribution(dist)
@@ -213,13 +213,13 @@ def test_local_directory(tmp_path: Path):
         "url": "file:///home/user/project",
         "dir_info": {"editable": True},
     }
-    dist = PathDistribution(tmp_path)
+    dist = Distribution.at(tmp_path)
     write_to_distribution(dist, data)
 
     result = read_from_distribution(dist)
     assert isinstance(result, DirData)
     assert result.url == "file:///home/user/project"
-    assert result.dir_info.editable is True
+    assert result.dir_info.is_editable()
     assert to_dict(result) == data
 
     result.dir_info.editable = False
@@ -241,12 +241,12 @@ def test_unknown_url_type(tmp_path: Path):
         "url": "unknown:///home/user/project",
         "unknown_info": {},
     }
-    dist = PathDistribution(tmp_path)
+    dist = Distribution.at(tmp_path)
     write_to_distribution(dist, data)
     assert read_from_distribution(dist) is None
 
 
 def test_no_file(tmp_path: Path):
     """Test that a missing file is read back as None."""
-    dist = PathDistribution(tmp_path)
+    dist = Distribution.at(tmp_path)
     assert read_from_distribution(dist) is None

@@ -51,7 +51,16 @@ __version__ = version(__package__)
 
 @dataclass
 class VCSInfo:
-    """VCS information."""
+    """VCS information.
+
+    See also :spec:`vcs`.
+
+    Args:
+        vcs: The VCS type.
+        commit_id: The exact commit/revision number that was/is to be installed.
+        requested_revision: A branch/tag/ref/commit/revision/etc (in a format
+            compatible with the VCS).
+    """
 
     vcs: str
     commit_id: str
@@ -62,20 +71,34 @@ class VCSInfo:
 
 @dataclass
 class _BaseData:
-    """Base direct URL data."""
+    """Base direct URL data.
+
+    Args:
+        url: The direct URL.
+    """
 
     url: str
 
 
 @dataclass
 class VCSData(_BaseData):
-    """VCS direct URL data."""
+    """VCS direct URL data.
+
+    Args:
+        url: The VCS URL.
+        vcs_info: VCS information.
+    """
 
     vcs_info: VCSInfo
 
 
 class HashData(t.NamedTuple):
-    """Archive hash data."""
+    """(Deprecated) Archive hash data.
+
+    Args:
+        algorithm: The hash algorithm.
+        value: The hash value.
+    """
 
     algorithm: str
     value: str
@@ -83,42 +106,63 @@ class HashData(t.NamedTuple):
 
 @dataclass
 class ArchiveInfo:
-    """Archive information."""
+    """Archive information.
+
+    See also :spec:`archive`.
+
+    Args:
+        hashes: Dictionary mapping a hash name to a hex encoded digest of the file.
+        hash: The archive hash (deprecated).
+    """
 
     hashes: dict[str, str] | None = None
-    """Dictionary mapping a hash name to a hex encoded digest of the file."""
-
     hash: HashData | None = None
-    """The archive hash (deprecated)."""
 
 
 @dataclass
 class ArchiveData(_BaseData):
-    """Archive direct URL data."""
+    """Archive direct URL data.
+
+    Args:
+        url: The archive URL.
+        archive_info: Archive information.
+    """
 
     archive_info: ArchiveInfo
 
 
 @dataclass
 class DirInfo:
-    """Local directory information."""
+    """Local directory information.
 
-    _editable: bool | None
+    See also :spec:`directory`.
 
-    @property
-    def editable(self: Self) -> bool | None:
-        """Whether the directory is editable."""
-        return self._editable is True
+    Args:
+        editable: Whether the distribution is installed in editable mode.
+    """
 
-    @editable.setter
-    def editable(self: Self, value: bool | None) -> None:
-        """Set whether the directory is editable."""
-        self._editable = value
+    editable: bool | None
+
+    def is_editable(self: Self) -> bool:
+        """Distribution is editable?
+
+        ``True`` if the distribution was/is to be installed in editable mode,
+        ``False`` otherwise. If absent, default to ``False``
+
+        Returns:
+            Whether the distribution is installed in editable mode.
+        """
+        return self.editable is True
 
 
 @dataclass
 class DirData(_BaseData):
-    """Local directory direct URL data."""
+    """Local directory direct URL data.
+
+    Args:
+        url: The local directory URL.
+        dir_info: Local directory information.
+    """
 
     dir_info: DirInfo
 
@@ -168,8 +212,8 @@ def _(data: ArchiveData) -> ArchiveDict:
 @to_dict.register(DirData)
 def _(data: DirData) -> DirectoryDict:
     dir_info: DirectoryInfoDict = {}
-    if data.dir_info._editable is not None:  # noqa: SLF001
-        dir_info["editable"] = data.dir_info._editable  # noqa: SLF001
+    if data.dir_info.editable is not None:
+        dir_info["editable"] = data.dir_info.editable
     return {"url": data.url, "dir_info": dir_info}
 
 
@@ -191,7 +235,7 @@ def _parse(content: str) -> VCSData | ArchiveData | DirData | None:
         return DirData(
             url=data["url"],
             dir_info=DirInfo(
-                _editable=data["dir_info"].get("editable"),
+                editable=data["dir_info"].get("editable"),
             ),
         )
 
@@ -214,7 +258,7 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
     """Read the package data for a given package.
 
     Args:
-        dist: The package distribution.
+        dist(importlib_metadata.Distribution): The package distribution.
 
     Returns:
         The parsed PEP 610 file.
