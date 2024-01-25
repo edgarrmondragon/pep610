@@ -123,6 +123,37 @@ class ArchiveInfo:
     hashes: dict[str, str] | None = None
     hash: HashData | None = None
 
+    @property
+    def all_hashes(self: Self) -> dict[str, str]:
+        """All archive hashes.
+
+        Merges the ``hashes`` attribute with the legacy ``hash`` attribute, prioritizing the former.
+
+        Returns:
+            All archive hashes.
+
+        >>> archive_info = ArchiveInfo(
+        ...     hash=HashData(
+        ...         "sha256",
+        ...         "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
+        ...     ),
+        ...     hashes={
+        ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+        ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+        ...     },
+        ... )
+        >>> archive_info.all_hashes
+        {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}
+        """  # noqa: E501
+        hashes = {}
+        if self.hash is not None:
+            hashes[self.hash.algorithm] = self.hash.value
+
+        if self.hashes is not None:
+            hashes.update(self.hashes)
+
+        return hashes
+
 
 @dataclass
 class ArchiveData(_BaseData):
