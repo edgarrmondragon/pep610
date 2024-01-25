@@ -3,7 +3,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/pep610.svg)](https://pypi.org/project/pep610)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pep610.svg)](https://pypi.org/project/pep610)
 [![codecov](https://codecov.io/gh/edgarrmondragon/pep610/graph/badge.svg?token=6W1M6P9LYI)](https://codecov.io/gh/edgarrmondragon/pep610)
-[![Documentation Status](https://readthedocs.org/projects/pep610/badge/?version=latest)](https://pep610.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pep610/badge/?version=latest)](https://pep610.readthedocs.io/en/stable)
 
 [PEP 610][pep610] specifies how the Direct URL Origin of installed distributions should be recorded.
 
