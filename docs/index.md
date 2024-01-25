@@ -1,6 +1,6 @@
 # PEP 610 Parser and Builder
 
-*A parser and builder for [PEP 610 direct URL metadata](https://packaging.python.org/en/latest/specifications/direct-url-data-structure).*
+*A parser and builder for {external:doc}`PEP 610 direct URL metadata <specifications/direct-url>`.*
 
 Release **v{sub-ref}`version`**.
 

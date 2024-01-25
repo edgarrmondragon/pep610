@@ -22,6 +22,13 @@ version = pep610.__version__
 release = pep610.__version__
 project_copyright = f"2023, {author}"
 
+# -- General configuration ----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+nitpicky = True
+nitpick_ignore = [
+    ("py:class", "pep610.HashData"),
+]
+
 # -- Options for HTML output --------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
@@ -57,7 +64,7 @@ autodoc_typehints_description_target = "documented"
 extlinks_detect_hardcoded_links = True
 extlinks = {
     "spec": (
-        "https://packaging.python.org/en/latest/specifications/direct-url-data-structure/#%s-urls",
+        "https://packaging.python.org/en/latest/specifications/direct-url-data-structure/#%s",
         "specification for %s URLs",
     ),
 }
@@ -66,6 +73,7 @@ extlinks = {
 # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#configuration
 intersphinx_mapping = {
     "metadata": ("https://importlib-metadata.readthedocs.io/en/latest", None),
+    "packaging": ("https://packaging.python.org/en/latest", None),
     "python": ("https://docs.python.org/3/", None),
 }
 
