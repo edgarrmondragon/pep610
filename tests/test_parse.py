@@ -235,6 +235,55 @@ def test_local_directory(tmp_path: Path):
     }
 
 
+def test_archive_hashes_merged(tmp_path: Path):
+    """Test that archive hashes are merged."""
+    data = {
+        "url": "file://path/to/my.whl",
+        "archive_info": {
+            "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
+            "hashes": {
+                "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+                "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+            },
+        },
+    }
+    dist = Distribution.at(tmp_path)
+    write_to_distribution(dist, data)
+
+    result = read_from_distribution(dist)
+    assert isinstance(result, ArchiveData)
+    assert result.url == "file://path/to/my.whl"
+    assert result.archive_info.hash == HashData(
+        "sha256",
+        "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
+    )
+    assert result.archive_info.hashes == {
+        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+        "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+    }
+    assert result.archive_info.all_hashes == {
+        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+        "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+    }
+
+
+def test_archive_no_hashes(tmp_path: Path):
+    """Test an archive with no hashes."""
+    data = {
+        "url": "file://path/to/my.whl",
+        "archive_info": {},
+    }
+    dist = Distribution.at(tmp_path)
+    write_to_distribution(dist, data)
+
+    result = read_from_distribution(dist)
+    assert isinstance(result, ArchiveData)
+    assert result.url == "file://path/to/my.whl"
+    assert result.archive_info.hash is None
+    assert result.archive_info.hashes is None
+    assert result.archive_info.all_hashes == {}
+
+
 def test_unknown_url_type(tmp_path: Path):
     """Test that an unknown URL type is read back as None."""
     data = {
