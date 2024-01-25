@@ -73,6 +73,7 @@ extlinks = {
 # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#configuration
 intersphinx_mapping = {
     "metadata": ("https://importlib-metadata.readthedocs.io/en/latest", None),
+    "packaging": ("https://packaging.python.org/en/latest", None),
     "python": ("https://docs.python.org/3/", None),
 }
 
