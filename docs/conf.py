@@ -22,6 +22,13 @@ version = pep610.__version__
 release = pep610.__version__
 project_copyright = f"2023, {author}"
 
+# -- General configuration ----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+nitpicky = True
+nitpick_ignore = [
+    ("py:class", "pep610.HashData"),
+]
+
 # -- Options for HTML output --------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
