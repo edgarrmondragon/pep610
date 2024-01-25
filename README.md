@@ -58,6 +58,40 @@ match data:
         print("Not editable install")
 ```
 
+## Development
+
+This project uses [Hatch][hatch].
+
+### Testing
+
+1. Run the unit tests:
+
+   ```shell
+   hatch run all:cov
+   ```
+
+2. Compute the coverage report:
+
+   ```shell
+   hatch run coverage:report
+   ```
+
+### Linting
+
+1. Run the linters:
+
+   ```shell
+   hatch env run --force-continue --env=lint all
+   ```
+
+### Documentation
+
+1. Build the documentation:
+
+   ```shell
+   hatch run docs:build
+   ```
+
 ## License
 
 `pep610` is distributed under the terms of the [Apache License 2.0](LICENSE).
@@ -66,3 +100,4 @@ match data:
 [pep610-pypa]: https://packaging.python.org/en/latest/specifications/direct-url/#direct-url
 [pep610-structure]: https://packaging.python.org/en/latest/specifications/direct-url-data-structure/
 [pypa-specs]: https://packaging.python.org/en/latest/specifications/
+[hatch]: https://hatch.pypa.io/

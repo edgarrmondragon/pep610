@@ -53,7 +53,7 @@ __version__ = version(__package__)
 class VCSInfo:
     """VCS information.
 
-    See also :spec:`vcs`.
+    See the :spec:`vcs`.
 
     Args:
         vcs: The VCS type.
@@ -108,10 +108,15 @@ class HashData(t.NamedTuple):
 class ArchiveInfo:
     """Archive information.
 
-    See also :spec:`archive`.
+    See the :spec:`archive`.
 
     Args:
         hashes: Dictionary mapping a hash name to a hex encoded digest of the file.
+
+            Any hash algorithm available via :py:mod:`hashlib` (specifically any that can be
+            passed to :py:func:`hashlib.new()` and do not require additional parameters) can be used
+            as a key for the ``hashes`` dictionary. At least one secure algorithm from
+            :py:data:`hashlib.algorithms_guaranteed` SHOULD always be included.
         hash: The archive hash (deprecated).
     """
 
@@ -135,7 +140,7 @@ class ArchiveData(_BaseData):
 class DirInfo:
     """Local directory information.
 
-    See also :spec:`directory`.
+    See the :spec:`directory`.
 
     Args:
         editable: Whether the distribution is installed in editable mode.
