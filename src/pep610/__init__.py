@@ -240,6 +240,18 @@ class DirData(_BaseData):
     dir_info: DirInfo
 
 
+@dataclass
+class UnknownData(_BaseData):
+    """Unknown direct URL data.
+
+    Args:
+        url: The direct URL.
+        contents: The parsed contents.
+    """
+
+    contents: dict[str, t.Any]
+
+
 @singledispatch
 def to_dict(data) -> dict[str, t.Any]:  # noqa: ANN001
     """Convert the parsed data to a dictionary.
@@ -288,6 +300,11 @@ def _(data: DirData) -> DirectoryDict:
     if data.dir_info.editable is not None:
         dir_info["editable"] = data.dir_info.editable
     return {"url": data.url, "dir_info": dir_info}
+
+
+@to_dict.register(UnknownData)
+def _(data: UnknownData) -> dict[str, t.Any]:
+    return {"url": data.url, **data.contents}
 
 
 def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
@@ -344,10 +361,14 @@ def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
             ),
         )
 
-    return None
+    contents = data.copy()
+    url = contents.pop("url", None)
+    return UnknownData(url, contents=contents)
 
 
-def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirData | None:
+def read_from_distribution(
+    dist: Distribution,
+) -> VCSData | ArchiveData | DirData | UnknownData | None:
     """Read the package data for a given package.
 
     Args:

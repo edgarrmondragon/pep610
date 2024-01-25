@@ -13,6 +13,7 @@ from pep610 import (
     DirData,
     DirInfo,
     HashData,
+    UnknownData,
     VCSData,
     VCSInfo,
     is_editable,
@@ -316,7 +317,10 @@ def test_unknown_url_type(tmp_path: Path):
     }
     dist = Distribution.at(tmp_path)
     write_to_distribution(dist, data)
-    assert read_from_distribution(dist) is None
+    assert read_from_distribution(dist) == UnknownData(
+        url="unknown:///home/user/project",
+        contents={"unknown_info": {}},
+    )
 
 
 def test_no_file(tmp_path: Path):
