@@ -66,6 +66,7 @@ matrix.python.env-vars = [
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
+doctest = "pytest --doctest-modules {args:src/pep610}"
 cov = "coverage run -m pytest {args:tests}"
 
 [[tool.hatch.envs.all.matrix]]

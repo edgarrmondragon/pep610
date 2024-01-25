@@ -156,6 +156,18 @@ class DirInfo:
 
         Returns:
             Whether the distribution is installed in editable mode.
+
+        >>> dir_info = DirInfo(editable=True)
+        >>> dir_info.is_editable()
+        True
+
+        >>> dir_info = DirInfo(editable=False)
+        >>> dir_info.is_editable()
+        False
+
+        >>> dir_info = DirInfo(editable=None)
+        >>> dir_info.is_editable()
+        False
         """
         return self.editable is True
 

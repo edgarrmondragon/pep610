@@ -74,6 +74,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
     env:
+      HATCH_ENV: all
       HATCH_VERBOSE: "3"
     strategy:
       fail-fast: false
@@ -110,14 +111,14 @@ jobs:
         run: |
           pipx install hatch
       - name: Run tests
-        env:
-          HATCH_ENV: all
         run: |
           hatch run +py=${{ matrix.python-version }} cov
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}
           path: ".coverage.*"
+      - name: Run doctests
+        run: hatch run +py=${{ matrix.python-version }} doctest
 
   coverage:
     name: Coverage
