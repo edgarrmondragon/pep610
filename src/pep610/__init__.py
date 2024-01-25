@@ -53,7 +53,7 @@ __version__ = version(__package__)
 class VCSInfo:
     """VCS information.
 
-    See the :spec:`vcs`.
+    See the :spec:`VCS URLs specification <vcs-urls>`.
 
     Args:
         vcs: The VCS type.
@@ -108,7 +108,7 @@ class HashData(t.NamedTuple):
 class ArchiveInfo:
     """Archive information.
 
-    See the :spec:`archive`.
+    See the :spec:`Archive URLs specification <archive-urls>`.
 
     Args:
         hashes: Dictionary mapping a hash name to a hex encoded digest of the file.
@@ -140,7 +140,7 @@ class ArchiveData(_BaseData):
 class DirInfo:
     """Local directory information.
 
-    See the :spec:`directory`.
+    See the :spec:`Local Directories specification <local-directories>`.
 
     Args:
         editable: Whether the distribution is installed in editable mode.

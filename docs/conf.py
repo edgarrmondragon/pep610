@@ -64,7 +64,7 @@ autodoc_typehints_description_target = "documented"
 extlinks_detect_hardcoded_links = True
 extlinks = {
     "spec": (
-        "https://packaging.python.org/en/latest/specifications/direct-url-data-structure/#%s-urls",
+        "https://packaging.python.org/en/latest/specifications/direct-url-data-structure/#%s",
         "specification for %s URLs",
     ),
 }
