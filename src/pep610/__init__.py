@@ -139,7 +139,7 @@ class ArchiveInfo:
         ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
         ...     },
         ... )
-        >>> archive_info.has_valid_hashes()
+        >>> archive_info.has_valid_algorithms()
         True
         """
         return set(self.all_hashes).intersection(hashlib.algorithms_guaranteed) != set()
