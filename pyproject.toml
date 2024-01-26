@@ -61,6 +61,7 @@ dependencies = [
 ]
 features = ["dev"]
 [tool.hatch.envs.default.overrides]
+env.GITHUB_ACTIONS.dev-mode = { value = false, if = ["true"] }
 matrix.python.env-vars = [
   { key = "COVERAGE_CORE", value = "sysmon", if = ["3.12", "3.13"] }
 ]
@@ -76,6 +77,7 @@ python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.10"]
 dependencies = [
   "coverage[toml]>=6.5",
 ]
+detached = true
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
 xml = "coverage xml"
@@ -101,6 +103,7 @@ all = ["style", "typing"]
 
 [tool.hatch.envs.docs]
 features = ["docs"]
+template = "docs"
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build -W -b html docs docs/_build"
 
@@ -207,14 +210,16 @@ omit = [
   "*/pep610/_types.py",
 ]
 parallel = true
+relative_files = true
 
 [tool.coverage.paths]
-pep610 = ["src/pep610", "*/pep610/src/pep610"]
-tests = ["tests", "*/pep610/tests"]
+pep610 = ["src/pep610", "*/pep610"]
+tests = ["tests", "*/tests"]
 
 [tool.coverage.report]
-exclude_lines = [
+exclude_also = [
   "no cov",
   "if __name__ == .__main__.:",
   "if t.TYPE_CHECKING:",
 ]
+show_missing = true

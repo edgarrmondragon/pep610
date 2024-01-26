@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import typing as t
@@ -122,6 +123,26 @@ class ArchiveInfo:
 
     hashes: dict[str, str] | None = None
     hash: HashData | None = None
+
+    def has_valid_algorithms(self: ArchiveInfo) -> bool:
+        """Has valid archive hashes?
+
+        Checks that the ``hashes`` attribute is not empty and that at least one of the hashes is
+        present in :py:data:`hashlib.algorithms_guaranteed`.
+
+        Returns:
+            Whether the archive has valid hashes.
+
+        >>> archive_info = ArchiveInfo(
+        ...     hashes={
+        ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+        ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+        ...     },
+        ... )
+        >>> archive_info.has_valid_algorithms()
+        True
+        """
+        return set(self.all_hashes).intersection(hashlib.algorithms_guaranteed) != set()
 
     @property
     def all_hashes(self: Self) -> dict[str, str]:
