@@ -12,7 +12,6 @@ from pep610 import (
     ArchiveInfo,
     DirData,
     DirInfo,
-    HashData,
     VCSData,
     VCSInfo,
     is_editable,
@@ -301,10 +300,7 @@ def test_archive_hashes_merged(tmp_path: Path):
     result = read_from_distribution(dist)
     assert isinstance(result, ArchiveData)
     assert result.url == "file://path/to/my.whl"
-    assert result.archive_info.hash == HashData(
-        "sha256",
-        "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
-    )
+    assert result.archive_info.hash is None
     assert result.archive_info.hashes == {
         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
