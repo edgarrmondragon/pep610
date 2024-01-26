@@ -12,6 +12,7 @@ from pep610 import (
     ArchiveInfo,
     DirData,
     DirInfo,
+    HashData,
     VCSData,
     VCSInfo,
     is_editable,
