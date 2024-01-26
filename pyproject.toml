@@ -82,7 +82,7 @@ detached = true
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
 xml = "coverage xml"
-report = ["coverage combine", "coverage report"]
+report = ["coverage combine", "coverage report --show-missing"]
 
 [tool.hatch.envs.lint]
 detached = true
@@ -222,3 +222,4 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if t.TYPE_CHECKING:",
 ]
+show_missing = true
