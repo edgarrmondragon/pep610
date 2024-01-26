@@ -79,6 +79,7 @@ dependencies = [
   "coverage[toml]>=6.5",
 ]
 detached = true
+template = "coverage"
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
 xml = "coverage xml"
@@ -211,13 +212,14 @@ omit = [
   "*/pep610/_types.py",
 ]
 parallel = true
+relative_files = true
 
 [tool.coverage.paths]
 pep610 = ["src/pep610", "*/pep610/src/pep610"]
 tests = ["tests", "*/pep610/tests"]
 
 [tool.coverage.report]
-exclude_lines = [
+exclude_also = [
   "no cov",
   "if __name__ == .__main__.:",
   "if t.TYPE_CHECKING:",
