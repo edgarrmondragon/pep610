@@ -78,8 +78,6 @@ dependencies = [
   "coverage[toml]>=6.5",
 ]
 detached = true
-dev-mode = false
-template = "coverage"
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
 xml = "coverage xml"
@@ -217,7 +215,6 @@ relative_files = true
 [tool.coverage.paths]
 pep610 = ["src/pep610", "*/pep610"]
 tests = ["tests", "*/tests"]
-
 
 [tool.coverage.report]
 exclude_also = [
