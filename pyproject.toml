@@ -65,7 +65,6 @@ env.GITHUB_ACTIONS.dev-mode = { value = false, if = ["true"] }
 matrix.python.env-vars = [
   { key = "COVERAGE_CORE", value = "sysmon", if = ["3.12", "3.13"] }
 ]
-
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
 doctest = "pytest --doctest-modules {args:src/pep610}"
@@ -79,6 +78,7 @@ dependencies = [
   "coverage[toml]>=6.5",
 ]
 detached = true
+dev-mode = false
 template = "coverage"
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
