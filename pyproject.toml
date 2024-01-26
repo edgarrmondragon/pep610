@@ -215,8 +215,9 @@ parallel = true
 relative_files = true
 
 [tool.coverage.paths]
-pep610 = ["src/pep610", "*/pep610/src/pep610"]
-tests = ["tests", "*/pep610/tests"]
+pep610 = ["src/pep610", "*/pep610"]
+tests = ["tests", "*/tests"]
+
 
 [tool.coverage.report]
 exclude_also = [
