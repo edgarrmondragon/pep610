@@ -124,7 +124,7 @@ class ArchiveInfo:
     hashes: dict[str, str] | None = None
     hash: HashData | None = None
 
-    def has_valid_hashes(self: ArchiveInfo) -> bool:
+    def has_valid_algorithms(self: ArchiveInfo) -> bool:
         """Has valid archive hashes?
 
         Checks that the ``hashes`` attribute is not empty and that at least one of the hashes is

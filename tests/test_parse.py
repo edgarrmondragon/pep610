@@ -284,6 +284,28 @@ def test_archive_no_hashes(tmp_path: Path):
     assert result.archive_info.all_hashes == {}
 
 
+def test_archive_no_valid_algorithms(tmp_path: Path):
+    """Test an archive without any of the required algorithms."""
+    data = {
+        "url": "file://path/to/my.whl",
+        "archive_info": {
+            "hashes": {
+                "notavalidalgo": "1234",
+            },
+        },
+    }
+    dist = Distribution.at(tmp_path)
+    write_to_distribution(dist, data)
+
+    result = read_from_distribution(dist)
+    assert isinstance(result, ArchiveData)
+    assert result.url == "file://path/to/my.whl"
+    assert result.archive_info.hash is None
+    assert result.archive_info.hashes == {"notavalidalgo": "1234"}
+    assert result.archive_info.all_hashes == {}
+    assert not result.archive_info.has_valid_algorithms()
+
+
 def test_unknown_url_type(tmp_path: Path):
     """Test that an unknown URL type is read back as None."""
     data = {

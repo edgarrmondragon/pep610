@@ -76,6 +76,7 @@ python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.10"]
 dependencies = [
   "coverage[toml]>=6.5",
 ]
+detached = true
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
 xml = "coverage xml"
@@ -101,6 +102,7 @@ all = ["style", "typing"]
 
 [tool.hatch.envs.docs]
 features = ["docs"]
+template = "docs"
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build -W -b html docs docs/_build"
 
@@ -218,3 +220,4 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if t.TYPE_CHECKING:",
 ]
+show_missing = true
