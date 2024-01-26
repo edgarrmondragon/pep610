@@ -302,7 +302,7 @@ def test_archive_no_valid_algorithms(tmp_path: Path):
     assert result.url == "file://path/to/my.whl"
     assert result.archive_info.hash is None
     assert result.archive_info.hashes == {"notavalidalgo": "1234"}
-    assert result.archive_info.all_hashes == {}
+    assert result.archive_info.all_hashes == {"notavalidalgo": "1234"}
     assert not result.archive_info.has_valid_algorithms()
 
 
