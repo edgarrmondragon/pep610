@@ -175,6 +175,27 @@ class ArchiveInfo:
 
         return hashes
 
+    @classmethod
+    def from_contents(cls: type[ArchiveInfo], contents: bytes) -> ArchiveInfo:
+        """Create a minimal ``ArchiveInfo`` object from a file.
+
+        Args:
+            contents: The file contents.
+
+        Returns:
+            The archive info object.
+
+        >>> archive_info = ArchiveInfo.from_contents(b"abc")
+        >>> archive_info.hashes
+        {'sha256': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', 'md5': '900150983cd24fb0d6963f7d28e17f72'}
+        """  # noqa: E501
+        return cls(
+            hashes={
+                algo: hashlib.new(algo, contents, usedforsecurity=False).hexdigest()
+                for algo in ("sha256", "md5")
+            },
+        )
+
 
 @dataclass
 class ArchiveData(_BaseData):

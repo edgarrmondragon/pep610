@@ -321,3 +321,12 @@ def test_no_file(tmp_path: Path):
     """Test that a missing file is read back as None."""
     dist = Distribution.at(tmp_path)
     assert read_from_distribution(dist) is None
+
+
+def test_archive_info_from_contents():
+    """Test that archive info can be created from contents."""
+    info = ArchiveInfo.from_contents(b"abc")
+    assert info.hashes == {
+        "md5": "900150983cd24fb0d6963f7d28e17f72",
+        "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    }
