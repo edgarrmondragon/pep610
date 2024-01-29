@@ -1,6 +1,6 @@
-# PEP 610 Parser and Builder
+# PEP 610 Parser
 
-*A parser and builder for {external:doc}`PEP 610 direct URL metadata <specifications/direct-url>`.*
+*A parser for {external:doc}`PEP 610 direct URL metadata <specifications/direct-url>`.*
 
 Release **v{sub-ref}`version`**.
 

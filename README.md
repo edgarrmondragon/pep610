@@ -5,9 +5,9 @@
 [![codecov](https://codecov.io/gh/edgarrmondragon/pep610/graph/badge.svg?token=6W1M6P9LYI)](https://codecov.io/gh/edgarrmondragon/pep610)
 [![Documentation Status](https://readthedocs.org/projects/pep610/badge/?version=latest)](https://pep610.readthedocs.io/en/stable)
 
-[PEP 610][pep610] specifies how the Direct URL Origin of installed distributions should be recorded.
+A Python library for parsing the [Direct URL Origin structure][pep610-structure] from installed packages.
 
-The up-to-date, [canonical specification][pep610-pypa] is maintained on the [PyPA specs page][pypa-specs].
+[PEP 610][pep610] initially specified how the Direct URL Origin of installed distributions should be recorded, but the up-to-date, [canonical specification][pep610-pypa] is maintained on the [PyPA specs page][pypa-specs].
 
 -----
 
