@@ -344,7 +344,7 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
 
 
 def is_editable(distribution_name: str) -> bool:
-    """Is the distribution editable?
+    """Wrapper around :func:`read_from_distribution` to check if a distribution is editable.
 
     Args:
         distribution_name: The distribution name.
