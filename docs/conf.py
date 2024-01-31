@@ -36,7 +36,7 @@ nitpick_ignore = [
 # a list of builtin themes.
 
 html_theme = "furo"
-html_title = "PEP 610 - Direct URL Parser and Builder for Python"
+html_title = "PEP 610 - Direct URL Parser for Python"
 html_theme_options = {
     "navigation_with_keys": True,
     "source_repository": "https://github.com/edgarrmondragon/citric/",

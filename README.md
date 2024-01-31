@@ -5,9 +5,9 @@
 [![codecov](https://codecov.io/gh/edgarrmondragon/pep610/graph/badge.svg?token=6W1M6P9LYI)](https://codecov.io/gh/edgarrmondragon/pep610)
 [![Documentation Status](https://readthedocs.org/projects/pep610/badge/?version=latest)](https://pep610.readthedocs.io/en/stable)
 
-[PEP 610][pep610] specifies how the Direct URL Origin of installed distributions should be recorded.
+A Python library for parsing the [Direct URL Origin structure][pep610-structure] from installed packages.
 
-The up-to-date, [canonical specification][pep610-pypa] is maintained on the [PyPA specs page][pypa-specs].
+[PEP 610][pep610] initially specified how the Direct URL Origin of installed distributions should be recorded, but the up-to-date, [canonical specification][pep610-pypa] is maintained on the [PyPA specs page][pypa-specs].
 
 -----
 
@@ -33,12 +33,15 @@ from importlib import metadata
 import pep610
 
 dist = metadata.distribution("pep610")
-data = pep610.read_from_distribution(dist)
 
-if isinstance(data, pep610.DirData) and data.dir_info.is_editable():
-    print("Editable install")
+if (
+    (data := pep610.read_from_distribution(dist))
+    and isinstance(data, pep610.DirData)
+    and data.dir_info.is_editable()
+):
+    print("Editable installation, a.k.a. in development mode")
 else:
-    print("Not editable install")
+    print("Not an editable installation")
 ```
 
 Or, in Python 3.10+ using pattern matching:
@@ -49,13 +52,12 @@ from importlib import metadata
 import pep610
 
 dist = metadata.distribution("pep610")
-data = pep610.read_from_distribution(dist)
 
-match data:
+match data := pep610.read_from_distribution(dist):
     case pep610.DirData(url, pep610.DirInfo(editable=True)):
-        print("Editable install")
+        print("Editable installation, a.k.a. in development mode")
     case _:
-        print("Not editable install")
+        print("Not an editable installation")
 ```
 
 ## Development

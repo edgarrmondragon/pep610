@@ -1,6 +1,6 @@
-# PEP 610 Parser and Builder
+# PEP 610 Parser
 
-*A parser and builder for {external:doc}`PEP 610 direct URL metadata <specifications/direct-url>`.*
+*A parser for {external:doc}`PEP 610 direct URL metadata <specifications/direct-url>`.*
 
 Release **v{sub-ref}`version`**.
 
@@ -14,13 +14,12 @@ from importlib import metadata
 import pep610
 
 dist = metadata.distribution("pep610")
-data = pep610.read_from_distribution(dist)
 
-match data:
+match data := pep610.read_from_distribution(dist):
     case pep610.DirData(url, pep610.DirInfo(editable=True)):
-        print("Editable install")
+        print("Editable installation, a.k.a. in development mode")
     case _:
-        print("Not editable install")
+        print("Not an editable installation")
 ```
 
 :::
@@ -32,12 +31,15 @@ from importlib import metadata
 import pep610
 
 dist = metadata.distribution("pep610")
-data = pep610.read_from_distribution(dist)
 
-if isinstance(data, pep610.DirData) and data.dir_info.is_editable():
-    print("Editable install")
+if (
+    (data := pep610.read_from_distribution(dist))
+    and isinstance(data, pep610.DirData)
+    and data.dir_info.is_editable()
+):
+    print("Editable installation, a.k.a. in development mode")
 else:
-    print("Not editable install")
+    print("Not an editable installation")
 ```
 :::
 ::::
