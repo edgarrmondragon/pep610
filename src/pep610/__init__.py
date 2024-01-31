@@ -352,18 +352,15 @@ def is_editable(distribution_name: str) -> bool:
     Returns:
         Whether the distribution is editable.
 
+    Raises:
+        importlib_metadata.PackageNotFoundError: If the distribution is not found.
+
     >>> is_editable("pep610")  # doctest: +SKIP
     False
-    """
+    """  # noqa: DAR402, RUF100
     dist = distribution(distribution_name)
-    if (
-        (data := read_from_distribution(dist))
-        and isinstance(data, DirData)
-        and data.dir_info.is_editable()
-    ):
-        return True
-
-    return False
+    data = read_from_distribution(dist)
+    return isinstance(data, DirData) and data.dir_info.is_editable()
 
 
 def write_to_distribution(dist: PathDistribution, data: dict) -> int:
