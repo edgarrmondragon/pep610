@@ -331,6 +331,11 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
 
     Returns:
         The parsed PEP 610 file.
+
+    >>> import importlib.metadata
+    >>> dist = importlib.metadata.distribution("pep610")
+    >>> read_from_distribution(dist)  # doctest: +SKIP
+    DirData(url='file:///home/user/pep610', dir_info=DirInfo(editable=False))
     """
     if contents := dist.read_text("direct_url.json"):
         return _parse(contents)
@@ -346,6 +351,9 @@ def is_editable(distribution_name: str) -> bool:
 
     Returns:
         Whether the distribution is editable.
+
+    >>> is_editable("pep610")  # doctest: +SKIP
+    False
     """
     dist = distribution(distribution_name)
     if (
