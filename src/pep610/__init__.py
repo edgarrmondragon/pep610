@@ -8,7 +8,7 @@ import sys
 import typing as t
 from dataclasses import dataclass
 from functools import singledispatch
-from importlib.metadata import version
+from importlib.metadata import distribution, version
 
 if sys.version_info < (3, 9):
     import importlib_resources
@@ -336,6 +336,26 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
         return _parse(contents)
 
     return None
+
+
+def is_editable(distribution_name: str) -> bool:
+    """Is the distribution editable?
+
+    Args:
+        distribution_name: The distribution name.
+
+    Returns:
+        Whether the distribution is editable.
+    """
+    dist = distribution(distribution_name)
+    if (
+        (data := read_from_distribution(dist))
+        and isinstance(data, DirData)
+        and data.dir_info.is_editable()
+    ):
+        return True
+
+    return False
 
 
 def write_to_distribution(dist: PathDistribution, data: dict) -> int:
