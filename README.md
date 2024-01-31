@@ -39,9 +39,9 @@ if (
     and isinstance(data, pep610.DirData)
     and data.dir_info.is_editable()
 ):
-    print("Editable install")
+    print("Editable installation, a.k.a. in development mode")
 else:
-    print("Not editable install")
+    print("Not an editable installation")
 ```
 
 Or, in Python 3.10+ using pattern matching:
@@ -55,9 +55,9 @@ dist = metadata.distribution("pep610")
 
 match data := pep610.read_from_distribution(dist)
     case pep610.DirData(url, pep610.DirInfo(editable=True)):
-        print("Editable install")
+        print("Editable installation, a.k.a. in development mode")
     case _:
-        print("Not editable install")
+        print("Not an editable installation")
 ```
 
 ## Development
