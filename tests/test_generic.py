@@ -13,7 +13,7 @@ if sys.version_info < (3, 9):
 else:
     import importlib.resources as importlib_resources
 
-SCHEMA_FILE = importlib_resources.files(__package__) / "direct_url.schema.json"
+SCHEMA_FILE = importlib_resources.files(__package__) / "fixtures/direct_url.schema.json"
 SCHEMA = json.loads(SCHEMA_FILE.read_text())
 
 
