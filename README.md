@@ -53,7 +53,7 @@ import pep610
 
 dist = metadata.distribution("pep610")
 
-match data := pep610.read_from_distribution(dist)
+match data := pep610.read_from_distribution(dist):
     case pep610.DirData(url, pep610.DirInfo(editable=True)):
         print("Editable installation, a.k.a. in development mode")
     case _:
