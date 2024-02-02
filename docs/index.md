@@ -54,7 +54,15 @@ import pep610
 
 report = json.loads(
     subprocess.run(
-        ["pip", "install", "--quiet", "--report", "-", "--dry-run", "-e", "."],
+        [
+            "pip",
+            "install",
+            "--quiet",
+            "--report",
+            "-",
+            "--dry-run",
+            "packaging@git+https://github.com/pypa/packaging@main",
+        ],
         capture_output=True,
         text=True,
     ).stdout
