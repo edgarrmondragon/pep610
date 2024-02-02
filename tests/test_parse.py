@@ -15,6 +15,7 @@ from pep610 import (
     HashData,
     VCSData,
     VCSInfo,
+    parse,
     read_from_distribution,
     to_dict,
     write_to_distribution,
@@ -321,3 +322,28 @@ def test_no_file(tmp_path: Path):
     """Test that a missing file is read back as None."""
     dist = Distribution.at(tmp_path)
     assert read_from_distribution(dist) is None
+
+
+def _get_direct_url_packages(report: dict) -> dict:
+    """Get direct URL packages from a pip install report."""
+    return {
+        package["metadata"]["name"]: parse(package["download_info"])
+        for package in report["install"]
+        if package["is_direct"]
+    }
+
+
+def test_parse_pip_install_report(pip_install_report: dict):
+    """Test parsing a pip install report."""
+    packages = _get_direct_url_packages(pip_install_report)
+
+    assert packages == {
+        "packaging": VCSData(
+            url="https://github.com/pypa/packaging",
+            vcs_info=VCSInfo(
+                vcs="git",
+                requested_revision="main",
+                commit_id="4f42225e91a0be634625c09e84dd29ea82b85e27",
+            ),
+        ),
+    }

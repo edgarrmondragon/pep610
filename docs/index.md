@@ -44,6 +44,28 @@ else:
 :::
 ::::
 
+It can also be used to parse pip's {external:doc}`reference/installation-report`:
+
+```python
+import json
+import subprocess
+
+import pep610
+
+report = json.loads(
+    subprocess.run(
+        ["pip", "install", "--quiet", "--report", "-", "--dry-run", "-e", "."],
+        capture_output=True,
+        text=True,
+    ).stdout
+)
+
+for package in report["install"]:
+    if package["is_direct"]:
+        data = pep610.parse(package["download_info"])
+        print(data)
+```
+
 ## Supported formats
 
 ```{eval-rst}
@@ -79,6 +101,10 @@ else:
 ```
 
 ## Functions
+
+```{eval-rst}
+.. autofunction:: pep610.parse
+```
 
 ```{eval-rst}
 .. autofunction:: pep610.read_from_distribution

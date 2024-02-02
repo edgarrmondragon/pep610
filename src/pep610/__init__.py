@@ -286,9 +286,27 @@ def _(data: DirData) -> DirectoryDict:
     return {"url": data.url, "dir_info": dir_info}
 
 
-def _parse(content: str) -> VCSData | ArchiveData | DirData | None:
-    data = json.loads(content)
+def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
+    """Parse the direct URL data.
 
+    Args:
+        data: The direct URL data.
+
+    Returns:
+        The parsed direct URL data.
+
+    >>> parse(
+    ...     {
+    ...         "url": "https://github.com/pypa/packaging",
+    ...         "vcs_info": {
+    ...             "vcs": "git",
+    ...             "requested_revision": "main",
+    ...             "commit_id": "4f42225e91a0be634625c09e84dd29ea82b85e27"
+    ...         }
+    ...     }
+    ... )
+    VCSData(url='https://github.com/pypa/packaging', vcs_info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None))
+    """  # noqa: E501
     if "archive_info" in data:
         hashes = data["archive_info"].get("hashes")
         hash_data = None
@@ -333,7 +351,7 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
         The parsed PEP 610 file.
     """
     if contents := dist.read_text("direct_url.json"):
-        return _parse(contents)
+        return parse(json.loads(contents))
 
     return None
 

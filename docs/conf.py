@@ -74,6 +74,7 @@ extlinks = {
 intersphinx_mapping = {
     "metadata": ("https://importlib-metadata.readthedocs.io/en/latest", None),
     "packaging": ("https://packaging.python.org/en/latest", None),
+    "pip": ("https://pip.pypa.io/en/stable/", None),
     "python": ("https://docs.python.org/3/", None),
 }
 
