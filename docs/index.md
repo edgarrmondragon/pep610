@@ -61,7 +61,7 @@ report = json.loads(
             "--report",
             "-",
             "--dry-run",
-            "packaging@git+https://github.com/pypa/packaging@main",
+            "git+https://github.com/pypa/packaging@main",
         ],
         capture_output=True,
         text=True,
