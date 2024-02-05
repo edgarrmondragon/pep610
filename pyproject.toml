@@ -46,6 +46,7 @@ optional-dependencies.docs = [
   "furo==2024.1.29",
   "myst-parser==2",
   "sphinx==7.2.6",
+  "sphinx-copybutton==0.5.2",
   "sphinx_design==0.5",
 ]
 urls.Documentation = "https://pep610.readthedocs.io"

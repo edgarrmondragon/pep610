@@ -133,15 +133,17 @@ class ArchiveInfo:
         Returns:
             Whether the archive has valid hashes.
 
-        >>> archive_info = ArchiveInfo(
-        ...     hashes={
-        ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
-        ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
-        ...     },
-        ... )
-        >>> archive_info.has_valid_algorithms()
-        True
-        """
+        .. code-block:: pycon
+
+            >>> archive_info = ArchiveInfo(
+            ...     hashes={
+            ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+            ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+            ...     },
+            ... )
+            >>> archive_info.has_valid_algorithms()
+            True
+        """  # noqa: E501
         return set(self.all_hashes).intersection(hashlib.algorithms_guaranteed) != set()
 
     @property
@@ -153,18 +155,20 @@ class ArchiveInfo:
         Returns:
             All archive hashes.
 
-        >>> archive_info = ArchiveInfo(
-        ...     hash=HashData(
-        ...         "sha256",
-        ...         "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
-        ...     ),
-        ...     hashes={
-        ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
-        ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
-        ...     },
-        ... )
-        >>> archive_info.all_hashes
-        {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}
+        .. code-block:: pycon
+
+            >>> archive_info = ArchiveInfo(
+            ...     hash=HashData(
+            ...         "sha256",
+            ...         "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
+            ...     ),
+            ...     hashes={
+            ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+            ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+            ...     },
+            ... )
+            >>> archive_info.all_hashes
+            {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}
         """  # noqa: E501
         hashes = {}
         if self.hash is not None:
@@ -209,17 +213,23 @@ class DirInfo:
         Returns:
             Whether the distribution is installed in editable mode.
 
-        >>> dir_info = DirInfo(editable=True)
-        >>> dir_info.is_editable()
-        True
+        .. code-block:: pycon
 
-        >>> dir_info = DirInfo(editable=False)
-        >>> dir_info.is_editable()
-        False
+            >>> dir_info = DirInfo(editable=True)
+            >>> dir_info.is_editable()
+            True
 
-        >>> dir_info = DirInfo(editable=None)
-        >>> dir_info.is_editable()
-        False
+        .. code-block:: pycon
+
+            >>> dir_info = DirInfo(editable=False)
+            >>> dir_info.is_editable()
+            False
+
+        .. code-block:: pycon
+
+            >>> dir_info = DirInfo(editable=None)
+            >>> dir_info.is_editable()
+            False
         """
         return self.editable is True
 
@@ -295,17 +305,19 @@ def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
     Returns:
         The parsed direct URL data.
 
-    >>> parse(
-    ...     {
-    ...         "url": "https://github.com/pypa/packaging",
-    ...         "vcs_info": {
-    ...             "vcs": "git",
-    ...             "requested_revision": "main",
-    ...             "commit_id": "4f42225e91a0be634625c09e84dd29ea82b85e27"
-    ...         }
-    ...     }
-    ... )
-    VCSData(url='https://github.com/pypa/packaging', vcs_info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None))
+    .. code-block:: pycon
+
+        >>> parse(
+        ...     {
+        ...         "url": "https://github.com/pypa/packaging",
+        ...         "vcs_info": {
+        ...             "vcs": "git",
+        ...             "requested_revision": "main",
+        ...             "commit_id": "4f42225e91a0be634625c09e84dd29ea82b85e27"
+        ...         }
+        ...     }
+        ... )
+        VCSData(url='https://github.com/pypa/packaging', vcs_info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None))
     """  # noqa: E501
     if "archive_info" in data:
         hashes = data["archive_info"].get("hashes")

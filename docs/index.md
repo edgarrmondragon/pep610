@@ -44,7 +44,7 @@ else:
 :::
 ::::
 
-It can also be used to parse pip's {external:doc}`reference/installation-report`:
+It can also be used to parse the direct URL download info in pip's {external:doc}`reference/installation-report`:
 
 ```python
 import json
