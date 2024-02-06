@@ -34,12 +34,12 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  'importlib-resources>=5.3; python_version < "3.9"',
 ]
 optional-dependencies.dev = [
   "coverage[toml]>=6.5",
   "hypothesis",
   "hypothesis-jsonschema",
+  'importlib-resources>=5.3; python_version < "3.9"',
   "pytest",
 ]
 optional-dependencies.docs = [

@@ -4,18 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sys
 import typing as t
 from dataclasses import dataclass
 from functools import singledispatch
 from importlib.metadata import version
 
-if sys.version_info < (3, 9):
-    import importlib_resources
-else:
-    import importlib.resources as importlib_resources
-
 if t.TYPE_CHECKING:
+    import sys
     from importlib.metadata import Distribution, PathDistribution
 
     if sys.version_info <= (3, 10):
@@ -46,7 +41,6 @@ __all__ = [
     "write_to_distribution",
 ]
 
-SCHEMA_FILE = importlib_resources.files(__package__) / "direct_url.schema.json"
 __version__ = version(__package__)
 
 
