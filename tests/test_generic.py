@@ -1,12 +1,19 @@
 import json
+import sys
 from importlib.metadata import Distribution
 
 import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis_jsonschema import from_schema
 
-from pep610 import SCHEMA_FILE, read_from_distribution, write_to_distribution
+from pep610 import read_from_distribution, write_to_distribution
 
+if sys.version_info < (3, 9):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
+
+SCHEMA_FILE = importlib_resources.files(__package__) / "fixtures/direct_url.schema.json"
 SCHEMA = json.loads(SCHEMA_FILE.read_text())
 
 
