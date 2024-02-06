@@ -117,3 +117,7 @@ for package in report["install"]:
 ```{eval-rst}
 .. autofunction:: pep610.read_from_distribution
 ```
+
+```{eval-rst}
+.. autofunction:: pep610.is_editable
+```

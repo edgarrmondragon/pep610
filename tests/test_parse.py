@@ -15,6 +15,7 @@ from pep610 import (
     HashData,
     VCSData,
     VCSInfo,
+    is_editable,
     parse,
     read_from_distribution,
     to_dict,
@@ -347,3 +348,54 @@ def test_parse_pip_install_report(pip_install_report: dict):
             ),
         ),
     }
+
+
+@pytest.mark.parametrize(
+    ("data", "expected"),
+    [
+        pytest.param(
+            {
+                "url": "file:///home/user/project",
+                "dir_info": {"editable": True},
+            },
+            True,
+            id="editable",
+        ),
+        pytest.param(
+            {
+                "url": "file:///home/user/project",
+                "dir_info": {"editable": False},
+            },
+            False,
+            id="not_editable",
+        ),
+        pytest.param(
+            {
+                "url": "file:///home/user/project",
+                "dir_info": {},
+            },
+            False,
+            id="no_editable_info",
+        ),
+        pytest.param(
+            {
+                "url": "https://github.com/pypa/pip.git",
+                "vcs_info": {
+                    "vcs": "git",
+                    "requested_revision": "1.3.1",
+                    "resolved_revision_type": "tag",
+                    "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
+                },
+            },
+            False,
+            id="vcs_git",
+        ),
+    ],
+)
+def test_is_editable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, data: dict, expected: bool):  # noqa: FBT001
+    """Test the is_editable function."""
+    dist = Distribution.at(tmp_path)
+    write_to_distribution(dist, data)
+
+    monkeypatch.setattr("pep610.distribution", lambda _: dist)
+    assert is_editable("my_package") is expected

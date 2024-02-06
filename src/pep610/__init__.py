@@ -7,7 +7,7 @@ import json
 import typing as t
 from dataclasses import dataclass
 from functools import singledispatch
-from importlib.metadata import version
+from importlib.metadata import distribution, version
 
 if t.TYPE_CHECKING:
     import sys
@@ -355,11 +355,36 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
 
     Returns:
         The parsed PEP 610 file.
+
+    >>> import importlib.metadata
+    >>> dist = importlib.metadata.distribution("pep610")
+    >>> read_from_distribution(dist)  # doctest: +SKIP
+    DirData(url='file:///home/user/pep610', dir_info=DirInfo(editable=False))
     """
     if contents := dist.read_text("direct_url.json"):
         return parse(json.loads(contents))
 
     return None
+
+
+def is_editable(distribution_name: str) -> bool:
+    """Wrapper around :func:`read_from_distribution` to check if a distribution is editable.
+
+    Args:
+        distribution_name: The distribution name.
+
+    Returns:
+        Whether the distribution is editable.
+
+    Raises:
+        importlib_metadata.PackageNotFoundError: If the distribution is not found.
+
+    >>> is_editable("pep610")  # doctest: +SKIP
+    False
+    """  # noqa: DAR402, RUF100
+    dist = distribution(distribution_name)
+    data = read_from_distribution(dist)
+    return isinstance(data, DirData) and data.dir_info.is_editable()
 
 
 def write_to_distribution(dist: PathDistribution, data: dict) -> int:
