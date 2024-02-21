@@ -36,7 +36,7 @@ dynamic = [
 dependencies = [
 ]
 optional-dependencies.dev = [
-  "coverage[toml]>=6.5",
+  "coverage[toml]>=7.4.2",
   "hypothesis",
   "hypothesis-jsonschema",
   'importlib-resources>=5.3; python_version < "3.9"',
@@ -58,14 +58,13 @@ source = "vcs"
 
 [tool.hatch.envs.default]
 dependencies = [
-  "coverage[toml]>=6.5",
+  "coverage[toml]>=7.4.2",
 ]
 features = ["dev"]
+[tool.hatch.envs.default.env-vars]
+COVERAGE_CORE = "sysmon"
 [tool.hatch.envs.default.overrides]
 env.GITHUB_ACTIONS.dev-mode = { value = false, if = ["true"] }
-matrix.python.env-vars = [
-  { key = "COVERAGE_CORE", value = "sysmon", if = ["3.12", "3.13"] }
-]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
 doctest = "pytest --doctest-modules {args:src/pep610}"
@@ -76,7 +75,7 @@ python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.10"]
 
 [tool.hatch.envs.coverage]
 dependencies = [
-  "coverage[toml]>=6.5",
+  "coverage[toml]>=7.4.2",
 ]
 detached = true
 [tool.hatch.envs.coverage.scripts]
