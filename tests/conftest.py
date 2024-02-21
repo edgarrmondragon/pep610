@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 import pytest
 
@@ -112,6 +113,13 @@ PIP_INSTALL_REPORT = """\
   }
 }
 """
+
+
+def pytest_report_header() -> list[str]:
+    """Return a list of strings to be displayed in the header of the report."""
+    return [
+        f"{key}: {value}" for key, value in os.environ.items() if key.startswith(("COVERAGE_",))
+    ]
 
 
 @pytest.fixture()
