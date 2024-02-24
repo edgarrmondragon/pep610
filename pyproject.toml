@@ -110,7 +110,6 @@ build = "sphinx-build -W -b html docs docs/_build"
 [tool.ruff]
 line-length = 100
 preview = true
-target-version = "py38"
 
 [tool.ruff.lint]
 ignore = [
