@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
   "title": "Direct URL Data",
   "description": "Data structure that can represent URLs to python projects and distribution artifacts such as VCS source trees, local source trees, source distributions and wheels.",
   "definitions": {
@@ -47,7 +47,8 @@
       "properties": {
         "hash": {
           "type": "string",
-          "pattern": "^[a-f0-9]+=[a-f0-9]+$"
+          "pattern": "^\\w+=[a-f0-9]+$",
+          "deprecated": true
         },
         "hashes": {
           "type": "object",
