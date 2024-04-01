@@ -21,14 +21,14 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.27.4
+  rev: 0.28.1
   hooks:
   - id: check-dependabot
   - id: check-github-workflows
   - id: check-readthedocs
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.2.0
+  rev: v0.3.5
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix, --show-fixes]
@@ -42,7 +42,7 @@ repos:
     - darglint==1.8.1
 
 - repo: https://github.com/pre-commit/pre-commit
-  rev: v3.6.0
+  rev: v3.7.0
   hooks:
   - id: validate_manifest
 
@@ -52,6 +52,6 @@ repos:
   - id: pyproject-fmt
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.18.1
+  rev: v1.19.0
   hooks:
   - id: typos
