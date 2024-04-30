@@ -43,7 +43,7 @@ optional-dependencies.dev = [
   "pytest",
 ]
 optional-dependencies.docs = [
-  "furo==2024.1.29",
+  "furo==2024.4.27",
   "myst-parser==3.0.1",
   "sphinx==7.3.7",
   "sphinx-copybutton==0.5.2",
