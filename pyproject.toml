@@ -37,10 +37,11 @@ dependencies = [
 ]
 optional-dependencies.dev = [
   "coverage[toml]>=7.4.2",
-  "hypothesis",
-  "hypothesis-jsonschema",
+  "hypothesis>=6.100",
+  "hypothesis-jsonschema>=0.23",
   'importlib-resources>=5.3; python_version < "3.9"',
-  "pytest",
+  "pytest>=8",
+  "rpds-py<0.18.1", # https://github.com/PyO3/pyo3/pull/3821
 ]
 optional-dependencies.docs = [
   "furo==2024.4.27",
