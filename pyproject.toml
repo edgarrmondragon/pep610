@@ -41,7 +41,7 @@ optional-dependencies.dev = [
   "hypothesis-jsonschema>=0.23",
   'importlib-resources>=5.3; python_version < "3.9"',
   "pytest>=8",
-  "rpds-py<0.18.1", # https://github.com/PyO3/pyo3/pull/3821
+  "rpds-py<0.18.2", # https://github.com/PyO3/pyo3/pull/3821
 ]
 optional-dependencies.docs = [
   "furo==2024.5.6",
