@@ -82,29 +82,44 @@ jobs:
         os: ["ubuntu-latest"]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         experimental: [false]
+        nightly: [false]
         include:
           - python-version: "3.13"
             os: "ubuntu-latest"
             experimental: true
+            nightly: false
+
+          - python-version: "3.14"
+            os: "ubuntu-latest"
+            experimental: true
+            nightly: true
 
           - python-version: "pypy3.10"
             os: "ubuntu-latest"
             experimental: false
+            nightly: false
 
           - python-version: "3.12"
             os: "windows-latest"
             experimental: false
+            nightly: false
 
           - python-version: "3.12"
             os: "macos-latest"
             experimental: false
+            nightly: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        if: ${{ !matrix.nightly }}
         with:
           cache: pip
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
+      - uses: deadsnakes/action@v3.1.0
+        if: ${{ matrix.nightly }}
+        with:
+          python-version: ${{ matrix.python-version }}-dev
       - name: Install dependencies
         env:
           PIP_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
