@@ -13,8 +13,10 @@ keywords = [
   "pep",
   "pep610",
 ]
-license = {file = "LICENSE"}
-authors = [{ name = "Edgar Ramírez Mondragón", email = "edgarrmondragon@hey.com" }]
+license = { file = "LICENSE" }
+authors = [
+  { name = "Edgar Ramírez Mondragón", email = "edgarrmondragon@hey.com" },
+]
 requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -39,7 +41,7 @@ optional-dependencies.dev = [
   "coverage[toml]>=7.4.2",
   "hypothesis>=6.100",
   "hypothesis-jsonschema>=0.23",
-  'importlib-resources>=5.3; python_version < "3.9"',
+  "importlib-resources>=5.3; python_version<'3.9'",
   "pytest>=8",
 ]
 optional-dependencies.docs = [
@@ -47,7 +49,7 @@ optional-dependencies.docs = [
   "myst-parser==3.0.1",
   "sphinx==7.3.7",
   "sphinx-copybutton==0.5.2",
-  "sphinx_design==0.5",
+  "sphinx-design==0.5",
 ]
 urls.Documentation = "https://pep610.readthedocs.io"
 urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
@@ -60,15 +62,22 @@ source = "vcs"
 dependencies = [
   "coverage[toml]>=7.4.2",
 ]
-features = ["dev"]
+features = [
+  "dev",
+]
 [tool.hatch.envs.default.env-vars]
 COVERAGE_CORE = "sysmon"
 [tool.hatch.envs.default.overrides]
-env.GITHUB_ACTIONS.dev-mode = { value = false, if = ["true"] }
+env.GITHUB_ACTIONS.dev-mode = { value = false, if = [
+  "true",
+] }
 # https://github.com/PyO3/pyo3/pull/3821
 # https://github.com/PyO3/pyo3/issues/4038
-matrix.py.env-vars = [
-  { key = "PYO3_USE_ABI3_FORWARD_COMPATIBILITY", value = "1", if = ["3.13", "3.14"] },
+matrix.python.env-vars = [
+  { key = "PYO3_USE_ABI3_FORWARD_COMPATIBILITY", value = "1", if = [
+    "3.13",
+    "3.14",
+  ] },
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
@@ -76,7 +85,16 @@ doctest = "pytest --doctest-modules {args:src/pep610}"
 cov = "coverage run -m pytest {args:tests}"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.10"]
+python = [
+  "3.8",
+  "3.9",
+  "3.10",
+  "3.11",
+  "3.12",
+  "3.13",
+  "3.14",
+  "pypy3.10",
+]
 
 [tool.hatch.envs.coverage]
 dependencies = [
@@ -86,7 +104,10 @@ detached = true
 [tool.hatch.envs.coverage.scripts]
 json = "coverage json"
 xml = "coverage xml"
-report = ["coverage combine", "coverage report --show-missing"]
+report = [
+  "coverage combine",
+  "coverage report --show-missing",
+]
 
 [tool.hatch.envs.lint]
 detached = true
@@ -103,11 +124,20 @@ style = [
   "ruff check {args:.}",
   "ruff format --check --diff {args:.}",
 ]
-fmt = ["ruff check --fix {args:.}", "ruff format {args:.}", "style"]
-all = ["style", "typing"]
+fmt = [
+  "ruff check --fix {args:.}",
+  "ruff format {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
 
 [tool.hatch.envs.docs]
-features = ["docs"]
+features = [
+  "docs",
+]
 template = "docs"
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build -W -b html docs docs/_build"
@@ -116,98 +146,97 @@ build = "sphinx-build -W -b html docs docs/_build"
 line-length = 100
 preview = true
 
-[tool.ruff.lint]
-ignore = [
-  "COM812",  # missing-trailing-comma
-  "ISC001",  # single-line-implicit-string-concatenation
-]
-select = [
-  "F",
-  "E",
-  "W",
-  "C90",
-  "I",
-  "N",
-  "D",
-  "UP",
-  "YTT",
-  "ANN",
-  "S",
-  "BLE",
-  "FBT",
-  "B",
+lint.select = [
   "A",
-  "COM",
-  "C4",
-  "DTZ",
-  "T10",
-  "EM",
-  "FA",
-  "ISC",
-  "ICN",
-  "G",
-  "INP",
-  "PIE",
-  "T20",
-  "PT",
-  "Q",
-  "RSE",
-  "RET",
-  "SLF",
-  "SIM",
-  "TID",
-  "TCH",
-  "INT",
+  "ANN",
   "ARG",
-  "PTH",
-  "TD",
-  "FIX",
+  "B",
+  "BLE",
+  "C4",
+  "C90",
+  "COM",
+  "D",
+  "DTZ",
+  "E",
+  "EM",
   "ERA",
+  "F",
+  "FA",
+  "FBT",
+  "FIX",
+  "FLY",
+  "FURB",
+  "G",
+  "I",
+  "ICN",
+  "INP",
+  "INT",
+  "ISC",
+  "N",
+  "PERF",
   "PGH",
+  "PIE",
   "PLC",
   "PLE",
   "PLR",
   "PLW",
-  "TRY",
-  "FLY",
-  "PERF",
-  "FURB",
+  "PT",
+  "PTH",
+  "Q",
+  "RET",
+  "RSE",
   "RUF",
+  "S",
+  "SIM",
+  "SLF",
+  "T10",
+  "T20",
+  "TCH",
+  "TD",
+  "TID",
+  "TRY",
+  "UP",
+  "W",
+  "YTT",
 ]
-unfixable = [
-  "ERA", # commented-out-code
+lint.per-file-ignores."docs/conf.py" = [
+  "INP001", # Not an implicit namespace packages
 ]
-
-[tool.ruff.lint.isort]
-known-first-party = ["pep610"]
-
-[tool.ruff.lint.flake8-tidy-imports]
-ban-relative-imports = "all"
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*" = [
+lint.per-file-ignores."tests/**/*" = [
+  "ANN201",  # missing-return-type-undocumented-public-function
+  "D100",    # undocumented-public-module
+  "D104",    # undocumented-public-package
   "PLR2004", # magic-value-comparison
   "S101",    # assert
   "TID252",  # relative-imports
-  "D100",    # undocumented-public-module
-  "D104",	   # undocumented-public-package
-  "ANN201",  # missing-return-type-undocumented-public-function
 ]
-"docs/conf.py" = [
-  "INP001", # Not an implicit namespace packages
+lint.unfixable = [
+  "ERA", # commented-out-code
 ]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
+lint.flake8-tidy-imports.ban-relative-imports = "all"
+lint.isort.known-first-party = [
+  "pep610",
+]
+lint.pydocstyle.convention = "google"
+lint.ignore = [
+  "COM812", # missing-trailing-comma
+  "ISC001", # single-line-implicit-string-concatenation
+]
 
 [tool.pyproject-fmt]
 max_supported_python = "3.13"
 
 [tool.pytest.ini_options]
 addopts = "-v"
+filterwarnings = [
+  "error",
+]
 
 [tool.coverage.run]
-source_pkgs = ["pep610", "tests"]
+source_pkgs = [
+  "pep610",
+  "tests",
+]
 branch = true
 omit = [
   # omit type definitions
@@ -217,8 +246,14 @@ parallel = true
 relative_files = true
 
 [tool.coverage.paths]
-pep610 = ["src/pep610", "*/pep610"]
-tests = ["tests", "*/tests"]
+pep610 = [
+  "src/pep610",
+  "*/pep610",
+]
+tests = [
+  "tests",
+  "*/tests",
+]
 
 [tool.coverage.report]
 exclude_also = [
