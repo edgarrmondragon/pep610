@@ -41,7 +41,6 @@ optional-dependencies.dev = [
   "hypothesis-jsonschema>=0.23",
   'importlib-resources>=5.3; python_version < "3.9"',
   "pytest>=8",
-  "rpds-py<0.18.2", # https://github.com/PyO3/pyo3/pull/3821
 ]
 optional-dependencies.docs = [
   "furo==2024.5.6",
@@ -66,6 +65,11 @@ features = ["dev"]
 COVERAGE_CORE = "sysmon"
 [tool.hatch.envs.default.overrides]
 env.GITHUB_ACTIONS.dev-mode = { value = false, if = ["true"] }
+# https://github.com/PyO3/pyo3/pull/3821
+# https://github.com/PyO3/pyo3/issues/4038
+matrix.py.env-vars = [
+  { key = "PYO3_USE_ABI3_FORWARD_COMPATIBILITY", value = "1", if = ["3.13", "3.14"] },
+]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
 doctest = "pytest --doctest-modules {args:src/pep610}"
