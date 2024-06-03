@@ -199,6 +199,11 @@ lint.select = [
   "W",
   "YTT",
 ]
+lint.ignore = [
+  "COM812", # missing-trailing-comma
+  "ISC001", # single-line-implicit-string-concatenation
+]
+
 lint.per-file-ignores."docs/conf.py" = [
   "INP001", # Not an implicit namespace packages
 ]
@@ -218,10 +223,6 @@ lint.isort.known-first-party = [
   "pep610",
 ]
 lint.pydocstyle.convention = "google"
-lint.ignore = [
-  "COM812", # missing-trailing-comma
-  "ISC001", # single-line-implicit-string-concatenation
-]
 
 [tool.pyproject-fmt]
 max_supported_python = "3.13"
