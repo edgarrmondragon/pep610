@@ -91,6 +91,11 @@ for package in report["install"]:
     :members:
 ```
 
+```{eval-rst}
+.. autoclass:: pep610.UnknownData
+    :members:
+```
+
 ## Other classes
 
 ```{eval-rst}
