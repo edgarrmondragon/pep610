@@ -124,7 +124,7 @@ def pytest_report_header() -> list[str]:
     ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def pip_install_report() -> dict:
     """Return the parsed JSON report of a pip install command."""
     return json.loads(PIP_INSTALL_REPORT)
