@@ -47,7 +47,7 @@ optional-dependencies.dev = [
 ]
 optional-dependencies.docs = [
   "furo==2024.7.18",
-  "myst-parser==3.0.1",
+  "myst-parser==4.0.0",
   "sphinx==7.4.7",
   "sphinx-copybutton==0.5.2",
   "sphinx-design==0.6",
