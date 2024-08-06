@@ -50,7 +50,7 @@ optional-dependencies.docs = [
   "myst-parser==3.0.1",
   "sphinx==7.4.7",
   "sphinx-copybutton==0.5.2",
-  "sphinx-design==0.6",
+  "sphinx-design==0.6.1",
 ]
 urls.Documentation = "https://pep610.readthedocs.io"
 urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
