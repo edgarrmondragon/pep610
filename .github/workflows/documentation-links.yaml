@@ -11,6 +11,6 @@ jobs:
   documentation-links:
     runs-on: ubuntu-latest
     steps:
-      - uses: readthedocs/actions/preview@v1
+      - uses: edgarrmondragon/actions/preview@use-project-endpoint
         with:
           project-slug: "pep610"
