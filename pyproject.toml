@@ -46,11 +46,11 @@ optional-dependencies.dev = [
   "pytest>=8",
 ]
 optional-dependencies.docs = [
-  "furo==2024.8.6",
-  "myst-parser==4",
-  "sphinx==8.0.2",
-  "sphinx-copybutton==0.5.2",
-  "sphinx-design==0.6.1",
+  "furo",
+  "myst-parser",
+  "sphinx",
+  "sphinx-copybutton",
+  "sphinx-design",
 ]
 urls.Documentation = "https://pep610.readthedocs.io"
 urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
@@ -60,9 +60,6 @@ urls.Source = "https://github.com/edgarrmondragon/pep610"
 source = "vcs"
 
 [tool.hatch.envs.default]
-dependencies = [
-  "coverage[toml]>=7.4.2",
-]
 features = [
   "dev",
 ]
