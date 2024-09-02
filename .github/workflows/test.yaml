@@ -87,6 +87,7 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
         experimental: [false]
         nightly: [false]
         include:
@@ -131,7 +132,8 @@ jobs:
           hatch run +py=${{ matrix.python-version }} cov
       - uses: actions/upload-artifact@v4
         with:
-          name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}
+          include-hidden-files: true
+          name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.nightly && 'nightly' || 'stable' }}
           path: ".coverage.*"
       - name: Run doctests
         run: hatch run +py=${{ matrix.python-version }} doctest
