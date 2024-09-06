@@ -63,6 +63,35 @@ class VCSInfo:
     resolved_revision: str | None = None
     resolved_revision_type: str | None = None
 
+    def to_dict(self) -> VCSInfoDict:
+        """Convert the VCS data to a dictionary.
+
+        Returns:
+            The VCS data as a dictionary.
+
+        .. code-block:: pycon
+
+            >>> vcs_info = VCSInfo(
+            ...     vcs="git",
+            ...     commit_id="4f42225e91a0be634625c09e84dd29ea82b85e27",
+            ...     requested_revision="main",
+            ... )
+            >>> vcs_info.to_dict()
+            {'vcs': 'git', 'commit_id': '4f42225e91a0be634625c09e84dd29ea82b85e27', 'requested_revision': 'main'}
+        """  # noqa: E501
+        vcs_info: VCSInfoDict = {
+            "vcs": self.vcs,
+            "commit_id": self.commit_id,
+        }
+        if self.requested_revision is not None:
+            vcs_info["requested_revision"] = self.requested_revision
+        if self.resolved_revision is not None:
+            vcs_info["resolved_revision"] = self.resolved_revision
+        if self.resolved_revision_type is not None:
+            vcs_info["resolved_revision_type"] = self.resolved_revision_type
+
+        return vcs_info
+
 
 @dataclass
 class _BaseData:
@@ -173,6 +202,30 @@ class ArchiveInfo:
 
         return hashes
 
+    def to_dict(self) -> ArchiveInfoDict:
+        """Convert the archive data to a dictionary.
+
+        Returns:
+            The archive data as a dictionary.
+
+        .. code-block:: pycon
+
+            >>> archive_info = ArchiveInfo(
+            ...     hashes={
+            ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+            ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+            ...     },
+            ... )
+            >>> archive_info.to_dict()
+            {'hashes': {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}}
+        """  # noqa: E501
+        archive_info: ArchiveInfoDict = {}
+        if self.hashes is not None:
+            archive_info["hashes"] = self.hashes
+        if self.hash is not None:
+            archive_info["hash"] = f"{self.hash.algorithm}={self.hash.value}"
+        return archive_info
+
 
 @dataclass
 class ArchiveData(_BaseData):
@@ -227,6 +280,24 @@ class DirInfo:
         """
         return self.editable is True
 
+    def to_dict(self) -> DirectoryInfoDict:
+        """Convert the directory data to a dictionary.
+
+        Returns:
+            The directory data as a dictionary.
+
+        .. code-block:: pycon
+
+                >>> dir_info = DirInfo(editable=True)
+                >>> dir_info.to_dict()
+                {'editable': True}
+        """
+        dir_info: DirectoryInfoDict = {}
+        if self.editable is not None:
+            dir_info["editable"] = self.editable
+
+        return dir_info
+
 
 @dataclass
 class DirData(_BaseData):
@@ -256,38 +327,17 @@ def to_dict(data) -> dict[str, t.Any]:  # noqa: ANN001
 
 @to_dict.register(VCSData)
 def _(data: VCSData) -> VCSDict:
-    vcs_info: VCSInfoDict = {
-        "vcs": data.vcs_info.vcs,
-        "commit_id": data.vcs_info.commit_id,
-    }
-    if data.vcs_info.requested_revision is not None:
-        vcs_info["requested_revision"] = data.vcs_info.requested_revision
-    if data.vcs_info.resolved_revision is not None:
-        vcs_info["resolved_revision"] = data.vcs_info.resolved_revision
-    if data.vcs_info.resolved_revision_type is not None:
-        vcs_info["resolved_revision_type"] = data.vcs_info.resolved_revision_type
-
-    return {"url": data.url, "vcs_info": vcs_info}
+    return {"url": data.url, "vcs_info": data.vcs_info.to_dict()}
 
 
 @to_dict.register(ArchiveData)
 def _(data: ArchiveData) -> ArchiveDict:
-    archive_info: ArchiveInfoDict = {}
-    if data.archive_info.hashes is not None:
-        archive_info["hashes"] = data.archive_info.hashes
-
-    if data.archive_info.hash is not None:
-        archive_info["hash"] = f"{data.archive_info.hash.algorithm}={data.archive_info.hash.value}"
-
-    return {"url": data.url, "archive_info": archive_info}
+    return {"url": data.url, "archive_info": data.archive_info.to_dict()}
 
 
 @to_dict.register(DirData)
 def _(data: DirData) -> DirectoryDict:
-    dir_info: DirectoryInfoDict = {}
-    if data.dir_info.editable is not None:
-        dir_info["editable"] = data.dir_info.editable
-    return {"url": data.url, "dir_info": dir_info}
+    return {"url": data.url, "dir_info": data.dir_info.to_dict()}
 
 
 def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
