@@ -176,9 +176,32 @@ if t.TYPE_CHECKING:
             ),
             id="vcs_no_resolved_revision",
         ),
+        pytest.param(
+            pep610.VCSData(
+                url="https://github.com/pypa/pip.git",
+                vcs_info=pep610.VCSInfo(
+                    vcs="git",
+                    requested_revision="1.3.1",
+                    resolved_revision="1.3.1",
+                    resolved_revision_type=None,
+                    commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
+                ),
+            ),
+            pep610.VCSData(
+                url="https://github.com/pypa/pip.git",
+                vcs_info=pep610.VCSInfo(
+                    vcs="git",
+                    requested_revision="1.3.1",
+                    resolved_revision="1.3.1",
+                    resolved_revision_type=None,
+                    commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
+                ),
+            ),
+            id="vcs_readback",
+        ),
     ],
 )
-def test_parse(data: dict, expected: object, tmp_path: Path):
+def test_parse(data: dict | pep610._BaseData, expected: object, tmp_path: Path):
     """Test the parse function."""
     dist = Distribution.at(tmp_path)
     pep610.write_to_distribution(dist, data)
