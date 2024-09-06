@@ -47,6 +47,10 @@ __version__ = version(__package__)
 DIRECT_URL_METADATA_NAME = "direct_url.json"
 
 
+class DirectUrlValidationError(Exception):
+    """Direct URL validation error."""
+
+
 @dataclass
 class VCSInfo:
     """VCS information.
@@ -379,7 +383,7 @@ def _(data: DirData) -> DirectoryDict:
     return data.to_dict()
 
 
-def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
+def parse(data: dict) -> VCSData | ArchiveData | DirData:
     """Parse the direct URL data.
 
     Args:
@@ -387,6 +391,9 @@ def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
 
     Returns:
         The parsed direct URL data.
+
+    Raises:
+        DirectUrlValidationError: If the direct URL data does not contain a recognized info key.
 
     .. code-block:: pycon
 
@@ -433,7 +440,8 @@ def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
             ),
         )
 
-    return None
+    msg = "Direct URL data does not contain 'archive_info', 'dir_info', or 'vcs_info'"
+    raise DirectUrlValidationError(msg)
 
 
 def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirData | None:
