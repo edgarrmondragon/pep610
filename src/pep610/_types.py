@@ -30,16 +30,6 @@ class VCSInfoDict(t.TypedDict, total=False):
     resolved_revision_type: str
 
 
-class VCSDict(t.TypedDict):
-    """VCS direct URL data dictionary."""
-
-    #: The VCS URL.
-    url: str
-
-    #: VCS information.
-    vcs_info: VCSInfoDict
-
-
 class ArchiveInfoDict(t.TypedDict, total=False):
     """Archive information dictionary."""
 
@@ -50,16 +40,6 @@ class ArchiveInfoDict(t.TypedDict, total=False):
     hash: str
 
 
-class ArchiveDict(t.TypedDict):
-    """Archive direct URL data dictionary."""
-
-    #: The archive URL.
-    url: str
-
-    #: Archive information.
-    archive_info: ArchiveInfoDict
-
-
 class DirectoryInfoDict(t.TypedDict, total=False):
     """Local directory information dictionary."""
 
@@ -67,11 +47,12 @@ class DirectoryInfoDict(t.TypedDict, total=False):
     editable: bool
 
 
-class DirectoryDict(t.TypedDict):
-    """Local directory direct URL data dictionary."""
+class DirectUrlDict(t.TypedDict):
+    """Direct URL data dictionary."""
 
-    #: The local directory URL.
-    url: str
+    #: The direct URL.
+    url: Required[str]
 
-    #: Directory information.
+    vcs_info: VCSInfoDict
+    archive_info: ArchiveInfoDict
     dir_info: DirectoryInfoDict

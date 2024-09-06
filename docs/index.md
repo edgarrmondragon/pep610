@@ -16,7 +16,7 @@ import pep610
 dist = metadata.distribution("pep610")
 
 match data := pep610.read_from_distribution(dist):
-    case pep610.DirData(url, pep610.DirInfo(editable=True)):
+    case pep610.DirectUrl(url, pep610.DirInfo(editable=True)):
         print("Editable installation, a.k.a. in development mode")
     case _:
         print("Not an editable installation")
@@ -34,8 +34,9 @@ dist = metadata.distribution("pep610")
 
 if (
     (data := pep610.read_from_distribution(dist))
-    and isinstance(data, pep610.DirData)
-    and data.dir_info.is_editable()
+    and isinstance(data, pep610.DirectUrl)
+    and isinstance(data.info, pep610.DirInfo)
+    and data.info.is_editable()
 ):
     print("Editable installation, a.k.a. in development mode")
 else:
@@ -74,24 +75,14 @@ for package in report["install"]:
         print(data)
 ```
 
-## Supported formats
+## Direct URL Data class
 
 ```{eval-rst}
-.. autoclass:: pep610.ArchiveData
+.. autoclass:: pep610.DirectUrl
     :members:
 ```
 
-```{eval-rst}
-.. autoclass:: pep610.DirData
-    :members:
-```
-
-```{eval-rst}
-.. autoclass:: pep610.VCSData
-    :members:
-```
-
-## Other classes
+## Supported direct URL formats
 
 ```{eval-rst}
 .. autoclass:: pep610.ArchiveInfo
@@ -136,18 +127,8 @@ for package in report["install"]:
 ```
 
 ```{eval-rst}
-.. autoclass:: pep610._types.ArchiveDict
-    :members: url, archive_info
-```
-
-```{eval-rst}
 .. autoclass:: pep610._types.DirectoryInfoDict
     :members: editable
-```
-
-```{eval-rst}
-.. autoclass:: pep610._types.DirectoryDict
-    :members: url, dir_info
 ```
 
 ```{eval-rst}
@@ -156,6 +137,6 @@ for package in report["install"]:
 ```
 
 ```{eval-rst}
-.. autoclass:: pep610._types.VCSDict
-    :members: url ,vcs_info
+.. autoclass:: pep610._types.DirectUrlDict
+    :members: url, vcs_info, archive_info, dir_info
 ```
