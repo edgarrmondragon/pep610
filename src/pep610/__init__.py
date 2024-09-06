@@ -13,7 +13,7 @@ if t.TYPE_CHECKING:
     import sys
     from importlib.metadata import Distribution, PathDistribution
 
-    if sys.version_info <= (3, 10):
+    if sys.version_info < (3, 11):
         from typing_extensions import Self
     else:
         from typing import Self

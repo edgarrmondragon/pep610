@@ -121,3 +121,35 @@ for package in report["install"]:
 ```{eval-rst}
 .. autofunction:: pep610.is_editable
 ```
+
+## Types
+
+```{eval-rst}
+.. autoclass:: pep610._types.ArchiveInfoDict
+    :members: hashes, hash
+```
+
+```{eval-rst}
+.. autoclass:: pep610._types.ArchiveDict
+    :members: url, archive_info
+```
+
+```{eval-rst}
+.. autoclass:: pep610._types.DirectoryInfoDict
+    :members: editable
+```
+
+```{eval-rst}
+.. autoclass:: pep610._types.DirectoryDict
+    :members: url, dir_info
+```
+
+```{eval-rst}
+.. autoclass:: pep610._types.VCSInfoDict
+    :members: vcs, commit_id, requested_revision, resolved_revision, resolved_revision_type
+```
+
+```{eval-rst}
+.. autoclass:: pep610._types.VCSDict
+    :members: url ,vcs_info
+```
