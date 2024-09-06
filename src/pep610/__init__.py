@@ -115,6 +115,14 @@ class VCSData(_BaseData):
 
     vcs_info: VCSInfo
 
+    def to_dict(self) -> VCSDict:
+        """Convert the VCS data to a dictionary.
+
+        Returns:
+            The VCS data as a dictionary.
+        """
+        return {"url": self.url, "vcs_info": self.vcs_info.to_dict()}
+
 
 class HashData(t.NamedTuple):
     """(Deprecated) Archive hash data.
@@ -238,6 +246,14 @@ class ArchiveData(_BaseData):
 
     archive_info: ArchiveInfo
 
+    def to_dict(self) -> ArchiveDict:
+        """Convert the archive data to a dictionary.
+
+        Returns:
+            The archive data as a dictionary.
+        """
+        return {"url": self.url, "archive_info": self.archive_info.to_dict()}
+
 
 @dataclass
 class DirInfo:
@@ -310,6 +326,14 @@ class DirData(_BaseData):
 
     dir_info: DirInfo
 
+    def to_dict(self) -> DirectoryDict:
+        """Convert the directory data to a dictionary.
+
+        Returns:
+            The directory data as a dictionary.
+        """
+        return {"url": self.url, "dir_info": self.dir_info.to_dict()}
+
 
 @singledispatch
 def to_dict(data) -> dict[str, t.Any]:  # noqa: ANN001
@@ -327,17 +351,17 @@ def to_dict(data) -> dict[str, t.Any]:  # noqa: ANN001
 
 @to_dict.register(VCSData)
 def _(data: VCSData) -> VCSDict:
-    return {"url": data.url, "vcs_info": data.vcs_info.to_dict()}
+    return data.to_dict()
 
 
 @to_dict.register(ArchiveData)
 def _(data: ArchiveData) -> ArchiveDict:
-    return {"url": data.url, "archive_info": data.archive_info.to_dict()}
+    return data.to_dict()
 
 
 @to_dict.register(DirData)
 def _(data: DirData) -> DirectoryDict:
-    return {"url": data.url, "dir_info": data.dir_info.to_dict()}
+    return data.to_dict()
 
 
 def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
