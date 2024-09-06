@@ -122,6 +122,12 @@ for package in report["install"]:
 .. autofunction:: pep610.is_editable
 ```
 
+## Exceptions
+
+```{eval-rst}
+.. autoclass:: pep610.DirectUrlValidationError
+```
+
 ## Types
 
 ```{eval-rst}
