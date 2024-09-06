@@ -473,4 +473,4 @@ def write_to_distribution(dist: PathDistribution, data: dict) -> int:
     """
     return dist._path.joinpath(  # type: ignore[attr-defined]  # noqa: SLF001
         "direct_url.json",
-    ).write_text(json.dumps(data))
+    ).write_text(json.dumps(data, sort_keys=True))
