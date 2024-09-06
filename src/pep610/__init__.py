@@ -451,7 +451,7 @@ def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirDat
         dist(importlib_metadata.Distribution): The package distribution.
 
     Returns:
-        The parsed PEP 610 file.
+        The parsed PEP 610 data or ``None`` if the file is not found.
 
     >>> import importlib.metadata
     >>> dist = importlib.metadata.distribution("pep610")
