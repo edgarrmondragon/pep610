@@ -23,10 +23,7 @@ class VCSInfoDict(t.TypedDict, total=False):
     #: The requested revision.
     requested_revision: str
 
-    #: The resolved revision.
     resolved_revision: str
-
-    #: The resolved revision type.
     resolved_revision_type: str
 
 
