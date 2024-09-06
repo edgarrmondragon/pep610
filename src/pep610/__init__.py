@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import abc
 import hashlib
 import json
 import typing as t
@@ -42,6 +43,8 @@ __all__ = [
 ]
 
 __version__ = version(__package__)
+
+DIRECT_URL_METADATA_NAME = "direct_url.json"
 
 
 @dataclass
@@ -94,7 +97,7 @@ class VCSInfo:
 
 
 @dataclass
-class _BaseData:
+class _BaseData(abc.ABC):
     """Base direct URL data.
 
     Args:
@@ -102,6 +105,18 @@ class _BaseData:
     """
 
     url: str
+
+    @abc.abstractmethod
+    def to_dict(self) -> t.Mapping[str, t.Any]:
+        """Convert the data to a dictionary."""
+
+    def to_json(self) -> str:
+        """Convert the data to a JSON string.
+
+        Returns:
+            The data as a JSON string.
+        """
+        return json.dumps(self.to_dict(), sort_keys=True)
 
 
 @dataclass
@@ -461,7 +476,7 @@ def is_editable(distribution_name: str) -> bool:
     return isinstance(data, DirData) and data.dir_info.is_editable()
 
 
-def write_to_distribution(dist: PathDistribution, data: dict) -> int:
+def write_to_distribution(dist: PathDistribution, data: dict | _BaseData) -> int:
     """Write the direct URL data to a distribution.
 
     Args:
@@ -471,6 +486,5 @@ def write_to_distribution(dist: PathDistribution, data: dict) -> int:
     Returns:
         The number of bytes written.
     """
-    return dist._path.joinpath(  # type: ignore[attr-defined]  # noqa: SLF001
-        "direct_url.json",
-    ).write_text(json.dumps(data, sort_keys=True))
+    to_write = json.dumps(data, sort_keys=True) if isinstance(data, dict) else data.to_json()
+    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # noqa: SLF001
