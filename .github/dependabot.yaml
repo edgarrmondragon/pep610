@@ -12,6 +12,29 @@ updates:
     commit-message:
       prefix: "chore(deps): "
       prefix-development: "chore(deps-dev): "
+    groups:
+      development-dependencies:
+        dependency-type: development
+      runtime-dependencies:
+        dependency-type: production
+        update-types:
+          - "patch"
+  - directory: /docs
+    package-ecosystem: pip
+    schedule:
+      interval: weekly
+      timezone: America/Mexico_City
+    assignees:
+      - "edgarrmondragon"
+    reviewers:
+      - "edgarrmondragon"
+    commit-message:
+      prefix: "docs(deps): "
+      prefix-development: "docs(deps-dev): "
+    groups:
+      all:
+        patterns:
+          - "*"
   - package-ecosystem: pip
     directory: /.github/workflows
     schedule:
@@ -23,6 +46,10 @@ updates:
       - "edgarrmondragon"
     commit-message:
       prefix: "ci: "
+    groups:
+      ci:
+        patterns:
+          - "*"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
