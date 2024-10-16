@@ -55,6 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
           cache: pip
           python-version: "3.12"
@@ -62,7 +63,7 @@ jobs:
         env:
           PIP_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
         run: |
-          pipx install hatch
+          pipx install --python ${{ steps.setup-python.outputs.python-path }} hatch
       - name: Run typing
         env:
           HATCH_ENV: lint
