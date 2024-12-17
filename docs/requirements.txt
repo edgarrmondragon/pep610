@@ -6,7 +6,7 @@ babel==2.16.0
     # via sphinx
 beautifulsoup4==4.13.0b2
     # via furo
-certifi==2024.8.30
+certifi==2024.12.14
     # via requests
 charset-normalizer==3.4.0
     # via requests
