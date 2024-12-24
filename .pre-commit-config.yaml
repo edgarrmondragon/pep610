@@ -21,14 +21,14 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.29.4
+  rev: 0.30.0
   hooks:
   - id: check-dependabot
   - id: check-github-workflows
   - id: check-readthedocs
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.7.2
+  rev: v0.8.1
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix, --show-fixes]
@@ -52,6 +52,6 @@ repos:
   - id: pyproject-fmt
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.27.0
+  rev: typos-dict-v0.11.37
   hooks:
   - id: typos
