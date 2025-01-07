@@ -4,7 +4,7 @@ alabaster==1.0.0
     # via sphinx
 babel==2.16.0
     # via sphinx
-beautifulsoup4==4.13.0b2
+beautifulsoup4==4.13.0b3
     # via furo
 certifi==2024.12.14
     # via requests
@@ -38,7 +38,7 @@ myst-parser==4.0.0
     # via pep610 (pyproject.toml)
 packaging==24.2
     # via sphinx
-pygments==2.18.0
+pygments==2.19.1
     # via
     #   furo
     #   sphinx
