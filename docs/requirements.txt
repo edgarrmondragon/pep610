@@ -4,7 +4,7 @@ alabaster==1.0.0
     # via sphinx
 babel==2.16.0
     # via sphinx
-beautifulsoup4==4.13.0b2
+beautifulsoup4==4.13.1
     # via furo
 certifi==2024.12.14
     # via requests
