@@ -4,7 +4,7 @@ alabaster==1.0.0
     # via sphinx
 babel==2.16.0
     # via sphinx
-beautifulsoup4==4.13.0b2
+beautifulsoup4==4.13.3
     # via furo
 certifi==2024.12.14
     # via requests
@@ -34,7 +34,7 @@ mdit-py-plugins==0.4.2
     # via myst-parser
 mdurl==0.1.2
     # via markdown-it-py
-myst-parser==4.0.0
+myst-parser==4.0.1
     # via pep610 (pyproject.toml)
 packaging==24.2
     # via sphinx
