@@ -12,7 +12,6 @@ from pep610 import (
     ArchiveInfo,
     DirData,
     DirInfo,
-    HashData,
     VCSData,
     VCSInfo,
     is_editable,
@@ -27,7 +26,7 @@ if t.TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    ("data", "expected"),
+    ("data", "expected", "write_back"),
     [
         pytest.param(
             {"url": "file:///home/user/project", "dir_info": {"editable": True}},
@@ -35,6 +34,7 @@ if t.TYPE_CHECKING:
                 url="file:///home/user/project",
                 dir_info=DirInfo(editable=True),
             ),
+            None,
             id="local_editable",
         ),
         pytest.param(
@@ -43,6 +43,7 @@ if t.TYPE_CHECKING:
                 url="file:///home/user/project",
                 dir_info=DirInfo(editable=False),
             ),
+            None,
             id="local_not_editable",
         ),
         pytest.param(
@@ -51,6 +52,7 @@ if t.TYPE_CHECKING:
                 url="file:///home/user/project",
                 dir_info=DirInfo(editable=None),
             ),
+            None,
             id="local_no_editable_info",
         ),
         pytest.param(
@@ -72,6 +74,7 @@ if t.TYPE_CHECKING:
                     },
                 ),
             ),
+            None,
             id="archive_hashes",
         ),
         pytest.param(
@@ -84,12 +87,19 @@ if t.TYPE_CHECKING:
             ArchiveData(
                 url="https://github.com/pypa/pip/archive/1.3.1.zip",
                 archive_info=ArchiveInfo(
-                    hash=HashData(
-                        "sha256",
-                        "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
-                    ),
+                    hashes={
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                    },
                 ),
             ),
+            {
+                "url": "https://github.com/pypa/pip/archive/1.3.1.zip",
+                "archive_info": {
+                    "hashes": {
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                    },
+                },
+            },
             id="archive_sha256_legacy",
         ),
         pytest.param(
@@ -101,7 +111,38 @@ if t.TYPE_CHECKING:
                 url="file://path/to/my.whl",
                 archive_info=ArchiveInfo(hash=None),
             ),
+            None,
             id="archive_no_hashes",
+        ),
+        pytest.param(
+            {
+                "url": "file://path/to/my.whl",
+                "archive_info": {
+                    "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                    "hashes": {
+                        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+                    },
+                },
+            },
+            ArchiveData(
+                url="file://path/to/my.whl",
+                archive_info=ArchiveInfo(
+                    hashes={
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+                    },
+                ),
+            ),
+            {
+                "url": "file://path/to/my.whl",
+                "archive_info": {
+                    "hashes": {
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                        "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+                    },
+                },
+            },
+            id="archive_mixed_hashes",
         ),
         pytest.param(
             {
@@ -122,6 +163,7 @@ if t.TYPE_CHECKING:
                     commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
                 ),
             ),
+            None,
             id="vcs_git",
         ),
         pytest.param(
@@ -142,6 +184,7 @@ if t.TYPE_CHECKING:
                     commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
                 ),
             ),
+            None,
             id="vcs_git_no_requested_revision",
         ),
         pytest.param(
@@ -165,6 +208,7 @@ if t.TYPE_CHECKING:
                     commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
                 ),
             ),
+            None,
             id="vcs_git_resolved_revision",
         ),
         pytest.param(
@@ -187,11 +231,12 @@ if t.TYPE_CHECKING:
                     commit_id="7921be1537eac1e97bc40179a57f0349c2aee67d",
                 ),
             ),
+            None,
             id="vcs_no_resolved_revision",
         ),
     ],
 )
-def test_parse(data: dict, expected: object, tmp_path: Path):
+def test_parse(data: dict, expected: object, write_back: dict | None, tmp_path: Path):
     """Test the parse function."""
     dist = Distribution.at(tmp_path)
     write_to_distribution(dist, data)
@@ -199,7 +244,7 @@ def test_parse(data: dict, expected: object, tmp_path: Path):
     result = read_from_distribution(dist)
     assert result == expected
 
-    assert to_dict(result) == data
+    assert to_dict(result) == (data if write_back is None else write_back)
 
 
 def test_unknown_data_type():
@@ -255,10 +300,7 @@ def test_archive_hashes_merged(tmp_path: Path):
     result = read_from_distribution(dist)
     assert isinstance(result, ArchiveData)
     assert result.url == "file://path/to/my.whl"
-    assert result.archive_info.hash == HashData(
-        "sha256",
-        "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
-    )
+    assert result.archive_info.hash is None
     assert result.archive_info.hashes == {
         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",

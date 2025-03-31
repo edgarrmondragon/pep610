@@ -314,14 +314,16 @@ def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
         VCSData(url='https://github.com/pypa/packaging', vcs_info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None))
     """  # noqa: E501
     if "archive_info" in data:
-        hashes = data["archive_info"].get("hashes")
-        hash_data = None
+        hashes = {}
         if hash_value := data["archive_info"].get("hash"):
-            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None
+            algorithm, value = hash_value.split("=", 1)
+            hashes[algorithm] = value
+
+        hashes.update(data["archive_info"].get("hashes", {}))
 
         return ArchiveData(
             url=data["url"],
-            archive_info=ArchiveInfo(hashes=hashes, hash=hash_data),
+            archive_info=ArchiveInfo(hashes=hashes or None),
         )
 
     if "dir_info" in data:
