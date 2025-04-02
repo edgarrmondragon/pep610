@@ -40,7 +40,7 @@ html_theme = "furo"
 html_title = "PEP 610 - Direct URL Parser for Python"
 html_theme_options = {
     "navigation_with_keys": True,
-    "source_repository": "https://github.com/edgarrmondragon/citric/",
+    "source_repository": "https://github.com/edgarrmondragon/pep610/",
     "source_branch": "main",
     "source_directory": "docs/",
 }

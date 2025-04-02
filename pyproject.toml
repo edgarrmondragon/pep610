@@ -231,6 +231,11 @@ exclude_also = [
 ]
 show_missing = true
 
+[tool.mypy]
+warn_unused_configs = true
+warn_unreachable = true
+warn_unused_ignores = true
+
 [tool.uv]
 prerelease = "allow"
 required-version = ">=0.6"

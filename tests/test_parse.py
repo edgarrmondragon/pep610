@@ -7,20 +7,7 @@ from importlib.metadata import Distribution
 
 import pytest
 
-from pep610 import (
-    ArchiveData,
-    ArchiveInfo,
-    DirData,
-    DirInfo,
-    HashData,
-    VCSData,
-    VCSInfo,
-    is_editable,
-    parse,
-    read_from_distribution,
-    to_dict,
-    write_to_distribution,
-)
+import pep610
 
 if t.TYPE_CHECKING:
     from pathlib import Path
@@ -31,25 +18,25 @@ if t.TYPE_CHECKING:
     [
         pytest.param(
             {"url": "file:///home/user/project", "dir_info": {"editable": True}},
-            DirData(
+            pep610.DirectUrl(
                 url="file:///home/user/project",
-                dir_info=DirInfo(editable=True),
+                info=pep610.DirInfo(editable=True),
             ),
             id="local_editable",
         ),
         pytest.param(
             {"url": "file:///home/user/project", "dir_info": {"editable": False}},
-            DirData(
+            pep610.DirectUrl(
                 url="file:///home/user/project",
-                dir_info=DirInfo(editable=False),
+                info=pep610.DirInfo(editable=False),
             ),
             id="local_not_editable",
         ),
         pytest.param(
             {"url": "file:///home/user/project", "dir_info": {}},
-            DirData(
+            pep610.DirectUrl(
                 url="file:///home/user/project",
-                dir_info=DirInfo(editable=None),
+                info=pep610.DirInfo(editable=None),
             ),
             id="local_no_editable_info",
         ),
@@ -63,9 +50,9 @@ if t.TYPE_CHECKING:
                     }
                 },
             },
-            ArchiveData(
+            pep610.DirectUrl(
                 url="https://github.com/pypa/pip/archive/1.3.1.zip",
-                archive_info=ArchiveInfo(
+                info=pep610.ArchiveInfo(
                     hashes={
                         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
                         "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
@@ -81,10 +68,10 @@ if t.TYPE_CHECKING:
                     "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
                 },
             },
-            ArchiveData(
+            pep610.DirectUrl(
                 url="https://github.com/pypa/pip/archive/1.3.1.zip",
-                archive_info=ArchiveInfo(
-                    hash=HashData(
+                info=pep610.ArchiveInfo(
+                    hash=pep610.HashData(
                         "sha256",
                         "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
                     ),
@@ -97,9 +84,9 @@ if t.TYPE_CHECKING:
                 "url": "file://path/to/my.whl",
                 "archive_info": {},
             },
-            ArchiveData(
+            pep610.DirectUrl(
                 url="file://path/to/my.whl",
-                archive_info=ArchiveInfo(hash=None),
+                info=pep610.ArchiveInfo(hash=None),
             ),
             id="archive_no_hashes",
         ),
@@ -113,9 +100,9 @@ if t.TYPE_CHECKING:
                     "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
                 },
             },
-            VCSData(
+            pep610.DirectUrl(
                 url="https://github.com/pypa/pip.git",
-                vcs_info=VCSInfo(
+                info=pep610.VCSInfo(
                     vcs="git",
                     requested_revision="1.3.1",
                     resolved_revision_type="tag",
@@ -133,9 +120,9 @@ if t.TYPE_CHECKING:
                     "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
                 },
             },
-            VCSData(
+            pep610.DirectUrl(
                 url="https://github.com/pypa/pip.git",
-                vcs_info=VCSInfo(
+                info=pep610.VCSInfo(
                     vcs="git",
                     requested_revision=None,
                     resolved_revision_type="tag",
@@ -155,9 +142,9 @@ if t.TYPE_CHECKING:
                     "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
                 },
             },
-            VCSData(
+            pep610.DirectUrl(
                 url="https://github.com/pypa/pip.git",
-                vcs_info=VCSInfo(
+                info=pep610.VCSInfo(
                     vcs="git",
                     requested_revision="1.3.1",
                     resolved_revision="1.3.1",
@@ -177,9 +164,9 @@ if t.TYPE_CHECKING:
                     "commit_id": "7921be1537eac1e97bc40179a57f0349c2aee67d",
                 },
             },
-            VCSData(
+            pep610.DirectUrl(
                 url="https://github.com/pypa/pip.git",
-                vcs_info=VCSInfo(
+                info=pep610.VCSInfo(
                     vcs="git",
                     requested_revision="1.3.1",
                     resolved_revision="1.3.1",
@@ -194,19 +181,22 @@ if t.TYPE_CHECKING:
 def test_parse(data: dict[str, t.Any], expected: object, tmp_path: Path) -> None:
     """Test the parse function."""
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
+    pep610.write_to_distribution(dist, data)
 
-    result = read_from_distribution(dist)
+    result = pep610.read_from_distribution(dist)
     assert result == expected
 
-    assert to_dict(result) == data
+    assert pep610.to_dict(result) == data
 
 
-def test_unknown_data_type() -> None:
-    """Test serialization from unknown data fails."""
-    data = object()
-    with pytest.raises(NotImplementedError, match="Cannot serialize unknown"):
-        to_dict(data)
+def test_to_json() -> None:
+    """Test the to_json method."""
+    data = pep610.DirectUrl(
+        url="file:///home/user/project",
+        info=pep610.DirInfo(editable=True),
+    )
+
+    assert data.to_json() == '{"dir_info": {"editable": true}, "url": "file:///home/user/project"}'
 
 
 def test_local_directory(tmp_path: Path) -> None:
@@ -216,22 +206,23 @@ def test_local_directory(tmp_path: Path) -> None:
         "dir_info": {"editable": True},
     }
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
+    pep610.write_to_distribution(dist, data)
 
-    result = read_from_distribution(dist)
-    assert isinstance(result, DirData)
+    result = pep610.read_from_distribution(dist)
+    assert isinstance(result, pep610.DirectUrl)
     assert result.url == "file:///home/user/project"
-    assert result.dir_info.is_editable()
-    assert to_dict(result) == data
+    assert isinstance(result.info, pep610.DirInfo)
+    assert result.info.is_editable()
+    assert pep610.to_dict(result) == data
 
-    result.dir_info.editable = False
-    assert to_dict(result) == {
+    result.info.editable = False
+    assert pep610.to_dict(result) == {
         "url": "file:///home/user/project",
         "dir_info": {"editable": False},
     }
 
-    result.dir_info.editable = None
-    assert to_dict(result) == {
+    result.info.editable = None
+    assert pep610.to_dict(result) == {
         "url": "file:///home/user/project",
         "dir_info": {},
     }
@@ -250,20 +241,21 @@ def test_archive_hashes_merged(tmp_path: Path) -> None:
         },
     }
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
+    pep610.write_to_distribution(dist, data)
 
-    result = read_from_distribution(dist)
-    assert isinstance(result, ArchiveData)
+    result = pep610.read_from_distribution(dist)
+    assert isinstance(result, pep610.DirectUrl)
     assert result.url == "file://path/to/my.whl"
-    assert result.archive_info.hash == HashData(
+    assert isinstance(result.info, pep610.ArchiveInfo)
+    assert result.info.hash == pep610.HashData(
         "sha256",
         "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
     )
-    assert result.archive_info.hashes == {
+    assert result.info.hashes == {
         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
     }
-    assert result.archive_info.all_hashes == {
+    assert result.info.all_hashes == {
         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
     }
@@ -276,14 +268,15 @@ def test_archive_no_hashes(tmp_path: Path) -> None:
         "archive_info": {},
     }
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
+    pep610.write_to_distribution(dist, data)
 
-    result = read_from_distribution(dist)
-    assert isinstance(result, ArchiveData)
+    result = pep610.read_from_distribution(dist)
+    assert isinstance(result, pep610.DirectUrl)
     assert result.url == "file://path/to/my.whl"
-    assert result.archive_info.hash is None
-    assert result.archive_info.hashes is None
-    assert result.archive_info.all_hashes == {}
+    assert isinstance(result.info, pep610.ArchiveInfo)
+    assert result.info.hash is None
+    assert result.info.hashes is None
+    assert result.info.all_hashes == {}
 
 
 def test_archive_no_valid_algorithms(tmp_path: Path) -> None:
@@ -297,15 +290,16 @@ def test_archive_no_valid_algorithms(tmp_path: Path) -> None:
         },
     }
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
+    pep610.write_to_distribution(dist, data)
 
-    result = read_from_distribution(dist)
-    assert isinstance(result, ArchiveData)
+    result = pep610.read_from_distribution(dist)
+    assert isinstance(result, pep610.DirectUrl)
     assert result.url == "file://path/to/my.whl"
-    assert result.archive_info.hash is None
-    assert result.archive_info.hashes == {"notavalidalgo": "1234"}
-    assert result.archive_info.all_hashes == {"notavalidalgo": "1234"}
-    assert not result.archive_info.has_valid_algorithms()
+    assert isinstance(result.info, pep610.ArchiveInfo)
+    assert result.info.hash is None
+    assert result.info.hashes == {"notavalidalgo": "1234"}
+    assert result.info.all_hashes == {"notavalidalgo": "1234"}
+    assert not result.info.has_valid_algorithms()
 
 
 def test_unknown_url_type(tmp_path: Path) -> None:
@@ -315,22 +309,22 @@ def test_unknown_url_type(tmp_path: Path) -> None:
         "unknown_info": {},
     }
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
-    assert read_from_distribution(dist) is None
+    pep610.write_to_distribution(dist, data)
+
+    with pytest.raises(pep610.DirectUrlValidationError, match="does not contain"):
+        pep610.read_from_distribution(dist)
 
 
 def test_no_file(tmp_path: Path) -> None:
     """Test that a missing file is read back as None."""
     dist = Distribution.at(tmp_path)
-    assert read_from_distribution(dist) is None
+    assert pep610.read_from_distribution(dist) is None
 
 
-def _get_direct_url_packages(
-    report: dict[str, t.Any],
-) -> dict[str, VCSData | ArchiveData | DirData | None]:
+def _get_direct_url_packages(report: dict[str, t.Any]) -> dict[str, pep610.DirectUrl]:
     """Get direct URL packages from a pip install report."""
     return {
-        package["metadata"]["name"]: parse(package["download_info"])
+        package["metadata"]["name"]: pep610.parse(package["download_info"])
         for package in report["install"]
         if package["is_direct"]
     }
@@ -341,9 +335,9 @@ def test_parse_pip_install_report(pip_install_report: dict[str, t.Any]) -> None:
     packages = _get_direct_url_packages(pip_install_report)
 
     assert packages == {
-        "packaging": VCSData(
+        "packaging": pep610.DirectUrl(
             url="https://github.com/pypa/packaging",
-            vcs_info=VCSInfo(
+            info=pep610.VCSInfo(
                 vcs="git",
                 requested_revision="main",
                 commit_id="4f42225e91a0be634625c09e84dd29ea82b85e27",
@@ -402,7 +396,7 @@ def test_is_editable(
 ) -> None:
     """Test the is_editable function."""
     dist = Distribution.at(tmp_path)
-    write_to_distribution(dist, data)
+    pep610.write_to_distribution(dist, data)
 
     monkeypatch.setattr("pep610.distribution", lambda _: dist)
-    assert is_editable("my_package") is expected
+    assert pep610.is_editable("my_package") is expected

@@ -5,55 +5,51 @@ import typing as t
 if t.TYPE_CHECKING:
     import sys
 
-    if sys.version_info <= (3, 10):
+    if sys.version_info < (3, 11):
         from typing_extensions import Required
     else:
         from typing import Required
 
 
-class _BaseURLDict(t.TypedDict):
-    """Base direct URL data."""
-
-    url: str
-
-
 class VCSInfoDict(t.TypedDict, total=False):
-    """VCS information."""
+    """VCS information dictionary."""
 
+    #: The VCS type.
     vcs: Required[str]
+
+    #: The commit ID.
     commit_id: Required[str]
+
+    #: The requested revision.
     requested_revision: str
+
     resolved_revision: str
     resolved_revision_type: str
 
 
-class VCSDict(t.TypedDict):
-    """VCS direct URL data."""
-
-    url: str
-    vcs_info: VCSInfoDict
-
-
 class ArchiveInfoDict(t.TypedDict, total=False):
-    """Archive information."""
+    """Archive information dictionary."""
 
+    #: The hashes of the archive.
     hashes: dict[str, str]
+
+    #: The hash of the archive (deprecated).
     hash: str
 
 
-class ArchiveDict(_BaseURLDict):
-    """Archive direct URL data."""
-
-    archive_info: ArchiveInfoDict
-
-
 class DirectoryInfoDict(t.TypedDict, total=False):
-    """Local directory information."""
+    """Local directory information dictionary."""
 
+    #: Whether the directory is editable.
     editable: bool
 
 
-class DirectoryDict(_BaseURLDict):
-    """Local directory direct URL data."""
+class DirectUrlDict(t.TypedDict):
+    """Direct URL data dictionary."""
 
+    #: The direct URL.
+    url: Required[str]
+
+    vcs_info: VCSInfoDict
+    archive_info: ArchiveInfoDict
     dir_info: DirectoryInfoDict

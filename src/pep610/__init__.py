@@ -6,34 +6,28 @@ import hashlib
 import json
 import typing as t
 from dataclasses import dataclass
-from functools import singledispatch
 from importlib.metadata import distribution, version
 
 if t.TYPE_CHECKING:
     import sys
     from importlib.metadata import Distribution, PathDistribution
 
-    if sys.version_info <= (3, 10):
+    if sys.version_info < (3, 11):
         from typing_extensions import Self
     else:
         from typing import Self
 
     from pep610._types import (
-        ArchiveDict,
         ArchiveInfoDict,
-        DirectoryDict,
         DirectoryInfoDict,
-        VCSDict,
+        DirectUrlDict,
         VCSInfoDict,
     )
 
 __all__ = [
-    "ArchiveData",
     "ArchiveInfo",
-    "DirData",
     "DirInfo",
     "HashData",
-    "VCSData",
     "VCSInfo",
     "__version__",
     "read_from_distribution",
@@ -42,6 +36,23 @@ __all__ = [
 ]
 
 __version__ = version(__package__)
+
+T = t.TypeVar("T")
+
+DIRECT_URL_METADATA_NAME = "direct_url.json"
+
+
+class DirectUrlValidationError(Exception):
+    """Direct URL validation error."""
+
+
+def _filter_none(**kwargs: T) -> dict[str, T]:
+    """Make dict excluding None values.
+
+    Returns:
+        A dictionary with all the values that are not ``None``.
+    """
+    return {k: v for k, v in kwargs.items() if v is not None}
 
 
 @dataclass
@@ -57,34 +68,37 @@ class VCSInfo:
             compatible with the VCS).
     """
 
+    key: t.ClassVar[str] = "vcs_info"
+
     vcs: str
     commit_id: str
     requested_revision: str | None = None
     resolved_revision: str | None = None
     resolved_revision_type: str | None = None
 
+    def to_dict(self) -> VCSInfoDict:
+        """Convert the VCS data to a dictionary.
 
-@dataclass
-class _BaseData:
-    """Base direct URL data.
+        Returns:
+            The VCS data as a dictionary.
 
-    Args:
-        url: The direct URL.
-    """
+        .. code-block:: pycon
 
-    url: str
-
-
-@dataclass
-class VCSData(_BaseData):
-    """VCS direct URL data.
-
-    Args:
-        url: The VCS URL.
-        vcs_info: VCS information.
-    """
-
-    vcs_info: VCSInfo
+            >>> vcs_info = VCSInfo(
+            ...     vcs="git",
+            ...     commit_id="4f42225e91a0be634625c09e84dd29ea82b85e27",
+            ...     requested_revision="main",
+            ... )
+            >>> vcs_info.to_dict()
+            {'vcs': 'git', 'commit_id': '4f42225e91a0be634625c09e84dd29ea82b85e27', 'requested_revision': 'main'}
+        """  # noqa: E501
+        return _filter_none(  # type: ignore[return-value]
+            vcs=self.vcs,
+            commit_id=self.commit_id,
+            requested_revision=self.requested_revision,
+            resolved_revision=self.resolved_revision,
+            resolved_revision_type=self.resolved_revision_type,
+        )
 
 
 class HashData(t.NamedTuple):
@@ -114,6 +128,8 @@ class ArchiveInfo:
             :py:data:`hashlib.algorithms_guaranteed` SHOULD always be included.
         hash: The archive hash (deprecated).
     """
+
+    key: t.ClassVar[str] = "archive_info"
 
     hashes: dict[str, str] | None = None
     hash: HashData | None = None
@@ -173,17 +189,27 @@ class ArchiveInfo:
 
         return hashes
 
+    def to_dict(self) -> ArchiveInfoDict:
+        """Convert the archive data to a dictionary.
 
-@dataclass
-class ArchiveData(_BaseData):
-    """Archive direct URL data.
+        Returns:
+            The archive data as a dictionary.
 
-    Args:
-        url: The archive URL.
-        archive_info: Archive information.
-    """
+        .. code-block:: pycon
 
-    archive_info: ArchiveInfo
+            >>> archive_info = ArchiveInfo(
+            ...     hashes={
+            ...         "sha256": "1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9",
+            ...         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
+            ...     },
+            ... )
+            >>> archive_info.to_dict()
+            {'hashes': {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}}
+        """  # noqa: E501
+        return _filter_none(  # type: ignore[return-value]
+            hashes=self.hashes,
+            hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",
+        )
 
 
 @dataclass
@@ -195,6 +221,8 @@ class DirInfo:
     Args:
         editable: Whether the distribution is installed in editable mode.
     """
+
+    key: t.ClassVar[str] = "dir_info"
 
     editable: bool | None
 
@@ -227,70 +255,89 @@ class DirInfo:
         """
         return self.editable is True
 
+    def to_dict(self) -> DirectoryInfoDict:
+        """Convert the directory data to a dictionary.
+
+        Returns:
+            The directory data as a dictionary.
+
+        .. code-block:: pycon
+
+                >>> dir_info = DirInfo(editable=True)
+                >>> dir_info.to_dict()
+                {'editable': True}
+        """
+        return _filter_none(editable=self.editable)  # type: ignore[return-value]
+
 
 @dataclass
-class DirData(_BaseData):
-    """Local directory direct URL data.
+class DirectUrl:
+    """Direct URL data.
 
     Args:
-        url: The local directory URL.
-        dir_info: Local directory information.
+        url: The direct URL.
+        info: The direct URL data.
+        subdirectory: The optional directory path, relative to the root of the VCS repository,
+            source archive or local directory, to specify where pyproject.toml or setup.py
+            is located.
     """
 
-    dir_info: DirInfo
+    url: str
+    info: VCSInfo | ArchiveInfo | DirInfo
+    subdirectory: str | None = None
+
+    def to_dict(self) -> DirectUrlDict:
+        """Convert the data to a dictionary.
+
+        Returns:
+            The data as a dictionary.
+
+        .. code-block:: pycon
+
+            >>> direct_url = DirectUrl(
+            ...     url="file:///home/user/pep610",
+            ...     info=DirInfo(editable=False),
+            ...     subdirectory="app",
+            ... )
+            >>> direct_url.to_dict()
+            {'url': 'file:///home/user/pep610', 'subdirectory': 'app', 'dir_info': {'editable': False}}
+        """  # noqa: E501
+        res = _filter_none(url=self.url, subdirectory=self.subdirectory)
+        res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]
+        return res  # type: ignore[return-value]
+
+    def to_json(self) -> str:
+        """Convert the data to a JSON string.
+
+        Returns:
+            The data as a JSON string.
+
+        .. code-block:: pycon
+
+            >>> direct_url = DirectUrl(
+            ...     url="file:///home/user/pep610",
+            ...     info=DirInfo(editable=False),
+            ...     subdirectory="app",
+            ... )
+            >>> direct_url.to_json()
+            '{"dir_info": {"editable": false}, "subdirectory": "app", "url": "file:///home/user/pep610"}'
+        """
+        return json.dumps(self.to_dict(), sort_keys=True)
 
 
-@singledispatch
-def to_dict(data: object) -> dict[str, t.Any]:
+def to_dict(data: DirectUrl) -> DirectUrlDict:
     """Convert the parsed data to a dictionary.
 
     Args:
         data: The parsed data.
 
-    Raises:
-        NotImplementedError: If the data type is not supported.
+    Returns:
+        The data as a dictionary.
     """
-    message = f"Cannot serialize unknown direct URL data of type {type(data)}"
-    raise NotImplementedError(message)
+    return data.to_dict()
 
 
-@to_dict.register(VCSData)
-def _(data: VCSData) -> VCSDict:
-    vcs_info: VCSInfoDict = {
-        "vcs": data.vcs_info.vcs,
-        "commit_id": data.vcs_info.commit_id,
-    }
-    if data.vcs_info.requested_revision is not None:
-        vcs_info["requested_revision"] = data.vcs_info.requested_revision
-    if data.vcs_info.resolved_revision is not None:
-        vcs_info["resolved_revision"] = data.vcs_info.resolved_revision
-    if data.vcs_info.resolved_revision_type is not None:
-        vcs_info["resolved_revision_type"] = data.vcs_info.resolved_revision_type
-
-    return {"url": data.url, "vcs_info": vcs_info}
-
-
-@to_dict.register(ArchiveData)
-def _(data: ArchiveData) -> ArchiveDict:
-    archive_info: ArchiveInfoDict = {}
-    if data.archive_info.hashes is not None:
-        archive_info["hashes"] = data.archive_info.hashes
-
-    if data.archive_info.hash is not None:
-        archive_info["hash"] = f"{data.archive_info.hash.algorithm}={data.archive_info.hash.value}"
-
-    return {"url": data.url, "archive_info": archive_info}
-
-
-@to_dict.register(DirData)
-def _(data: DirData) -> DirectoryDict:
-    dir_info: DirectoryInfoDict = {}
-    if data.dir_info.editable is not None:
-        dir_info["editable"] = data.dir_info.editable
-    return {"url": data.url, "dir_info": dir_info}
-
-
-def parse(data: dict[str, t.Any]) -> VCSData | ArchiveData | DirData | None:
+def parse(data: dict[str, t.Any]) -> DirectUrl:
     """Parse the direct URL data.
 
     Args:
@@ -298,6 +345,9 @@ def parse(data: dict[str, t.Any]) -> VCSData | ArchiveData | DirData | None:
 
     Returns:
         The parsed direct URL data.
+
+    Raises:
+        DirectUrlValidationError: If the direct URL data does not contain a recognized info key.
 
     .. code-block:: pycon
 
@@ -311,50 +361,54 @@ def parse(data: dict[str, t.Any]) -> VCSData | ArchiveData | DirData | None:
         ...         }
         ...     }
         ... )
-        VCSData(url='https://github.com/pypa/packaging', vcs_info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None))
-    """  # noqa: E501
+        DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
+    """  # noqa: E501, DOC502
     if "archive_info" in data:
         hashes = data["archive_info"].get("hashes")
         hash_data = None
         if hash_value := data["archive_info"].get("hash"):
             hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None
 
-        return ArchiveData(
+        return DirectUrl(
             url=data["url"],
-            archive_info=ArchiveInfo(hashes=hashes, hash=hash_data),
+            info=ArchiveInfo(hashes=hashes, hash=hash_data),
+            subdirectory=data.get("subdirectory"),
         )
 
     if "dir_info" in data:
-        return DirData(
+        return DirectUrl(
             url=data["url"],
-            dir_info=DirInfo(
+            info=DirInfo(
                 editable=data["dir_info"].get("editable"),
             ),
+            subdirectory=data.get("subdirectory"),
         )
 
     if "vcs_info" in data:
-        return VCSData(
+        return DirectUrl(
             url=data["url"],
-            vcs_info=VCSInfo(
+            info=VCSInfo(
                 vcs=data["vcs_info"]["vcs"],
                 commit_id=data["vcs_info"]["commit_id"],
                 requested_revision=data["vcs_info"].get("requested_revision"),
                 resolved_revision=data["vcs_info"].get("resolved_revision"),
                 resolved_revision_type=data["vcs_info"].get("resolved_revision_type"),
             ),
+            subdirectory=data.get("subdirectory"),
         )
 
-    return None
+    msg = "Direct URL data does not contain 'archive_info', 'dir_info', or 'vcs_info'"
+    raise DirectUrlValidationError(msg)
 
 
-def read_from_distribution(dist: Distribution) -> VCSData | ArchiveData | DirData | None:
+def read_from_distribution(dist: Distribution) -> DirectUrl | None:
     """Read the package data for a given package.
 
     Args:
         dist(importlib_metadata.Distribution): The package distribution.
 
     Returns:
-        The parsed PEP 610 file.
+        The parsed PEP 610 data or ``None`` if the file is not found.
 
     >>> import importlib.metadata
     >>> dist = importlib.metadata.distribution("pep610")
@@ -381,10 +435,10 @@ def is_editable(distribution_name: str) -> bool:
     """  # noqa: RUF100
     dist = distribution(distribution_name)
     data = read_from_distribution(dist)
-    return isinstance(data, DirData) and data.dir_info.is_editable()
+    return data is not None and isinstance(data.info, DirInfo) and data.info.is_editable()
 
 
-def write_to_distribution(dist: PathDistribution, data: dict[str, t.Any]) -> int:
+def write_to_distribution(dist: PathDistribution, data: dict[str, t.Any] | DirectUrl) -> int:
     """Write the direct URL data to a distribution.
 
     Args:
@@ -394,6 +448,5 @@ def write_to_distribution(dist: PathDistribution, data: dict[str, t.Any]) -> int
     Returns:
         The number of bytes written.
     """
-    return dist._path.joinpath(  # type: ignore[attr-defined, no-any-return]  # noqa: SLF001
-        "direct_url.json",
-    ).write_text(json.dumps(data))
+    to_write = json.dumps(data, sort_keys=True) if isinstance(data, dict) else data.to_json()
+    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # noqa: SLF001
