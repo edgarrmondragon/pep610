@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import typing as t
 
 import pytest
 
@@ -125,6 +126,6 @@ def pytest_report_header() -> list[str]:
 
 
 @pytest.fixture
-def pip_install_report() -> dict:
+def pip_install_report() -> dict[str, t.Any]:
     """Return the parsed JSON report of a pip install command."""
-    return json.loads(PIP_INSTALL_REPORT)
+    return json.loads(PIP_INSTALL_REPORT)  # type: ignore[no-any-return]

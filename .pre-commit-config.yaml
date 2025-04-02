@@ -21,28 +21,27 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.31.2
+  rev: 0.32.1
   hooks:
   - id: check-dependabot
   - id: check-github-workflows
   - id: check-readthedocs
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.9.9
+  rev: v0.11.2
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix, --show-fixes]
   - id: ruff-format
 
-- repo: https://github.com/pycqa/flake8
-  rev: 7.1.2
+- repo: https://github.com/astral-sh/uv-pre-commit
+  rev: "0.6.11"
   hooks:
-  - id: flake8
-    additional_dependencies:
-    - darglint==1.8.1
+  - id: uv-lock
+  - id: uv-sync
 
 - repo: https://github.com/pre-commit/pre-commit
-  rev: v4.1.0
+  rev: v4.2.0
   hooks:
   - id: validate_manifest
 
@@ -52,6 +51,6 @@ repos:
   - id: pyproject-fmt
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.30.0
+  rev: v1.31.1
   hooks:
   - id: typos

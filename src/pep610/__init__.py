@@ -241,7 +241,7 @@ class DirData(_BaseData):
 
 
 @singledispatch
-def to_dict(data) -> dict[str, t.Any]:  # noqa: ANN001
+def to_dict(data: object) -> dict[str, t.Any]:
     """Convert the parsed data to a dictionary.
 
     Args:
@@ -290,7 +290,7 @@ def _(data: DirData) -> DirectoryDict:
     return {"url": data.url, "dir_info": dir_info}
 
 
-def parse(data: dict) -> VCSData | ArchiveData | DirData | None:
+def parse(data: dict[str, t.Any]) -> VCSData | ArchiveData | DirData | None:
     """Parse the direct URL data.
 
     Args:
@@ -376,18 +376,15 @@ def is_editable(distribution_name: str) -> bool:
     Returns:
         Whether the distribution is editable.
 
-    Raises:
-        importlib_metadata.PackageNotFoundError: If the distribution is not found.
-
     >>> is_editable("pep610")  # doctest: +SKIP
     False
-    """  # noqa: DAR402, RUF100
+    """  # noqa: RUF100
     dist = distribution(distribution_name)
     data = read_from_distribution(dist)
     return isinstance(data, DirData) and data.dir_info.is_editable()
 
 
-def write_to_distribution(dist: PathDistribution, data: dict) -> int:
+def write_to_distribution(dist: PathDistribution, data: dict[str, t.Any]) -> int:
     """Write the direct URL data to a distribution.
 
     Args:
@@ -397,6 +394,6 @@ def write_to_distribution(dist: PathDistribution, data: dict) -> int:
     Returns:
         The number of bytes written.
     """
-    return dist._path.joinpath(  # type: ignore[attr-defined]  # noqa: SLF001
+    return dist._path.joinpath(  # type: ignore[attr-defined, no-any-return]  # noqa: SLF001
         "direct_url.json",
     ).write_text(json.dumps(data))
