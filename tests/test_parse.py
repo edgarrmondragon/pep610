@@ -178,7 +178,7 @@ if t.TYPE_CHECKING:
         ),
     ],
 )
-def test_parse(data: dict, expected: object, tmp_path: Path):
+def test_parse(data: dict[str, t.Any], expected: object, tmp_path: Path) -> None:
     """Test the parse function."""
     dist = Distribution.at(tmp_path)
     pep610.write_to_distribution(dist, data)
@@ -189,7 +189,7 @@ def test_parse(data: dict, expected: object, tmp_path: Path):
     assert pep610.to_dict(result) == data
 
 
-def test_to_json():
+def test_to_json() -> None:
     """Test the to_json method."""
     data = pep610.DirectUrl(
         url="file:///home/user/project",
@@ -199,7 +199,7 @@ def test_to_json():
     assert data.to_json() == '{"dir_info": {"editable": true}, "url": "file:///home/user/project"}'
 
 
-def test_local_directory(tmp_path: Path):
+def test_local_directory(tmp_path: Path) -> None:
     """Test that a local directory is read back as a local directory."""
     data = {
         "url": "file:///home/user/project",
@@ -228,7 +228,7 @@ def test_local_directory(tmp_path: Path):
     }
 
 
-def test_archive_hashes_merged(tmp_path: Path):
+def test_archive_hashes_merged(tmp_path: Path) -> None:
     """Test that archive hashes are merged."""
     data = {
         "url": "file://path/to/my.whl",
@@ -261,7 +261,7 @@ def test_archive_hashes_merged(tmp_path: Path):
     }
 
 
-def test_archive_no_hashes(tmp_path: Path):
+def test_archive_no_hashes(tmp_path: Path) -> None:
     """Test an archive with no hashes."""
     data = {
         "url": "file://path/to/my.whl",
@@ -279,7 +279,7 @@ def test_archive_no_hashes(tmp_path: Path):
     assert result.info.all_hashes == {}
 
 
-def test_archive_no_valid_algorithms(tmp_path: Path):
+def test_archive_no_valid_algorithms(tmp_path: Path) -> None:
     """Test an archive without any of the required algorithms."""
     data = {
         "url": "file://path/to/my.whl",
@@ -302,7 +302,7 @@ def test_archive_no_valid_algorithms(tmp_path: Path):
     assert not result.info.has_valid_algorithms()
 
 
-def test_unknown_url_type(tmp_path: Path):
+def test_unknown_url_type(tmp_path: Path) -> None:
     """Test that an unknown URL type is read back as None."""
     data = {
         "url": "unknown:///home/user/project",
@@ -315,13 +315,13 @@ def test_unknown_url_type(tmp_path: Path):
         pep610.read_from_distribution(dist)
 
 
-def test_no_file(tmp_path: Path):
+def test_no_file(tmp_path: Path) -> None:
     """Test that a missing file is read back as None."""
     dist = Distribution.at(tmp_path)
     assert pep610.read_from_distribution(dist) is None
 
 
-def _get_direct_url_packages(report: dict) -> dict:
+def _get_direct_url_packages(report: dict[str, t.Any]) -> dict[str, pep610.DirectUrl]:
     """Get direct URL packages from a pip install report."""
     return {
         package["metadata"]["name"]: pep610.parse(package["download_info"])
@@ -330,7 +330,7 @@ def _get_direct_url_packages(report: dict) -> dict:
     }
 
 
-def test_parse_pip_install_report(pip_install_report: dict):
+def test_parse_pip_install_report(pip_install_report: dict[str, t.Any]) -> None:
     """Test parsing a pip install report."""
     packages = _get_direct_url_packages(pip_install_report)
 
@@ -388,7 +388,12 @@ def test_parse_pip_install_report(pip_install_report: dict):
         ),
     ],
 )
-def test_is_editable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, data: dict, expected: bool):  # noqa: FBT001
+def test_is_editable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    data: dict[str, t.Any],
+    expected: bool,  # noqa: FBT001
+) -> None:
     """Test the is_editable function."""
     dist = Distribution.at(tmp_path)
     pep610.write_to_distribution(dist, data)

@@ -38,86 +38,55 @@ dynamic = [
 ]
 dependencies = [
 ]
-optional-dependencies.dev = [
+
+urls.Documentation = "https://pep610.readthedocs.io"
+urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
+urls.Source = "https://github.com/edgarrmondragon/pep610"
+
+[dependency-groups]
+dev = [
+  { include-group = "lint" },
+  { include-group = "testing" },
+  { include-group = "typing" },
+]
+docs = [
+  "furo>=2024.8.6",
+  "myst-parser>=3",
+  "sphinx>=7",
+  "sphinx-copybutton>=0.5.2",
+  "sphinx-design>=0.5",
+]
+lint = [
+  "ruff>=0.11.2",
+]
+testing = [
   "coverage[toml]>=7.4.2",
   "hypothesis>=6.100",
   "hypothesis-jsonschema>=0.23",
   "importlib-resources>=5.3; python_version<'3.9'",
   "pytest>=8",
 ]
-optional-dependencies.docs = [
-  "furo",
-  "myst-parser",
-  "sphinx",
-  "sphinx-copybutton",
-  "sphinx-design",
+typing = [
+  "mypy>=1.14.1",
+  "types-colorama>=0.4.15.20240311",
+  "types-jsonschema>=4.23.0.20241208",
+  "types-pexpect>=4.9.0.20241208",
+  "types-pygments>=2.19.0.20250107",
+  "types-setuptools>=75.8.0.20250110",
 ]
-urls.Documentation = "https://pep610.readthedocs.io"
-urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
-urls.Source = "https://github.com/edgarrmondragon/pep610"
 
 [tool.hatch.version]
 source = "vcs"
 
-[tool.hatch.envs.default]
-features = [
-  "dev",
-]
-[tool.hatch.envs.default.env-vars]
-COVERAGE_CORE = "sysmon"
-[tool.hatch.envs.default.overrides]
-env.GITHUB_ACTIONS.dev-mode = { value = false, if = [
-  "true",
-] }
-# https://github.com/PyO3/pyo3/pull/3821
-# https://github.com/PyO3/pyo3/issues/4038
-matrix.python.env-vars = [
-  { key = "PYO3_USE_ABI3_FORWARD_COMPATIBILITY", value = "1", if = [
-    "3.13",
-    "3.14",
-  ] },
-]
-[tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
-doctest = "pytest --doctest-modules {args:src/pep610}"
-cov = "coverage run -m pytest {args:tests}"
-
-[[tool.hatch.envs.all.matrix]]
-python = [
-  "3.8",
-  "3.9",
-  "3.10",
-  "3.11",
-  "3.12",
-  "3.13",
-  "3.14",
-  "pypy3.11",
-]
-
-[tool.hatch.envs.coverage]
-dependencies = [
-  "coverage[toml]>=7.4.2",
-]
-detached = true
-[tool.hatch.envs.coverage.scripts]
-json = "coverage json"
-xml = "coverage xml"
-report = [
-  "coverage combine",
-  "coverage report --show-missing",
-]
-
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
-  "mypy>=1.0.0",
   "hypothesis",
   "hypothesis-jsonschema",
   "pytest",
   "ruff>=0.1.0",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/pep610 tests}"
 style = [
   "ruff check {args:.}",
   "ruff format --check --diff {args:.}",
@@ -136,11 +105,9 @@ all = [
 features = [
   "docs",
 ]
-template = "docs"
-[tool.hatch.envs.docs.scripts]
-build = "sphinx-build -W -b html docs docs/_build"
 
 [tool.ruff]
+required-version = ">=0.11"
 line-length = 100
 preview = true
 
@@ -154,6 +121,7 @@ lint.select = [
   "C90",
   "COM",
   "D",
+  "DOC",
   "DTZ",
   "E",
   "EM",
@@ -189,7 +157,7 @@ lint.select = [
   "SLF",
   "T10",
   "T20",
-  "TCH",
+  "TC",
   "TD",
   "TID",
   "TRY",
@@ -209,6 +177,7 @@ lint.per-file-ignores."tests/**/*" = [
   "ANN201",  # missing-return-type-undocumented-public-function
   "D100",    # undocumented-public-module
   "D104",    # undocumented-public-package
+  "DOC201",  # docstring-missing-returns
   "PLR2004", # magic-value-comparison
   "S101",    # assert
   "TID252",  # relative-imports
@@ -266,3 +235,7 @@ show_missing = true
 warn_unused_configs = true
 warn_unreachable = true
 warn_unused_ignores = true
+
+[tool.uv]
+prerelease = "allow"
+required-version = ">=0.6"

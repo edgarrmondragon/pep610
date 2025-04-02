@@ -47,7 +47,11 @@ class DirectUrlValidationError(Exception):
 
 
 def _filter_none(**kwargs: T) -> dict[str, T]:
-    """Make dict excluding None values."""
+    """Make dict excluding None values.
+
+    Returns:
+        A dictionary with all the values that are not ``None``.
+    """
     return {k: v for k, v in kwargs.items() if v is not None}
 
 
@@ -333,7 +337,7 @@ def to_dict(data: DirectUrl) -> DirectUrlDict:
     return data.to_dict()
 
 
-def parse(data: dict) -> DirectUrl:
+def parse(data: dict[str, t.Any]) -> DirectUrl:
     """Parse the direct URL data.
 
     Args:
@@ -358,7 +362,7 @@ def parse(data: dict) -> DirectUrl:
         ...     }
         ... )
         DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
-    """  # noqa: E501
+    """  # noqa: E501, DOC502
     if "archive_info" in data:
         hashes = data["archive_info"].get("hashes")
         hash_data = None
@@ -426,18 +430,15 @@ def is_editable(distribution_name: str) -> bool:
     Returns:
         Whether the distribution is editable.
 
-    Raises:
-        importlib_metadata.PackageNotFoundError: If the distribution is not found.
-
     >>> is_editable("pep610")  # doctest: +SKIP
     False
-    """  # noqa: DAR402, RUF100
+    """  # noqa: RUF100
     dist = distribution(distribution_name)
     data = read_from_distribution(dist)
     return data is not None and isinstance(data.info, DirInfo) and data.info.is_editable()
 
 
-def write_to_distribution(dist: PathDistribution, data: dict | DirectUrl) -> int:
+def write_to_distribution(dist: PathDistribution, data: dict[str, t.Any] | DirectUrl) -> int:
     """Write the direct URL data to a distribution.
 
     Args:
@@ -448,4 +449,4 @@ def write_to_distribution(dist: PathDistribution, data: dict | DirectUrl) -> int
         The number of bytes written.
     """
     to_write = json.dumps(data, sort_keys=True) if isinstance(data, dict) else data.to_json()
-    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined]  # noqa: SLF001
+    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # noqa: SLF001
