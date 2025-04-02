@@ -7,6 +7,8 @@ on:
       - src/**
       - tests/**
       - pyproject.toml
+      - tox.ini
+      - uv.lock
       - .github/workflows/test.yaml
       - .github/workflows/constraints.txt
   pull_request:
@@ -15,6 +17,8 @@ on:
       - src/**
       - tests/**
       - pyproject.toml
+      - tox.ini
+      - uv.lock
       - .github/workflows/test.yaml
       - .github/workflows/constraints.txt
   workflow_dispatch: {}
@@ -29,57 +33,35 @@ env:
   FORCE_COLOR: "1"
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          cache: pip
-          python-version: "3.x"
-      - name: Install dependencies
-        env:
-          PIP_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
-        run: |
-          pipx install hatch
-      - name: Run lint
-        env:
-          HATCH_ENV: lint
-        run: |
-          hatch run style
-
   typing:
     name: Typing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
-          cache: pip
           python-version: "3.x"
-      - name: Install dependencies
+      - uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5.4.1
+        with:
+          version: ">=0.6"
+      - name: Install tools
         env:
-          PIP_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
+          UV_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
         run: |
-          pipx install hatch
+          uv tool install --with tox-uv tox
       - name: Run typing
-        env:
-          HATCH_ENV: lint
         run: |
-          hatch run typing
+          tox -e typing
 
   test:
     name: Pytest (Python ${{ matrix.python-version }}, ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
-    env:
-      HATCH_ENV: all
-      HATCH_VERBOSE: "0"
+    continue-on-error: true
+
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
+        os: ["ubuntu-24.04"]
         python-version:
           - "3.8"
           - "3.9"
@@ -88,84 +70,64 @@ jobs:
           - "3.12"
           - "3.13"
           - "3.14"
-        experimental: [false]
-        nightly: [false]
         include:
-          - python-version: "3.14"
-            os: "ubuntu-latest"
-            experimental: true
-            nightly: true
-
           - python-version: "pypy3.11"
-            os: "ubuntu-latest"
-            experimental: false
-            nightly: false
-
+            os: "ubuntu-24.04"
           - python-version: "3.13"
-            os: "windows-latest"
-            experimental: false
-            nightly: false
-
+            os: "windows-2025"
           - python-version: "3.13"
-            os: "macos-latest"
-            experimental: false
-            nightly: false
+            os: "macos-15"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        if: ${{ !matrix.nightly }}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
-          cache: pip
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
-      - uses: deadsnakes/action@v3.2.0
-        if: ${{ matrix.nightly }}
+      - uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5.4.1
         with:
-          python-version: ${{ matrix.python-version }}-dev
-      - name: Install dependencies
+          version: ">=0.6"
+      - name: Install tools
         env:
-          PIP_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
+          UV_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
         run: |
-          pipx install hatch
+          uv tool install --with tox-uv tox
       - name: Run tests
         run: |
-          hatch run +py=${{ matrix.python-version }} cov
-      - uses: actions/upload-artifact@v4
+          tox -e ${{ matrix.python-version }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           include-hidden-files: true
-          name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.nightly && 'nightly' || 'stable' }}
+          name: coverage-data-${{ matrix.os }}-${{ matrix.python-version }}
           path: ".coverage.*"
       - name: Run doctests
-        run: hatch run +py=${{ matrix.python-version }} doctest
+        run: |
+          tox -e doctest
 
   coverage:
     name: Coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: test
-    env:
-      PYTHON: "3.13"
-      HATCH_ENV: coverage
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
-          python-version: ${{ env.PYTHON }}
-      - name: Install dependencies
+          python-version: 3.x
+      - uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5.4.1
+        with:
+          version: ">=0.6"
+      - name: Install tools
         env:
-          PIP_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
+          UV_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
         run: |
-          pipx install hatch
-      - uses: actions/download-artifact@v4
+          uv tool install --with tox-uv tox
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           pattern: coverage-data-*
           merge-multiple: true
-      - name: Combine coverage data
-        run: |
-          hatch run report
       - name: Create coverage XML report
         run: |
-          hatch run xml
-      - uses: codecov/codecov-action@v5
+          tox -e coverage
+      - uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
         with:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
