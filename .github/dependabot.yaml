@@ -7,8 +7,6 @@ updates:
       timezone: America/Mexico_City
     assignees:
       - "edgarrmondragon"
-    reviewers:
-      - "edgarrmondragon"
     commit-message:
       prefix: "chore(deps): "
       prefix-development: "chore(deps-dev): "
@@ -26,8 +24,6 @@ updates:
       timezone: America/Mexico_City
     assignees:
       - "edgarrmondragon"
-    reviewers:
-      - "edgarrmondragon"
     commit-message:
       prefix: "docs(deps): "
       prefix-development: "docs(deps-dev): "
@@ -42,8 +38,6 @@ updates:
       timezone: America/Mexico_City
     assignees:
       - "edgarrmondragon"
-    reviewers:
-      - "edgarrmondragon"
     commit-message:
       prefix: "ci: "
     groups:
@@ -56,8 +50,6 @@ updates:
       interval: monthly
       timezone: America/Mexico_City
     assignees:
-      - "edgarrmondragon"
-    reviewers:
       - "edgarrmondragon"
     commit-message:
       prefix: "ci: "
