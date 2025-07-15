@@ -231,6 +231,104 @@ exclude_also = [
 ]
 show_missing = true
 
+[tool.tox]
+min_version = "4.22"
+requires = [
+  "tox>=4.22",
+  "tox-uv",
+]
+env_list = [
+  "lint",
+  "typing",
+  "3.14",
+  "3.13",
+  "3.12",
+  "3.11",
+  "3.10",
+  "3.9",
+  "3.8",
+  "coverage",
+  "doctest",
+  "docs",
+]
+
+[tool.tox.env_run_base]
+runner = "uv-venv-lock-runner"
+dependency_groups = [ "testing" ]
+commands = [ [ "coverage", "run", "-m", "pytest", { replace = "posargs", default = [ "tests" ], extend = true } ] ]
+
+[tool.tox.env_run_base.set_env]
+COVERAGE_CORE = "sysmon"
+# https://github.com/PyO3/pyo3/pull/3821
+# https://github.com/PyO3/pyo3/issues/4038
+PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
+
+[tool.tox.env.coverage]
+depends = [
+  "3.14",
+  "3.13",
+  "3.12",
+  "3.11",
+  "3.10",
+  "3.9",
+  "3.8",
+]
+dependency_groups = [ "testing" ]
+commands = [
+  [
+    "coverage",
+    "combine",
+    "--debug=pathmap",
+  ],
+  [
+    "coverage",
+    "report",
+    "--show-missing",
+  ],
+  [
+    "coverage",
+    "xml",
+  ],
+]
+
+[tool.tox.env.typing]
+dependency_groups = [ "testing", "typing" ]
+commands = [ [ "mypy", "--strict", { replace = "posargs", default = [ "src/pep610", "tests" ], extend = true } ] ]
+
+[tool.tox.env.doctest]
+description = "Run doctests"
+dependency_groups = [ "testing" ]
+commands = [ [ "pytest", "--doctest-modules", { replace = "posargs", default = [ "src/pep610" ], extend = true } ] ]
+
+[tool.tox.env.docs]
+description = "Build the documentation"
+dependency_groups = [ "docs" ]
+commands = [ [ "sphinx-build", "-W", "-b", "html", "docs", "docs/_build" ] ]
+
+[tool.tox.env.lint]
+description = "Run linters"
+dependency_groups = [ "lint" ]
+skip_install = true
+commands = [
+  [
+    "ruff",
+    "check",
+    "--fix",
+    "--exit-non-zero-on-fix",
+    "--show-fixes",
+    { replace = "posargs", default = [
+      ".",
+    ], extend = true },
+  ],
+  [
+    "ruff",
+    "format",
+    { replace = "posargs", default = [
+      ".",
+    ], extend = true },
+  ],
+]
+
 [tool.mypy]
 warn_unused_configs = true
 warn_unreachable = true
