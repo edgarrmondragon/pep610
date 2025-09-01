@@ -8,7 +8,7 @@ ci:
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
+  rev: v6.0.0
   hooks:
   - id: check-added-large-files
   - id: check-json
@@ -21,36 +21,36 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.32.1
+  rev: 0.33.3
   hooks:
   - id: check-dependabot
   - id: check-github-workflows
   - id: check-readthedocs
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.11.2
+  rev: v0.12.11
   hooks:
   - id: ruff
     args: [--fix, --exit-non-zero-on-fix, --show-fixes]
   - id: ruff-format
 
 - repo: https://github.com/astral-sh/uv-pre-commit
-  rev: "0.6.11"
+  rev: "0.8.14"
   hooks:
   - id: uv-lock
   - id: uv-sync
 
 - repo: https://github.com/pre-commit/pre-commit
-  rev: v4.2.0
+  rev: v4.3.0
   hooks:
   - id: validate_manifest
 
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: "v2.5.1"
+  rev: "v2.6.0"
   hooks:
   - id: pyproject-fmt
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.31.1
+  rev: v1
   hooks:
   - id: typos
