@@ -1,22 +1,14 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = [
-  "hatch-vcs",
-  "hatchling",
-]
+requires = [ "hatch-vcs", "hatchling" ]
 
 [project]
 name = "pep610"
 description = "PEP 610 Direct URL data parser"
 readme = "README.md"
-keywords = [
-  "pep",
-  "pep610",
-]
+keywords = [ "packaging", "pep", "pep610" ]
 license = "Apache-2.0"
-license-files = [
-  "LICENSE",
-]
+license-files = [ "LICENSE" ]
 authors = [
   { name = "Edgar Ramírez Mondragón", email = "edgarrmondragon@hey.com" },
 ]
@@ -34,11 +26,8 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Typing :: Typed",
 ]
-dynamic = [
-  "version",
-]
-dependencies = [
-]
+dynamic = [ "version" ]
+dependencies = [  ]
 urls.Documentation = "https://pep610.readthedocs.io"
 urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
 urls.Source = "https://github.com/edgarrmondragon/pep610"
@@ -56,9 +45,7 @@ docs = [
   "sphinx-copybutton>=0.5.2",
   "sphinx-design>=0.5",
 ]
-lint = [
-  "ruff>=0.11.2",
-]
+lint = [ "ruff>=0.11.2" ]
 testing = [
   "coverage[toml]>=7.4.2",
   "hypothesis>=6.100",
@@ -77,34 +64,6 @@ typing = [
 
 [tool.hatch.version]
 source = "vcs"
-
-[tool.hatch.envs.lint]
-detached = true
-dependencies = [
-  "hypothesis",
-  "hypothesis-jsonschema",
-  "pytest",
-  "ruff>=0.1.0",
-]
-[tool.hatch.envs.lint.scripts]
-style = [
-  "ruff check {args:.}",
-  "ruff format --check --diff {args:.}",
-]
-fmt = [
-  "ruff check --fix {args:.}",
-  "ruff format {args:.}",
-  "style",
-]
-all = [
-  "style",
-  "typing",
-]
-
-[tool.hatch.envs.docs]
-features = [
-  "docs",
-]
 
 [tool.ruff]
 required-version = ">=0.11"
@@ -186,9 +145,7 @@ lint.unfixable = [
   "ERA", # commented-out-code
 ]
 lint.flake8-tidy-imports.ban-relative-imports = "all"
-lint.isort.known-first-party = [
-  "pep610",
-]
+lint.isort.known-first-party = [ "pep610" ]
 lint.pydocstyle.convention = "google"
 
 [tool.pyproject-fmt]
@@ -196,47 +153,42 @@ max_supported_python = "3.14"
 
 [tool.pytest.ini_options]
 addopts = "-v"
-filterwarnings = [
-  "error",
-]
+filterwarnings = [ "error" ]
 
 [tool.coverage.run]
-source_pkgs = [
-  "pep610",
-  "tests",
-]
 branch = true
+core = "sysmon"
+disable_warnings = [
+  "no-sysmon",
+]
 omit = [
   # omit type definitions
   "*/pep610/_types.py",
 ]
 parallel = true
 relative_files = true
+source = [
+  "pep610",
+  "tests",
+]
 
 [tool.coverage.paths]
-pep610 = [
-  "src/pep610",
-  "*/pep610",
-]
-tests = [
-  "tests",
-  "*/tests",
+source = [
+  "src/",
+  "**/site-packages/pep610/",
+  "**/site-packages/pep610*/pep610/",
 ]
 
 [tool.coverage.report]
-exclude_also = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if t.TYPE_CHECKING:",
-]
+exclude_also = [ "no cov", "if __name__ == .__main__.:", "if t.TYPE_CHECKING:" ]
+fail_under = 100
+precision = 2
+skip_covered = false
 show_missing = true
 
 [tool.tox]
 min_version = "4.22"
-requires = [
-  "tox>=4.22",
-  "tox-uv",
-]
+requires = [ "tox>=4.22", "tox-uv" ]
 env_list = [
   "lint",
   "typing",
@@ -255,7 +207,17 @@ env_list = [
 [tool.tox.env_run_base]
 runner = "uv-venv-lock-runner"
 dependency_groups = [ "testing" ]
-commands = [ [ "coverage", "run", "-m", "pytest", { replace = "posargs", default = [ "tests" ], extend = true } ] ]
+commands = [
+  [
+    "coverage",
+    "run",
+    "-m",
+    "pytest",
+    { replace = "posargs", default = [
+      "tests",
+    ], extend = true },
+  ],
+]
 
 [tool.tox.env_run_base.set_env]
 COVERAGE_CORE = "sysmon"
@@ -264,15 +226,7 @@ COVERAGE_CORE = "sysmon"
 PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
 
 [tool.tox.env.coverage]
-depends = [
-  "3.14",
-  "3.13",
-  "3.12",
-  "3.11",
-  "3.10",
-  "3.9",
-  "3.8",
-]
+depends = [ "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8" ]
 dependency_groups = [ "testing" ]
 commands = [
   [
@@ -293,12 +247,29 @@ commands = [
 
 [tool.tox.env.typing]
 dependency_groups = [ "testing", "typing" ]
-commands = [ [ "mypy", "--strict", { replace = "posargs", default = [ "src/pep610", "tests" ], extend = true } ] ]
+commands = [
+  [
+    "mypy",
+    "--strict",
+    { replace = "posargs", default = [
+      "src/pep610",
+      "tests",
+    ], extend = true },
+  ],
+]
 
 [tool.tox.env.doctest]
 description = "Run doctests"
 dependency_groups = [ "testing" ]
-commands = [ [ "pytest", "--doctest-modules", { replace = "posargs", default = [ "src/pep610" ], extend = true } ] ]
+commands = [
+  [
+    "pytest",
+    "--doctest-modules",
+    { replace = "posargs", default = [
+      "src/pep610",
+    ], extend = true },
+  ],
+]
 
 [tool.tox.env.docs]
 description = "Build the documentation"

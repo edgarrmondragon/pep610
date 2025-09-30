@@ -363,10 +363,14 @@ def parse(data: dict[str, t.Any]) -> DirectUrl:
         ... )
         DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
     """  # noqa: E501, DOC502
-    if "archive_info" in data:
-        hashes = data["archive_info"].get("hashes")
+    if (
+        "archive_info" in data
+        and (archive_info := data["archive_info"]) is not None
+        and isinstance(archive_info, dict)
+    ):
+        hashes = archive_info.get("hashes")
         hash_data = None
-        if hash_value := data["archive_info"].get("hash"):
+        if hash_value := archive_info.get("hash"):
             hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None
 
         return DirectUrl(
@@ -375,24 +379,32 @@ def parse(data: dict[str, t.Any]) -> DirectUrl:
             subdirectory=data.get("subdirectory"),
         )
 
-    if "dir_info" in data:
+    if (
+        "dir_info" in data
+        and (dir_info := data["dir_info"]) is not None
+        and isinstance(dir_info, dict)
+    ):
         return DirectUrl(
             url=data["url"],
             info=DirInfo(
-                editable=data["dir_info"].get("editable"),
+                editable=dir_info.get("editable"),
             ),
             subdirectory=data.get("subdirectory"),
         )
 
-    if "vcs_info" in data:
+    if (
+        "vcs_info" in data
+        and (vcs_info := data["vcs_info"]) is not None
+        and isinstance(vcs_info, dict)
+    ):
         return DirectUrl(
             url=data["url"],
             info=VCSInfo(
-                vcs=data["vcs_info"]["vcs"],
-                commit_id=data["vcs_info"]["commit_id"],
-                requested_revision=data["vcs_info"].get("requested_revision"),
-                resolved_revision=data["vcs_info"].get("resolved_revision"),
-                resolved_revision_type=data["vcs_info"].get("resolved_revision_type"),
+                vcs=vcs_info["vcs"],
+                commit_id=vcs_info["commit_id"],
+                requested_revision=vcs_info.get("requested_revision"),
+                resolved_revision=vcs_info.get("resolved_revision"),
+                resolved_revision_type=vcs_info.get("resolved_revision_type"),
             ),
             subdirectory=data.get("subdirectory"),
         )
