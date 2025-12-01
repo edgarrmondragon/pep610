@@ -362,7 +362,7 @@ def parse(data: dict[str, t.Any]) -> DirectUrl:
         ...     }
         ... )
         DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
-    """  # noqa: E501, DOC502
+    """  # noqa: E501
     if (
         "archive_info" in data
         and (archive_info := data["archive_info"]) is not None
