@@ -1,5 +1,5 @@
 ci:
-  autofix_commit_msg: '[pre-commit.ci] auto fixes'
+  autofix_commit_msg: 'style: pre-commit fixes'
   autofix_prs: true
   autoupdate_schedule: quarterly
   autoupdate_commit_msg: 'chore(deps): pre-commit autoupdate'
