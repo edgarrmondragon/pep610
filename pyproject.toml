@@ -24,6 +24,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Typing :: Typed",
 ]
 dynamic = [ "version" ]
@@ -45,6 +46,9 @@ docs = [
   "sphinx-copybutton>=0.5.2",
   "sphinx-design>=0.5",
 ]
+backports = [
+  "importlib-resources",
+]
 lint = [ "ruff>=0.11.2" ]
 testing = [
   "coverage[toml]>=7.4.2",
@@ -55,11 +59,14 @@ testing = [
 ]
 typing = [
   "mypy>=1.14.1",
+  "ty>=0.0.13",
   "types-colorama>=0.4.15.20240311",
   "types-jsonschema>=4.23.0.20241208",
   "types-pexpect>=4.9.0.20241208",
   "types-pygments>=2.19.0.20250107",
   "types-setuptools>=75.8.0.20250110",
+  { include-group = "backports" },
+  { include-group = "testing" },
 ]
 
 [tool.hatch.version]
@@ -153,11 +160,15 @@ lint.isort.known-first-party = [ "pep610" ]
 lint.pydocstyle.convention = "google"
 
 [tool.pyproject-fmt]
-max_supported_python = "3.14"
+max_supported_python = "3.15"
 
 [tool.pytest.ini_options]
-addopts = "-v"
+addopts = [ "-v", "-ra", "--strict-config", "--strict-markers" ]
+log_level = "INFO"
+minversion = "6"
+testpaths = [ "tests" ]
 filterwarnings = [ "error" ]
+xfail_strict = true
 
 [tool.coverage.run]
 branch = true
@@ -196,6 +207,7 @@ requires = [ "tox>=4.22", "tox-uv" ]
 env_list = [
   "lint",
   "typing",
+  "3.15",
   "3.14",
   "3.13",
   "3.12",
@@ -230,7 +242,7 @@ COVERAGE_CORE = "sysmon"
 PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
 
 [tool.tox.env.coverage]
-depends = [ "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8" ]
+depends = [ "3.15", "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8" ]
 dependency_groups = [ "testing" ]
 commands = [
   [
@@ -252,14 +264,8 @@ commands = [
 [tool.tox.env.typing]
 dependency_groups = [ "testing", "typing" ]
 commands = [
-  [
-    "mypy",
-    "--strict",
-    { replace = "posargs", default = [
-      "src/pep610",
-      "tests",
-    ], extend = true },
-  ],
+  [ "mypy", "src/pep610", "tests" ],
+  [ "ty", "check", "src/pep610", "tests" ],
 ]
 
 [tool.tox.env.doctest]
@@ -305,6 +311,9 @@ commands = [
 ]
 
 [tool.mypy]
+enable_error_code = [ "ignore-without-code", "redundant-expr", "truthy-bool" ]
+strict = true
+warn_redundant_casts = true
 warn_unused_configs = true
 warn_unreachable = true
 warn_unused_ignores = true
