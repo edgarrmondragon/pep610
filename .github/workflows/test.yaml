@@ -7,20 +7,16 @@ on:
       - src/**
       - tests/**
       - pyproject.toml
-      - tox.ini
-      - uv.lock
+      - requirements/ci.constraints.txt
       - .github/workflows/test.yaml
-      - .github/workflows/constraints.txt
   pull_request:
     branches: [main]
     paths:
       - src/**
       - tests/**
       - pyproject.toml
-      - tox.ini
-      - uv.lock
+      - requirements/ci.constraints.txt
       - .github/workflows/test.yaml
-      - .github/workflows/constraints.txt
   workflow_dispatch: {}
   schedule:
     - cron: "40 12 * * 1-5"
@@ -32,12 +28,16 @@ concurrency:
 env:
   FORCE_COLOR: "1"
 
+permissions: {}
+
 jobs:
   typing:
     name: Typing
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: setup-python
         with:
@@ -47,7 +47,7 @@ jobs:
           version: ">=0.6"
       - name: Install tools
         env:
-          UV_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
+          UV_CONSTRAINT: ${{ github.workspace }}/requirements/ci.constraints.txt
           UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
         run: |
           uv tool install --with tox-uv tox
@@ -80,6 +80,8 @@ jobs:
             os: "macos-15"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
@@ -89,12 +91,15 @@ jobs:
           version: ">=0.6"
       - name: Install tools
         env:
-          UV_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
+          UV_CONSTRAINT: ${{ github.workspace }}/requirements/ci.constraints.txt
         run: |
           uv tool install --with tox-uv tox
       - name: Run tests
+        shell: sh
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
-          tox -e ${{ matrix.python-version }}
+          tox -e ${PYTHON_VERSION}
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           include-hidden-files: true
@@ -110,6 +115,8 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: 3.x
@@ -118,7 +125,7 @@ jobs:
           version: ">=0.6"
       - name: Install tools
         env:
-          UV_CONSTRAINT: ${{ github.workspace }}/.github/workflows/constraints.txt
+          UV_CONSTRAINT: ${{ github.workspace }}/requirements/ci.constraints.txt
         run: |
           uv tool install --with tox-uv tox
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0

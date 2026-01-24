@@ -87,14 +87,12 @@ class VCSInfo:
 
 
 class HashData(NamedTuple):
-    """(Deprecated) Archive hash data.
+    """(Deprecated) Archive hash data tuple."""
 
-    Args:
-        algorithm: The hash algorithm.
-        value: The hash value.
-    """
-
+    #: The hash algorithm.
     algorithm: str
+
+    #: The hash value.
     value: str
 
 
