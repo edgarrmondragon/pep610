@@ -1,9 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://packaging.python.org/en/latest/specifications/schemas/direct-url.schema.json",
   "title": "Direct URL Data",
   "description": "Data structure that can represent URLs to python projects and distribution artifacts such as VCS source trees, local source trees, source distributions and wheels.",
   "definitions": {
-    "URL": {
+    "url": {
       "type": "string",
       "format": "uri"
     },
@@ -20,12 +21,7 @@
       "properties": {
         "vcs": {
           "type": "string",
-          "enum": [
-            "git",
-            "hg",
-            "bzr",
-            "svn"
-          ]
+          "enum": ["git", "hg", "bzr", "svn"]
         },
         "requested_revision": {
           "type": "string"
@@ -37,10 +33,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "vcs",
-        "commit_id"
-      ]
+      "required": ["vcs", "commit_id"]
     },
     "ArchiveInfo": {
       "type": "object",
@@ -66,15 +59,13 @@
       "type": "object",
       "properties": {
         "url": {
-          "$ref": "#/definitions/URL"
+          "$ref": "#/definitions/url"
         }
       },
-      "required": [
-        "url"
-      ]
+      "required": ["url"]
     },
     {
-      "oneOf": [
+      "anyOf": [
         {
           "type": "object",
           "properties": {
@@ -82,9 +73,7 @@
               "$ref": "#/definitions/DirInfo"
             }
           },
-          "required": [
-            "dir_info"
-          ]
+          "required": ["dir_info"]
         },
         {
           "type": "object",
@@ -93,9 +82,7 @@
               "$ref": "#/definitions/VCSInfo"
             }
           },
-          "required": [
-            "vcs_info"
-          ]
+          "required": ["vcs_info"]
         },
         {
           "type": "object",
@@ -104,9 +91,7 @@
               "$ref": "#/definitions/ArchiveInfo"
             }
           },
-          "required": [
-            "archive_info"
-          ]
+          "required": ["archive_info"]
         }
       ]
     }
