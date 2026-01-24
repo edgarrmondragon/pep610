@@ -185,6 +185,7 @@ def test_parse(data: dict[str, t.Any], expected: object, tmp_path: Path) -> None
 
     result = pep610.read_from_distribution(dist)
     assert result == expected
+    assert result is not None
 
     assert pep610.to_dict(result) == data
 
@@ -398,5 +399,5 @@ def test_is_editable(
     dist = Distribution.at(tmp_path)
     pep610.write_to_distribution(dist, data)
 
-    monkeypatch.setattr("pep610.distribution", lambda _: dist)
+    monkeypatch.setattr("pep610._pep610.distribution", lambda _: dist)
     assert pep610.is_editable("my_package") is expected
