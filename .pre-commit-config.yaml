@@ -3,6 +3,8 @@ ci:
   autofix_prs: true
   autoupdate_schedule: quarterly
   autoupdate_commit_msg: 'chore(deps): pre-commit autoupdate'
+  skip:
+  - pip-compile
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -35,8 +37,23 @@ repos:
 - repo: https://github.com/astral-sh/uv-pre-commit
   rev: "0.9.26"
   hooks:
-  - id: uv-lock
-  - id: uv-sync
+  - id: pip-compile
+    files: ^requirements/ci.constraints\.(in|txt)$
+    args:
+    - requirements/ci.constraints.in
+    - --universal
+    - --output-file=requirements/ci.constraints.txt
+  - id: pip-compile
+    files: |
+      (?x)^(
+        pyproject.toml|
+        requirements/docs.requirements.txt
+      )$
+    args:
+    - pyproject.toml
+    - "--group=docs"
+    - "--python-version=3.14"
+    - "--output-file=requirements/docs.requirements.txt"
 
 - repo: https://github.com/pre-commit/pre-commit
   rev: v4.5.1

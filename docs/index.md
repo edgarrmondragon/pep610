@@ -122,6 +122,11 @@ for package in report["install"]:
 ## Types
 
 ```{eval-rst}
+.. autoclass:: pep610._pep610.HashData
+    :members: algorithm, value
+```
+
+```{eval-rst}
 .. autoclass:: pep610._types.ArchiveInfoDict
     :members: hashes, hash
 ```
