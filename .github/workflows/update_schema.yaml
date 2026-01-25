@@ -25,11 +25,14 @@ jobs:
         run: |
           curl -o tests/fixtures/direct_url.schema.json https://packaging.python.org/en/latest/specifications/schemas/direct-url.schema.json
       - name: Commit changes
+        continue-on-error: true
+        id: commit
         run: |
           git config user.name "GitHub Actions"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add tests/fixtures/direct_url.schema.json
           git commit -m "chore: update direct_url.schema.json"
       - name: Push changes
+        if: steps.commit.outcome == 'success'
         run: |
           git push
