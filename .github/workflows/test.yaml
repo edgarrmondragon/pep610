@@ -31,6 +31,20 @@ env:
 permissions: {}
 
 jobs:
+  build-package:
+    name: Build & verify package
+    runs-on: ubuntu-latest
+    outputs:
+      supported-python-versions: ${{ steps.baipp.outputs.supported_python_classifiers_json_array }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: hynek/build-and-inspect-python-package@efb823f52190ad02594531168b7a2d5790e66516 # v2.14.0
+        id: baipp
+
   typing:
     name: Typing
     runs-on: ubuntu-24.04
@@ -38,17 +52,12 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        id: setup-python
-        with:
-          python-version: "3.x"
       - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
-          version: ">=0.6"
+          python-version: "3.14"
       - name: Install tools
         env:
           UV_CONSTRAINT: ${{ github.workspace }}/requirements/ci.constraints.txt
-          UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
         run: |
           uv tool install --with tox-uv tox
       - name: Run typing
@@ -56,23 +65,16 @@ jobs:
           tox -e typing
 
   test:
-    name: Pytest (Python ${{ matrix.python-version }}, ${{ matrix.os }}
+    name: Pytest
+    needs: build-package
     runs-on: ${{ matrix.os }}
     continue-on-error: true
 
     strategy:
       fail-fast: false
       matrix:
+        python-version: ${{ fromJson(needs.build-package.outputs.supported-python-versions) }}
         os: ["ubuntu-24.04"]
-        python-version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-          - "3.14"
-          - "3.15"
         include:
           - python-version: "3.14"
             os: "windows-2025"
@@ -82,13 +84,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
       - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
-          version: ">=0.6"
+          python-version: ${{ matrix.python-version }}
       - name: Install tools
         env:
           UV_CONSTRAINT: ${{ github.workspace }}/requirements/ci.constraints.txt
@@ -117,12 +115,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: 3.x
       - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
-        with:
-          version: ">=0.6"
       - name: Install tools
         env:
           UV_CONSTRAINT: ${{ github.workspace }}/requirements/ci.constraints.txt

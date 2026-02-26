@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import importlib.resources
 import json
-import sys
 import typing as t
 from importlib.metadata import Distribution
 
@@ -13,12 +13,7 @@ from pep610 import read_from_distribution, write_to_distribution
 if t.TYPE_CHECKING:
     import pytest
 
-if sys.version_info >= (3, 9):
-    import importlib.resources as importlib_resources
-else:
-    import importlib_resources
-
-SCHEMA_FILE = importlib_resources.files(__package__) / "fixtures/direct_url.schema.json"
+SCHEMA_FILE = importlib.resources.files("tests") / "fixtures/direct_url.schema.json"
 SCHEMA = json.loads(SCHEMA_FILE.read_text())
 
 
