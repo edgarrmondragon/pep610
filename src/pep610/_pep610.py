@@ -400,7 +400,7 @@ def read_from_distribution(dist: Distribution) -> DirectUrl | None:
     """Read the package data for a given package.
 
     Args:
-        dist(importlib_metadata.Distribution): The package distribution.
+        dist(importlib.metadata.Distribution): The package distribution.
 
     Returns:
         The parsed PEP 610 data or ``None`` if the file is not found.

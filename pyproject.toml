@@ -9,16 +9,11 @@ readme = "README.md"
 keywords = [ "packaging", "pep", "pep610" ]
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
-authors = [
-  { name = "Edgar Ramírez Mondragón", email = "edgarrmondragon@hey.com" },
-]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -28,10 +23,14 @@ classifiers = [
   "Typing :: Typed",
 ]
 dynamic = [ "version" ]
-dependencies = [  ]
-urls.Documentation = "https://pep610.readthedocs.io"
-urls.Issues = "https://github.com/edgarrmondragon/pep610/issues"
-urls.Source = "https://github.com/edgarrmondragon/pep610"
+dependencies = []
+[[project.authors]]
+name = "Edgar Ramírez Mondragón"
+email = "edgarrmondragon@hey.com"
+[project.urls]
+Documentation = "https://pep610.readthedocs.io"
+Issues = "https://github.com/edgarrmondragon/pep610/issues"
+Source = "https://github.com/edgarrmondragon/pep610"
 
 [dependency-groups]
 dev = [
@@ -46,15 +45,11 @@ docs = [
   "sphinx-copybutton>=0.5.2",
   "sphinx-design>=0.5",
 ]
-backports = [
-  "importlib-resources",
-]
 lint = [ "ruff>=0.11.2" ]
 testing = [
   "coverage[toml]>=7.4.2",
   "hypothesis>=6.100",
   "hypothesis-jsonschema>=0.23",
-  "importlib-resources>=5.3; python_version<'3.9'",
   "pytest>=8",
 ]
 typing = [
@@ -65,7 +60,6 @@ typing = [
   "types-pexpect>=4.9.0.20241208",
   "types-pygments>=2.19.0.20250107",
   "types-setuptools>=75.8.0.20250110",
-  { include-group = "backports" },
   { include-group = "testing" },
 ]
 
@@ -73,15 +67,15 @@ typing = [
 source = "vcs"
 
 [tool.uv]
-prerelease = "allow"
 required-version = ">=0.9.17"
+prerelease = "allow"
 
 [tool.ruff]
 required-version = ">=0.11"
 line-length = 100
 preview = true
-
-lint.select = [
+[tool.ruff.lint]
+select = [
   "A",
   "ANN",
   "ARG",
@@ -135,15 +129,14 @@ lint.select = [
   "W",
   "YTT",
 ]
-lint.ignore = [
+ignore = [
   "COM812", # missing-trailing-comma
   "ISC001", # single-line-implicit-string-concatenation
 ]
-
-lint.per-file-ignores."docs/conf.py" = [
+per-file-ignores."docs/conf.py" = [
   "INP001", # Not an implicit namespace packages
 ]
-lint.per-file-ignores."tests/**/*" = [
+per-file-ignores."tests/**/*" = [
   "ANN201",  # missing-return-type-undocumented-public-function
   "D100",    # undocumented-public-module
   "D104",    # undocumented-public-package
@@ -152,15 +145,16 @@ lint.per-file-ignores."tests/**/*" = [
   "S101",    # assert
   "TID252",  # relative-imports
 ]
-lint.unfixable = [
+unfixable = [
   "ERA", # commented-out-code
 ]
-lint.flake8-tidy-imports.ban-relative-imports = "all"
-lint.isort.known-first-party = [ "pep610" ]
-lint.pydocstyle.convention = "google"
+flake8-tidy-imports.ban-relative-imports = "all"
+isort.known-first-party = [ "pep610" ]
+pydocstyle.convention = "google"
 
 [tool.pyproject-fmt]
 max_supported_python = "3.15"
+table_format = "long"
 
 [tool.pytest.ini_options]
 addopts = [ "-v", "-ra", "--strict-config", "--strict-markers" ]
@@ -170,6 +164,18 @@ testpaths = [ "tests" ]
 filterwarnings = [ "error" ]
 xfail_strict = true
 
+[tool.coverage.paths]
+source = [
+  "src/pep610/",
+  "**/site-packages/pep610/",
+  "**/site-packages/pep610*/pep610/",
+]
+[tool.coverage.report]
+exclude_also = [ "no cov", "if __name__ == .__main__.:", "if t.TYPE_CHECKING:" ]
+fail_under = 100
+precision = 2
+skip_covered = false
+show_missing = true
 [tool.coverage.run]
 branch = true
 core = "sysmon"
@@ -187,62 +193,19 @@ source = [
   "tests",
 ]
 
-[tool.coverage.paths]
-source = [
-  "src/pep610/",
-  "**/site-packages/pep610/",
-  "**/site-packages/pep610*/pep610/",
-]
-
-[tool.coverage.report]
-exclude_also = [ "no cov", "if __name__ == .__main__.:", "if t.TYPE_CHECKING:" ]
-fail_under = 100
-precision = 2
-skip_covered = false
-show_missing = true
-
 [tool.tox]
-min_version = "4.22"
-requires = [ "tox>=4.22", "tox-uv" ]
+min_version = "4.43"
+requires = [ "tox>=4.43", "tox-uv" ]
 env_list = [
   "lint",
   "typing",
-  "3.15",
-  "3.14",
-  "3.13",
-  "3.12",
-  "3.11",
-  "3.10",
-  "3.9",
-  "3.8",
+  { product = [ { prefix = "3.", start = 10, stop = 15 } ] },
   "coverage",
   "doctest",
   "docs",
 ]
-
-[tool.tox.env_run_base]
-runner = "uv-venv-runner"
-dependency_groups = [ "testing" ]
-commands = [
-  [
-    "coverage",
-    "run",
-    "-m",
-    "pytest",
-    { replace = "posargs", default = [
-      "tests",
-    ], extend = true },
-  ],
-]
-
-[tool.tox.env_run_base.set_env]
-COVERAGE_CORE = "sysmon"
-# https://github.com/PyO3/pyo3/pull/3821
-# https://github.com/PyO3/pyo3/issues/4038
-PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
-
 [tool.tox.env.coverage]
-depends = [ "3.15", "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8" ]
+depends = [ "3.*" ]
 dependency_groups = [ "testing" ]
 commands = [
   [
@@ -260,14 +223,10 @@ commands = [
     "xml",
   ],
 ]
-
-[tool.tox.env.typing]
-dependency_groups = [ "testing", "typing" ]
-commands = [
-  [ "mypy", "src/pep610", "tests" ],
-  [ "ty", "check", "src/pep610", "tests" ],
-]
-
+[tool.tox.env.docs]
+description = "Build the documentation"
+dependency_groups = [ "docs" ]
+commands = [ [ "sphinx-build", "-W", "-b", "html", "docs", "docs/_build" ] ]
 [tool.tox.env.doctest]
 description = "Run doctests"
 dependency_groups = [ "testing" ]
@@ -280,12 +239,6 @@ commands = [
     ], extend = true },
   ],
 ]
-
-[tool.tox.env.docs]
-description = "Build the documentation"
-dependency_groups = [ "docs" ]
-commands = [ [ "sphinx-build", "-W", "-b", "html", "docs", "docs/_build" ] ]
-
 [tool.tox.env.lint]
 description = "Run linters"
 dependency_groups = [ "lint" ]
@@ -309,6 +262,32 @@ commands = [
     ], extend = true },
   ],
 ]
+[tool.tox.env.typing]
+dependency_groups = [ "testing", "typing" ]
+commands = [
+  [ "mypy", "src/pep610", "tests" ],
+  [ "ty", "check", "src/pep610", "tests" ],
+]
+
+[tool.tox.env_run_base]
+runner = "uv-venv-runner"
+dependency_groups = [ "testing" ]
+commands = [
+  [
+    "coverage",
+    "run",
+    "-m",
+    "pytest",
+    { replace = "posargs", default = [
+      "tests",
+    ], extend = true },
+  ],
+]
+[tool.tox.env_run_base.set_env]
+COVERAGE_CORE = "sysmon"
+# https://github.com/PyO3/pyo3/pull/3821
+# https://github.com/PyO3/pyo3/issues/4038
+PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
 
 [tool.mypy]
 enable_error_code = [ "ignore-without-code", "redundant-expr", "truthy-bool" ]
