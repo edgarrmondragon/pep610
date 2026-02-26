@@ -26,7 +26,7 @@ dynamic = [ "version" ]
 dependencies = []
 [[project.authors]]
 name = "Edgar Ramírez Mondragón"
-email = "edgarrmondragon@hey.com"
+email = "edgarrm358@gmail.com"
 [project.urls]
 Documentation = "https://pep610.readthedocs.io"
 Issues = "https://github.com/edgarrmondragon/pep610/issues"
