@@ -156,6 +156,14 @@ pydocstyle.convention = "google"
 max_supported_python = "3.15"
 table_format = "long"
 
+[tool.mypy]
+enable_error_code = [ "ignore-without-code", "redundant-expr", "truthy-bool" ]
+strict = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
 [tool.pytest.ini_options]
 addopts = [ "-v", "-ra", "--strict-config", "--strict-markers" ]
 log_level = "INFO"
@@ -288,11 +296,3 @@ COVERAGE_CORE = "sysmon"
 # https://github.com/PyO3/pyo3/pull/3821
 # https://github.com/PyO3/pyo3/issues/4038
 PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
-
-[tool.mypy]
-enable_error_code = [ "ignore-without-code", "redundant-expr", "truthy-bool" ]
-strict = true
-warn_redundant_casts = true
-warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = true
