@@ -427,7 +427,7 @@ def is_editable(distribution_name: str) -> bool:
 
     >>> is_editable("pep610")  # doctest: +SKIP
     False
-    """  # noqa: RUF100
+    """
     dist = distribution(distribution_name)
     data = read_from_distribution(dist)
     return data is not None and isinstance(data.info, DirInfo) and data.info.is_editable()
