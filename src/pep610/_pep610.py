@@ -83,7 +83,7 @@ class VCSInfo:
             requested_revision=self.requested_revision,
             resolved_revision=self.resolved_revision,
             resolved_revision_type=self.resolved_revision_type,
-        )
+        )  # ty:ignore[invalid-return-type]
 
 
 class HashData(NamedTuple):
@@ -192,7 +192,7 @@ class ArchiveInfo:
         return _filter_none(  # type: ignore[return-value]
             hashes=self.hashes,
             hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",
-        )
+        )  # ty:ignore[invalid-return-type]
 
 
 @dataclass
@@ -250,7 +250,7 @@ class DirInfo:
                 >>> dir_info.to_dict()
                 {'editable': True}
         """
-        return _filter_none(editable=self.editable)  # type: ignore[return-value]
+        return _filter_none(editable=self.editable)  # type: ignore[return-value]  # ty:ignore[invalid-return-type]
 
 
 @dataclass
@@ -286,8 +286,8 @@ class DirectUrl:
             {'url': 'file:///home/user/pep610', 'subdirectory': 'app', 'dir_info': {'editable': False}}
         """  # noqa: E501
         res = _filter_none(url=self.url, subdirectory=self.subdirectory)
-        res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]
-        return res  # type: ignore[return-value]
+        res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]  # ty:ignore[invalid-assignment]
+        return res  # type: ignore[return-value]  # ty:ignore[invalid-return-type]
 
     def to_json(self) -> str:
         """Convert the data to a JSON string.
@@ -444,4 +444,4 @@ def write_to_distribution(dist: PathDistribution, data: dict[str, Any] | DirectU
         The number of bytes written.
     """
     to_write = json.dumps(data, sort_keys=True) if isinstance(data, dict) else data.to_json()
-    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # noqa: SLF001
+    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # ty:ignore[unresolved-attribute]  # noqa: SLF001
