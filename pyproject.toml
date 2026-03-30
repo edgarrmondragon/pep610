@@ -164,13 +164,13 @@ warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = true
 
-[tool.pytest.ini_options]
-addopts = [ "-v", "-ra", "--strict-config", "--strict-markers" ]
+[tool.pytest]
+addopts = [ "-v", "-ra" ]
+filterwarnings = [ "error" ]
 log_level = "INFO"
 minversion = "6"
+strict = true
 testpaths = [ "tests" ]
-filterwarnings = [ "error" ]
-xfail_strict = true
 
 [tool.coverage.paths]
 source = [
@@ -213,6 +213,7 @@ env_list = [
   "docs",
 ]
 [tool.tox.env.coverage]
+description = "combine coverage files and generate a report"
 depends = [ "3.*" ]
 dependency_groups = [ "testing" ]
 commands = [
@@ -232,11 +233,11 @@ commands = [
   ],
 ]
 [tool.tox.env.docs]
-description = "Build the documentation"
+description = "build the documentation"
 dependency_groups = [ "docs" ]
 commands = [ [ "sphinx-build", "-W", "-b", "html", "docs", "docs/_build" ] ]
 [tool.tox.env.doctest]
-description = "Run doctests"
+description = "run doctests"
 dependency_groups = [ "testing" ]
 commands = [
   [
@@ -248,7 +249,7 @@ commands = [
   ],
 ]
 [tool.tox.env.lint]
-description = "Run linters"
+description = "run linters"
 dependency_groups = [ "lint" ]
 skip_install = true
 commands = [
@@ -278,6 +279,7 @@ commands = [
 ]
 
 [tool.tox.env_run_base]
+description = "run tests on Python {py_dot_ver}"
 runner = "uv-venv-runner"
 dependency_groups = [ "testing" ]
 commands = [
