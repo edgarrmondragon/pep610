@@ -31,13 +31,13 @@ tomli-w==1.2.0
     # via tox
 tox==4.50.3
     # via
-    #   -r requirements/ci.constraints.in
+    #   -r ci.constraints.in
     #   tox-uv-bare
 tox-uv==1.33.4
-    # via -r requirements/ci.constraints.in
+    # via -r ci.constraints.in
 tox-uv-bare==1.33.4
     # via tox-uv
-uv==0.10.12
+uv==0.11.6
     # via tox-uv
 virtualenv==21.2.0
     # via tox
