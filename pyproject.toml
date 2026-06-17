@@ -54,6 +54,7 @@ testing = [
 ]
 typing = [
   "mypy>=1.14.1",
+  "pyrefly>=1.1",
   "ty>=0.0.13",
   "types-colorama>=0.4.15.20240311",
   "types-jsonschema>=4.23.0.20241208",
@@ -163,6 +164,9 @@ warn_unreachable = true
 enable_error_code = [ "ignore-without-code", "redundant-expr", "truthy-bool" ]
 strict = true
 warn_unused_configs = true
+
+[tool.pyrefly]
+preset = "all"
 
 [tool.pytest]
 addopts = [ "-v", "-ra" ]
@@ -275,6 +279,7 @@ description = "type checks"
 dependency_groups = [ "testing", "typing" ]
 commands = [
   [ "mypy", "src/pep610", "tests" ],
+  [ "pyrefly", "check", "src/pep610", "tests" ],
   [ "ty", "check", "src/pep610", "tests" ],
 ]
 
