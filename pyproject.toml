@@ -157,12 +157,12 @@ max_supported_python = "3.15"
 table_format = "long"
 
 [tool.mypy]
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
 enable_error_code = [ "ignore-without-code", "redundant-expr", "truthy-bool" ]
 strict = true
-warn_redundant_casts = true
-warn_unreachable = true
 warn_unused_configs = true
-warn_unused_ignores = true
 
 [tool.pytest]
 addopts = [ "-v", "-ra" ]
@@ -202,19 +202,17 @@ source = [
 ]
 
 [tool.tox]
-min_version = "4.43"
-requires = [ "tox>=4.43", "tox-uv" ]
+requires = [ "tox>=4.55", "tox-uv>=1.35" ]
 env_list = [
+  { prefix = "3.", start = 10, stop = 15 },
+  "coverage",
+  "docs",
+  "doctest",
   "lint",
   "typing",
-  { product = [ { prefix = "3.", start = 10, stop = 15 } ] },
-  "coverage",
-  "doctest",
-  "docs",
 ]
 [tool.tox.env.coverage]
 description = "combine coverage files and generate a report"
-depends = [ "3.*" ]
 dependency_groups = [ "testing" ]
 commands = [
   [
@@ -232,6 +230,7 @@ commands = [
     "xml",
   ],
 ]
+depends = [ "3.*" ]
 [tool.tox.env.docs]
 description = "build the documentation"
 dependency_groups = [ "docs" ]
@@ -250,8 +249,8 @@ commands = [
 ]
 [tool.tox.env.lint]
 description = "run linters"
-dependency_groups = [ "lint" ]
 skip_install = true
+dependency_groups = [ "lint" ]
 commands = [
   [
     "ruff",
@@ -272,6 +271,7 @@ commands = [
   ],
 ]
 [tool.tox.env.typing]
+description = "type checks"
 dependency_groups = [ "testing", "typing" ]
 commands = [
   [ "mypy", "src/pep610", "tests" ],
@@ -279,8 +279,8 @@ commands = [
 ]
 
 [tool.tox.env_run_base]
-description = "run tests on Python {py_dot_ver}"
 runner = "uv-venv-runner"
+description = "run tests on Python {py_dot_ver}"
 dependency_groups = [ "testing" ]
 commands = [
   [
