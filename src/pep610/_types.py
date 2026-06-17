@@ -44,7 +44,7 @@ class DirectoryInfoDict(t.TypedDict, total=False):
     editable: bool
 
 
-class DirectUrlDict(t.TypedDict):
+class DirectUrlDict(t.TypedDict, total=False):
     """Direct URL data dictionary."""
 
     #: The direct URL.

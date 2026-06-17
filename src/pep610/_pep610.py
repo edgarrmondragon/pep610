@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from importlib.metadata import distribution
 from typing import TYPE_CHECKING, Any, ClassVar, NamedTuple, TypeVar
@@ -320,7 +321,7 @@ def to_dict(data: DirectUrl) -> DirectUrlDict:
     return data.to_dict()
 
 
-def parse(data: dict[str, Any]) -> DirectUrl:
+def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
     """Parse the direct URL data.
 
     Args:
@@ -433,7 +434,7 @@ def is_editable(distribution_name: str) -> bool:
     return data is not None and isinstance(data.info, DirInfo) and data.info.is_editable()
 
 
-def write_to_distribution(dist: PathDistribution, data: dict[str, Any] | DirectUrl) -> int:
+def write_to_distribution(dist: PathDistribution, data: DirectUrlDict | DirectUrl) -> int:
     """Write the direct URL data to a distribution.
 
     Args:
@@ -443,5 +444,5 @@ def write_to_distribution(dist: PathDistribution, data: dict[str, Any] | DirectU
     Returns:
         The number of bytes written.
     """
-    to_write = json.dumps(data, sort_keys=True) if isinstance(data, dict) else data.to_json()
+    to_write = json.dumps(data, sort_keys=True) if isinstance(data, Mapping) else data.to_json()
     return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # ty:ignore[unresolved-attribute]  # noqa: SLF001

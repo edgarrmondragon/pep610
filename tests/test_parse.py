@@ -12,6 +12,8 @@ import pep610
 if t.TYPE_CHECKING:
     from pathlib import Path
 
+    from pep610._types import DirectUrlDict
+
 
 @pytest.mark.parametrize(
     ("data", "expected"),
@@ -178,7 +180,7 @@ if t.TYPE_CHECKING:
         ),
     ],
 )
-def test_parse(data: dict[str, t.Any], expected: object, tmp_path: Path) -> None:
+def test_parse(data: DirectUrlDict, expected: object, tmp_path: Path) -> None:
     """Test the parse function."""
     dist = Distribution.at(tmp_path)
     pep610.write_to_distribution(dist, data)
@@ -202,7 +204,7 @@ def test_to_json() -> None:
 
 def test_local_directory(tmp_path: Path) -> None:
     """Test that a local directory is read back as a local directory."""
-    data = {
+    data: DirectUrlDict = {
         "url": "file:///home/user/project",
         "dir_info": {"editable": True},
     }
@@ -231,7 +233,7 @@ def test_local_directory(tmp_path: Path) -> None:
 
 def test_archive_hashes_merged(tmp_path: Path) -> None:
     """Test that archive hashes are merged."""
-    data = {
+    data: DirectUrlDict = {
         "url": "file://path/to/my.whl",
         "archive_info": {
             "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",
@@ -264,7 +266,7 @@ def test_archive_hashes_merged(tmp_path: Path) -> None:
 
 def test_archive_no_hashes(tmp_path: Path) -> None:
     """Test an archive with no hashes."""
-    data = {
+    data: DirectUrlDict = {
         "url": "file://path/to/my.whl",
         "archive_info": {},
     }
@@ -282,7 +284,7 @@ def test_archive_no_hashes(tmp_path: Path) -> None:
 
 def test_archive_no_valid_algorithms(tmp_path: Path) -> None:
     """Test an archive without any of the required algorithms."""
-    data = {
+    data: DirectUrlDict = {
         "url": "file://path/to/my.whl",
         "archive_info": {
             "hashes": {
@@ -305,9 +307,9 @@ def test_archive_no_valid_algorithms(tmp_path: Path) -> None:
 
 def test_unknown_url_type(tmp_path: Path) -> None:
     """Test that an unknown URL type is read back as None."""
-    data = {
+    data: DirectUrlDict = {  # type: ignore[typeddict-unknown-key]
         "url": "unknown:///home/user/project",
-        "unknown_info": {},
+        "unknown_info": {},  # pyrefly: ignore[bad-typed-dict-key]  # ty:ignore[invalid-key]
     }
     dist = Distribution.at(tmp_path)
     pep610.write_to_distribution(dist, data)
@@ -322,7 +324,7 @@ def test_no_file(tmp_path: Path) -> None:
     assert pep610.read_from_distribution(dist) is None
 
 
-def _get_direct_url_packages(report: dict[str, t.Any]) -> dict[str, pep610.DirectUrl]:
+def _get_direct_url_packages(report: dict[str, t.Any]) -> dict[str, pep610.DirectUrl]:  # pyrefly: ignore[explicit-any]
     """Get direct URL packages from a pip install report."""
     return {
         package["metadata"]["name"]: pep610.parse(package["download_info"])
@@ -331,7 +333,7 @@ def _get_direct_url_packages(report: dict[str, t.Any]) -> dict[str, pep610.Direc
     }
 
 
-def test_parse_pip_install_report(pip_install_report: dict[str, t.Any]) -> None:
+def test_parse_pip_install_report(pip_install_report: dict[str, t.Any]) -> None:  # pyrefly: ignore[explicit-any]
     """Test parsing a pip install report."""
     packages = _get_direct_url_packages(pip_install_report)
 
@@ -392,7 +394,7 @@ def test_parse_pip_install_report(pip_install_report: dict[str, t.Any]) -> None:
 def test_is_editable(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    data: dict[str, t.Any],
+    data: DirectUrlDict,
     expected: bool,  # noqa: FBT001
 ) -> None:
     """Test the is_editable function."""

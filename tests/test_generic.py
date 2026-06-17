@@ -13,13 +13,15 @@ from pep610 import read_from_distribution, write_to_distribution
 if t.TYPE_CHECKING:
     import pytest
 
+    from pep610._types import DirectUrlDict
+
 SCHEMA_FILE = importlib.resources.files("tests") / "fixtures/direct_url.schema.json"
 SCHEMA = json.loads(SCHEMA_FILE.read_text())
 
 
 @settings(suppress_health_check=[HealthCheck.too_slow])
 @given(from_schema(SCHEMA))
-def test_generic(tmp_path_factory: pytest.TempPathFactory, value: dict[str, t.Any]) -> None:
+def test_generic(tmp_path_factory: pytest.TempPathFactory, value: DirectUrlDict) -> None:
     """Test parsing a local directory."""
     dist_path = tmp_path_factory.mktemp("pep610")
     dist = Distribution.at(dist_path)
