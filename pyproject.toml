@@ -167,6 +167,8 @@ warn_unused_configs = true
 
 [tool.pyrefly]
 preset = "all"
+[tool.pyrefly.errors]
+unused-type-ignore = "warn"
 
 [tool.pytest]
 addopts = [ "-v", "-ra" ]
@@ -279,8 +281,20 @@ description = "type checks"
 dependency_groups = [ "testing", "typing" ]
 commands = [
   [ "mypy", "src/pep610", "tests" ],
-  [ "pyrefly", "check", "src/pep610", "tests" ],
-  [ "ty", "check", "src/pep610", "tests" ],
+  [
+    "pyrefly",
+    "check",
+    "src/pep610",
+    "tests",
+    { replace = "if", condition = "env.GITHUB_ACTIONS == 'true'", then = [ "--output-format=github" ], else = [], extend = true }
+  ],
+  [
+    "ty",
+    "check",
+    "src/pep610",
+    "tests",
+    { replace = "if", condition = "env.GITHUB_ACTIONS == 'true'", then = [ "--output-format=github" ], else = [], extend = true }
+  ],
 ]
 
 [tool.tox.env_run_base]
