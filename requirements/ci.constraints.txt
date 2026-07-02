@@ -31,12 +31,12 @@ python-discovery==1.4.0
     #   virtualenv
 tomli-w==1.2.0
     # via tox
-tox==4.55.0
+tox==4.56.1
     # via
-    #   -r requirements/ci.constraints.in
+    #   -r ci.constraints.in
     #   tox-uv-bare
 tox-uv==1.35.2
-    # via -r requirements/ci.constraints.in
+    # via -r ci.constraints.in
 tox-uv-bare==1.35.2
     # via tox-uv
 uv==0.11.15
