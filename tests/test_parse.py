@@ -48,7 +48,7 @@ if t.TYPE_CHECKING:
                 "archive_info": {
                     "hashes": {
                         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
-                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # ruff:ignore[line-too-long]
                     }
                 },
             },
@@ -57,7 +57,7 @@ if t.TYPE_CHECKING:
                 info=pep610.ArchiveInfo(
                     hashes={
                         "md5": "c4e0f0a1e0a5e708c8e3e3c4cbe2e85f",
-                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                        "sha256": "2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # ruff:ignore[line-too-long]
                     },
                 ),
             ),
@@ -67,7 +67,7 @@ if t.TYPE_CHECKING:
             {
                 "url": "https://github.com/pypa/pip/archive/1.3.1.zip",
                 "archive_info": {
-                    "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # noqa: E501
+                    "hash": "sha256=2dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db8",  # ruff:ignore[line-too-long]
                 },
             },
             pep610.DirectUrl(
@@ -395,11 +395,14 @@ def test_is_editable(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     data: DirectUrlDict,
-    expected: bool,  # noqa: FBT001
+    expected: bool,  # ruff:ignore[boolean-type-hint-positional-argument]
 ) -> None:
     """Test the is_editable function."""
-    dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
 
-    monkeypatch.setattr("pep610._pep610.distribution", lambda _: dist)
+    def _get_dist(distribution_name: str) -> Distribution:  # ruff:ignore[unused-function-argument]
+        dist = Distribution.at(tmp_path)
+        pep610.write_to_distribution(dist, data)
+        return dist
+
+    monkeypatch.setattr("pep610._pep610.distribution", _get_dist)
     assert pep610.is_editable("my_package") is expected

@@ -77,7 +77,7 @@ class VCSInfo:
             ... )
             >>> vcs_info.to_dict()
             {'vcs': 'git', 'commit_id': '4f42225e91a0be634625c09e84dd29ea82b85e27', 'requested_revision': 'main'}
-        """  # noqa: E501
+        """  # ruff:ignore[line-too-long]
         return _filter_none(  # type: ignore[return-value]
             vcs=self.vcs,
             commit_id=self.commit_id,
@@ -137,7 +137,7 @@ class ArchiveInfo:
             ... )
             >>> archive_info.has_valid_algorithms()
             True
-        """  # noqa: E501
+        """  # ruff:ignore[line-too-long]
         return set(self.all_hashes).intersection(hashlib.algorithms_guaranteed) != set()
 
     @property
@@ -163,7 +163,7 @@ class ArchiveInfo:
             ... )
             >>> archive_info.all_hashes
             {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}
-        """  # noqa: E501
+        """  # ruff:ignore[line-too-long]
         hashes = {}
         if self.hash is not None:
             hashes[self.hash.algorithm] = self.hash.value
@@ -189,7 +189,7 @@ class ArchiveInfo:
             ... )
             >>> archive_info.to_dict()
             {'hashes': {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}}
-        """  # noqa: E501
+        """  # ruff:ignore[line-too-long]
         return _filter_none(  # type: ignore[return-value]
             hashes=self.hashes,
             hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",
@@ -285,7 +285,7 @@ class DirectUrl:
             ... )
             >>> direct_url.to_dict()
             {'url': 'file:///home/user/pep610', 'subdirectory': 'app', 'dir_info': {'editable': False}}
-        """  # noqa: E501
+        """  # ruff:ignore[line-too-long]
         res = _filter_none(url=self.url, subdirectory=self.subdirectory)
         res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]  # ty:ignore[invalid-assignment]
         return res  # type: ignore[return-value]  # ty:ignore[invalid-return-type]
@@ -346,7 +346,7 @@ def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
         ...     }
         ... )
         DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
-    """  # noqa: E501
+    """  # ruff:ignore[line-too-long]
     if (
         "archive_info" in data
         and (archive_info := data["archive_info"]) is not None

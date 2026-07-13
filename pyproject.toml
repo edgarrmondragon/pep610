@@ -72,7 +72,7 @@ required-version = ">=0.9.17"
 prerelease = "allow"
 
 [tool.ruff]
-required-version = ">=0.11"
+required-version = ">=0.15.21"
 line-length = 100
 preview = true
 [tool.ruff.lint]
@@ -296,7 +296,6 @@ commands = [
     { replace = "if", condition = "env.GITHUB_ACTIONS == 'true'", then = [ "--output-format=github" ], else = [], extend = true }
   ],
 ]
-
 [tool.tox.env_run_base]
 runner = "uv-venv-runner"
 description = "run tests on Python {py_dot_ver}"
