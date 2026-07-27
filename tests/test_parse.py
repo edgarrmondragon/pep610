@@ -183,7 +183,7 @@ if t.TYPE_CHECKING:
 def test_parse(data: DirectUrlDict, expected: object, tmp_path: Path) -> None:
     """Test the parse function."""
     dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
+    _ = pep610.write_to_distribution(dist, data)
 
     result = pep610.read_from_distribution(dist)
     assert result == expected
@@ -209,7 +209,7 @@ def test_local_directory(tmp_path: Path) -> None:
         "dir_info": {"editable": True},
     }
     dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
+    _ = pep610.write_to_distribution(dist, data)
 
     result = pep610.read_from_distribution(dist)
     assert isinstance(result, pep610.DirectUrl)
@@ -244,7 +244,7 @@ def test_archive_hashes_merged(tmp_path: Path) -> None:
         },
     }
     dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
+    _ = pep610.write_to_distribution(dist, data)
 
     result = pep610.read_from_distribution(dist)
     assert isinstance(result, pep610.DirectUrl)
@@ -271,7 +271,7 @@ def test_archive_no_hashes(tmp_path: Path) -> None:
         "archive_info": {},
     }
     dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
+    _ = pep610.write_to_distribution(dist, data)
 
     result = pep610.read_from_distribution(dist)
     assert isinstance(result, pep610.DirectUrl)
@@ -293,7 +293,7 @@ def test_archive_no_valid_algorithms(tmp_path: Path) -> None:
         },
     }
     dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
+    _ = pep610.write_to_distribution(dist, data)
 
     result = pep610.read_from_distribution(dist)
     assert isinstance(result, pep610.DirectUrl)
@@ -312,10 +312,10 @@ def test_unknown_url_type(tmp_path: Path) -> None:
         "unknown_info": {},  # pyrefly: ignore[bad-typed-dict-key]  # ty:ignore[invalid-key]
     }
     dist = Distribution.at(tmp_path)
-    pep610.write_to_distribution(dist, data)
+    _ = pep610.write_to_distribution(dist, data)
 
     with pytest.raises(pep610.DirectUrlValidationError, match="does not contain"):
-        pep610.read_from_distribution(dist)
+        _ = pep610.read_from_distribution(dist)
 
 
 def test_no_file(tmp_path: Path) -> None:
@@ -401,7 +401,7 @@ def test_is_editable(
 
     def _get_dist(distribution_name: str) -> Distribution:  # ruff:ignore[unused-function-argument]
         dist = Distribution.at(tmp_path)
-        pep610.write_to_distribution(dist, data)
+        _ = pep610.write_to_distribution(dist, data)
         return dist
 
     monkeypatch.setattr("pep610._pep610.distribution", _get_dist)

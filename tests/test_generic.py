@@ -25,5 +25,5 @@ def test_generic(tmp_path_factory: pytest.TempPathFactory, value: DirectUrlDict)
     """Test parsing a local directory."""
     dist_path = tmp_path_factory.mktemp("pep610")
     dist = Distribution.at(dist_path)
-    write_to_distribution(dist, value)
+    _ = write_to_distribution(dist, value)
     assert read_from_distribution(dist) is not None

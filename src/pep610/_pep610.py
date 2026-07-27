@@ -445,4 +445,4 @@ def write_to_distribution(dist: PathDistribution, data: DirectUrlDict | DirectUr
         The number of bytes written.
     """
     to_write = json.dumps(data, sort_keys=True) if isinstance(data, Mapping) else data.to_json()
-    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # ty:ignore[unresolved-attribute]  # noqa: SLF001
+    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # ty:ignore[unresolved-attribute]  # ruff: ignore[private-member-access]
