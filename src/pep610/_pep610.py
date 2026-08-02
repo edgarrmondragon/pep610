@@ -192,7 +192,7 @@ class ArchiveInfo:
         """  # ruff:ignore[line-too-long]
         return _filter_none(  # type: ignore[return-value]
             hashes=self.hashes,
-            hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",
+            hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",  # pyrefly: ignore[implicit-bool]
         )  # ty:ignore[invalid-return-type]
 
 
@@ -354,8 +354,8 @@ def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
     ):
         hashes = archive_info.get("hashes")
         hash_data = None
-        if hash_value := archive_info.get("hash"):
-            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None
+        if (hash_value := archive_info.get("hash")) is not None:
+            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None  # pyrefly: ignore[unknown-argument-type]
 
         return DirectUrl(
             url=data["url"],
@@ -384,8 +384,8 @@ def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
         return DirectUrl(
             url=data["url"],
             info=VCSInfo(
-                vcs=vcs_info["vcs"],
-                commit_id=vcs_info["commit_id"],
+                vcs=vcs_info["vcs"],  # pyrefly: ignore[unknown-argument-type]
+                commit_id=vcs_info["commit_id"],  # pyrefly: ignore[unknown-argument-type]
                 requested_revision=vcs_info.get("requested_revision"),
                 resolved_revision=vcs_info.get("resolved_revision"),
                 resolved_revision_type=vcs_info.get("resolved_revision_type"),
@@ -411,7 +411,7 @@ def read_from_distribution(dist: Distribution) -> DirectUrl | None:
     >>> read_from_distribution(dist)  # doctest: +SKIP
     DirData(url='file:///home/user/pep610', dir_info=DirInfo(editable=False))
     """
-    if contents := dist.read_text("direct_url.json"):
+    if (contents := dist.read_text("direct_url.json")) is not None:
         return parse(json.loads(contents))
 
     return None
