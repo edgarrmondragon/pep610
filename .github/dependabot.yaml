@@ -1,20 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: pip
-    directory: /requirements
-    schedule:
-      interval: monthly
-      timezone: America/Mexico_City
-    assignees:
-      - "edgarrmondragon"
-    commit-message:
-      prefix: "ci: "
-    groups:
-      ci:
-        patterns:
-          - "*"
-    cooldown:
-      default-days: 7
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
