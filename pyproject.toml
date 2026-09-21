@@ -283,6 +283,14 @@ commands = [
   [ "mypy", "src/pep610", "tests" ],
   [
     "pyrefly",
+    "coverage",
+    "check",
+    "src/pep610",
+    "tests",
+    { replace = "if", condition = "env.GITHUB_ACTIONS == 'true'", then = [ "--output-format=github" ], else = [], extend = true }
+  ],
+  [
+    "pyrefly",
     "check",
     "src/pep610",
     "tests",

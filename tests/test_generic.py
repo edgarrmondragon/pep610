@@ -16,7 +16,7 @@ if t.TYPE_CHECKING:
     from pep610._types import DirectUrlDict
 
 SCHEMA_FILE = importlib.resources.files("tests") / "fixtures/direct_url.schema.json"
-SCHEMA = json.loads(SCHEMA_FILE.read_text())
+SCHEMA: dict[str, t.Any] = json.loads(SCHEMA_FILE.read_text())  # pyrefly: ignore[explicit-any]
 
 
 @settings(suppress_health_check=[HealthCheck.too_slow])

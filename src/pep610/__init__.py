@@ -33,4 +33,4 @@ __all__ = [
     "write_to_distribution",
 ]
 
-__version__ = version("pep610")
+__version__: str = version("pep610")
