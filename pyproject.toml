@@ -138,13 +138,13 @@ per-file-ignores."docs/conf.py" = [
   "implicit-namespace-package",
 ]
 per-file-ignores."tests/**/*" = [
-  "missing-return-type-undocumented-public-function",
-  "undocumented-public-module",
-  "undocumented-public-package",
+  "assert",
   "docstring-missing-returns",
   "magic-value-comparison",
-  "assert",
+  "missing-return-type-undocumented-public-function",
   "relative-imports",
+  "undocumented-public-module",
+  "undocumented-public-package",
 ]
 unfixable = [
   "ERA", # commented-out-code
@@ -178,6 +178,22 @@ minversion = "6"
 strict = true
 testpaths = [ "tests" ]
 
+[tool.coverage.run]
+source = [
+  "pep610",
+  "tests",
+]
+omit = [
+  # omit type definitions
+  "*/pep610/_types.py",
+]
+branch = true
+parallel = true
+relative_files = true
+disable_warnings = [
+  "no-sysmon",
+]
+core = "sysmon"
 [tool.coverage.paths]
 source = [
   "src/pep610/",
@@ -185,27 +201,11 @@ source = [
   "**/site-packages/pep610*/pep610/",
 ]
 [tool.coverage.report]
-exclude_also = [ "no cov", "if __name__ == .__main__.:", "if t.TYPE_CHECKING:" ]
 fail_under = 100
 precision = 2
+exclude_also = [ "if __name__ == .__main__.:", "if t.TYPE_CHECKING:", "no cov" ]
 skip_covered = false
 show_missing = true
-[tool.coverage.run]
-branch = true
-core = "sysmon"
-disable_warnings = [
-  "no-sysmon",
-]
-omit = [
-  # omit type definitions
-  "*/pep610/_types.py",
-]
-parallel = true
-relative_files = true
-source = [
-  "pep610",
-  "tests",
-]
 
 [tool.tox]
 requires = [ "tox>=4.55", "tox-uv>=1.35" ]
