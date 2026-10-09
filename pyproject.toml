@@ -208,9 +208,9 @@ skip_covered = false
 show_missing = true
 
 [tool.tox]
-requires = [ "tox>=4.55", "tox-uv>=1.35" ]
+requires = [ "tox>=4.65", "tox-uv>=1.36.1" ]
 env_list = [
-  { prefix = "3.", start = 10, stop = 15 },
+  { prefix = "3.", start = 10 },
   "coverage",
   "docs",
   "doctest",
