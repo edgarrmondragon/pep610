@@ -17,11 +17,15 @@ from pep610._pep610 import (
     to_dict,
     write_to_distribution,
 )
+from pep610._types import (
+    DirectUrlDict,
+)
 
 __all__ = [
     "ArchiveInfo",
     "DirInfo",
     "DirectUrl",
+    "DirectUrlDict",
     "DirectUrlValidationError",
     "HashData",
     "VCSInfo",
