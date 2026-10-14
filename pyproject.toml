@@ -154,7 +154,6 @@ isort.known-first-party = [ "pep610" ]
 pydocstyle.convention = "google"
 
 [tool.pyproject-fmt]
-max_supported_python = "3.15"
 table_format = "long"
 
 [tool.mypy]
