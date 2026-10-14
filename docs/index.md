@@ -122,6 +122,11 @@ for package in report["install"]:
 ## Types
 
 ```{eval-rst}
+.. autoclass:: pep610.DirectUrlDict
+    :members: url, subdirectory, vcs_info, archive_info, dir_info
+```
+
+```{eval-rst}
 .. autoclass:: pep610._pep610.HashData
     :members: algorithm, value
 ```
@@ -139,9 +144,4 @@ for package in report["install"]:
 ```{eval-rst}
 .. autoclass:: pep610._types.VCSInfoDict
     :members: vcs, commit_id, requested_revision, resolved_revision, resolved_revision_type
-```
-
-```{eval-rst}
-.. autoclass:: pep610._types.DirectUrlDict
-    :members: url, vcs_info, archive_info, dir_info
 ```

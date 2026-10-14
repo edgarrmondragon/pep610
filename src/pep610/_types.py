@@ -50,6 +50,15 @@ class DirectUrlDict(t.TypedDict, total=False):
     #: The direct URL.
     url: Required[str]
 
+    #: A directory path, relative to the root of the VCS repository, source archive or local
+    #: directory, to specify where pyproject.toml or setup.py is located.
+    subdirectory: str
+
+    #: VCS repository details
     vcs_info: VCSInfoDict
+
+    #: Archive URL details
     archive_info: ArchiveInfoDict
+
+    #: Local directory details
     dir_info: DirectoryInfoDict

@@ -5,7 +5,7 @@ import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from importlib.metadata import distribution
-from typing import TYPE_CHECKING, Any, ClassVar, NamedTuple, TypeVar
+from typing import TYPE_CHECKING, ClassVar, NamedTuple, TypeVar
 
 if TYPE_CHECKING:
     import sys
@@ -321,7 +321,7 @@ def to_dict(data: DirectUrl) -> DirectUrlDict:
     return data.to_dict()
 
 
-def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
+def parse(data: DirectUrlDict) -> DirectUrl:
     """Parse the direct URL data.
 
     Args:
@@ -349,13 +349,13 @@ def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
     """  # ruff:ignore[line-too-long]
     if (
         "archive_info" in data
-        and (archive_info := data["archive_info"]) is not None
+        and (archive_info := data["archive_info"]) is not None  # type: ignore[redundant-expr]
         and isinstance(archive_info, dict)
     ):
         hashes = archive_info.get("hashes")
         hash_data = None
         if (hash_value := archive_info.get("hash")) is not None:
-            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None  # pyrefly: ignore[unknown-argument-type]
+            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None  # pyrefly: ignore[implicit-bool]
 
         return DirectUrl(
             url=data["url"],
@@ -365,7 +365,7 @@ def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
 
     if (
         "dir_info" in data
-        and (dir_info := data["dir_info"]) is not None
+        and (dir_info := data["dir_info"]) is not None  # type: ignore[redundant-expr]
         and isinstance(dir_info, dict)
     ):
         return DirectUrl(
@@ -378,14 +378,14 @@ def parse(data: dict[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
 
     if (
         "vcs_info" in data
-        and (vcs_info := data["vcs_info"]) is not None
+        and (vcs_info := data["vcs_info"]) is not None  # type: ignore[redundant-expr]
         and isinstance(vcs_info, dict)
     ):
         return DirectUrl(
             url=data["url"],
             info=VCSInfo(
-                vcs=vcs_info["vcs"],  # pyrefly: ignore[unknown-argument-type]
-                commit_id=vcs_info["commit_id"],  # pyrefly: ignore[unknown-argument-type]
+                vcs=vcs_info["vcs"],
+                commit_id=vcs_info["commit_id"],
                 requested_revision=vcs_info.get("requested_revision"),
                 resolved_revision=vcs_info.get("resolved_revision"),
                 resolved_revision_type=vcs_info.get("resolved_revision_type"),
