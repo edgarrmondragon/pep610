@@ -1,9 +1,10 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = [ "hatch-vcs", "hatchling" ]
+requires = [ "hatchling" ]
 
 [project]
 name = "pep610"
+version = "v26.1.dev0"
 description = "PEP 610 Direct URL data parser"
 readme = "README.md"
 keywords = [ "packaging", "pep", "pep610" ]
@@ -22,7 +23,6 @@ classifiers = [
   "Programming Language :: Python :: 3.15",
   "Typing :: Typed",
 ]
-dynamic = [ "version" ]
 dependencies = []
 [[project.authors]]
 name = "Edgar Ramírez Mondragón"
