@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: monthly
       timezone: America/Mexico_City
+    # Setting labels replaces Dependabot's defaults, so keep them alongside skip-changelog
+    labels:
+      - "dependencies"
+      - "github_actions"
+      - "skip-changelog"
     assignees:
       - "edgarrmondragon"
     commit-message:

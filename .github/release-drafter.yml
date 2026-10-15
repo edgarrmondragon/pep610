@@ -71,6 +71,10 @@ categories:
         - 'performance'
 
 autolabeler:
+  # pre-commit.ci has no setting for PR labels, so match its autoupdate PR title
+  - label: 'skip-changelog'
+    title:
+      - '/^chore\(deps\): pre-commit autoupdate$/i'
   - label: 'breaking'
     title:
       - '/^([A-Za-z]+)(\(.+\))?!:/i'
