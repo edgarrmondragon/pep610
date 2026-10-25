@@ -8,7 +8,7 @@ babel==2.18.0
     # via sphinx
 beautifulsoup4==4.15.0
     # via furo
-certifi==2026.10.19
+certifi==2026.10.23
     # via requests
 charset-normalizer==3.5.2
     # via requests
@@ -53,7 +53,7 @@ roman-numerals==4.1.0
     # via sphinx
 snowballstemmer==3.1.1
     # via sphinx
-soupsieve==3.0.3
+soupsieve==3.0.4
     # via beautifulsoup4
 sphinx==9.2.0
     # via
