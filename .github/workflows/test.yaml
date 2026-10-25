@@ -74,7 +74,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ${{ fromJson(needs.build-package.outputs.supported-python-versions) }}
-        os: ["ubuntu-26.04"]
+        os: ["ubuntu-latest"]
         include:
           - python-version: "3.15"
             os: "windows-latest"
