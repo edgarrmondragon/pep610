@@ -8,13 +8,8 @@ from importlib.metadata import distribution
 from typing import TYPE_CHECKING, ClassVar, NamedTuple, TypeVar
 
 if TYPE_CHECKING:
-    import sys
     from importlib.metadata import Distribution, PathDistribution
-
-    if sys.version_info < (3, 11):
-        from typing_extensions import Self
-    else:
-        from typing import Self
+    from typing import Self
 
     from pep610._types import (
         ArchiveInfoDict,

@@ -10,12 +10,11 @@ readme = "README.md"
 keywords = [ "packaging", "pep", "pep610" ]
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -209,7 +208,7 @@ show_missing = true
 [tool.tox]
 requires = [ "tox>=4.65", "tox-uv>=1.36.1" ]
 env_list = [
-  { prefix = "3.", start = 10 },
+  { prefix = "3.", start = 11 },
   "coverage",
   "docs",
   "doctest",

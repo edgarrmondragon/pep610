@@ -4,10 +4,6 @@
 
 Release **v{sub-ref}`version`**.
 
-::::{tab-set}
-
-:::{tab-item} Python 3.10+
-
 ```python
 from importlib import metadata
 
@@ -21,29 +17,6 @@ match data := pep610.read_from_distribution(dist):
     case _:
         print("Not an editable installation")
 ```
-
-:::
-
-:::{tab-item} Python 3.8+
-```python
-from importlib import metadata
-
-import pep610
-
-dist = metadata.distribution("pep610")
-
-if (
-    (data := pep610.read_from_distribution(dist))
-    and isinstance(data, pep610.DirectUrl)
-    and isinstance(data.info, pep610.DirInfo)
-    and data.info.is_editable()
-):
-    print("Editable installation, a.k.a. in development mode")
-else:
-    print("Not an editable installation")
-```
-:::
-::::
 
 It can also be used to parse the direct URL download info in pip's {external:doc}`reference/installation-report`:
 
