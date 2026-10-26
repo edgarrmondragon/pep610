@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import typing as t
 from importlib.metadata import Distribution
 
@@ -314,8 +315,78 @@ def test_unknown_url_type(tmp_path: Path) -> None:
     dist = Distribution.at(tmp_path)
     _ = pep610.write_to_distribution(dist, data)
 
-    with pytest.raises(pep610.DirectUrlValidationError, match="does not contain"):
+    with pytest.raises(pep610.DirectUrlValidationError, match="exactly one"):
         _ = pep610.read_from_distribution(dist)
+
+
+@pytest.mark.parametrize(
+    ("data", "match"),
+    [
+        pytest.param({"dir_info": {}}, "'url'", id="missing_url"),
+        pytest.param({"url": "file:///x"}, "exactly one", id="no_info"),
+        pytest.param(
+            {"url": "file:///x", "dir_info": {}, "archive_info": {}},
+            "exactly one",
+            id="multiple_info",
+        ),
+        pytest.param({"url": "file:///x", "vcs_info": []}, "must be an object", id="non_dict_info"),
+        pytest.param(
+            {"url": "https://x/a.zip", "archive_info": {"hash": "sha256"}},
+            "<algorithm>=<digest>",
+            id="malformed_hash",
+        ),
+        pytest.param(
+            {"url": "https://x.git", "vcs_info": {"vcs": "git"}},
+            "'vcs' and 'commit_id'",
+            id="vcs_missing_commit_id",
+        ),
+        pytest.param(
+            {"url": "https://x.git", "vcs_info": {"commit_id": "abc"}},
+            "'vcs' and 'commit_id'",
+            id="vcs_missing_vcs",
+        ),
+        pytest.param([], "JSON object", id="not_a_mapping"),
+    ],
+)
+def test_parse_invalid(data: object, match: str) -> None:
+    """Test that malformed data raises a validation error."""
+    with pytest.raises(pep610.DirectUrlValidationError, match=match):
+        _ = pep610.parse(data)  # type: ignore[arg-type]  # ty:ignore[invalid-argument-type]  # pyrefly: ignore[bad-argument-type]
+
+
+def test_invalid_json(tmp_path: Path) -> None:
+    """Test that invalid JSON raises a validation error."""
+    _ = (tmp_path / "direct_url.json").write_text("{not json")
+    with pytest.raises(pep610.DirectUrlValidationError, match="not valid JSON"):
+        _ = pep610.read_from_distribution(Distribution.at(tmp_path))
+
+
+def test_dir_info_default() -> None:
+    """Test that ``editable`` is optional."""
+    assert pep610.DirInfo().editable is None
+
+
+@pytest.mark.parametrize(
+    "info",
+    [
+        pep610.VCSInfo(vcs="git", commit_id="abc123", requested_revision="main"),
+        pep610.ArchiveInfo(hashes={"sha256": "abc123"}),
+        pep610.DirInfo(editable=True),
+    ],
+    ids=["vcs", "archive", "dir"],
+)
+def test_write_direct_url_object(
+    tmp_path: Path,
+    info: pep610.VCSInfo | pep610.ArchiveInfo | pep610.DirInfo,
+) -> None:
+    """Test writing a DirectUrl object, with a subdirectory, and reading it back."""
+    direct_url = pep610.DirectUrl(url="https://example.com/x", info=info, subdirectory="app")
+    dist = Distribution.at(tmp_path)
+    _ = pep610.write_to_distribution(dist, direct_url)
+
+    assert pep610.read_from_distribution(dist) == direct_url
+    assert json.loads(direct_url.to_json()) == pep610.to_dict(direct_url)
+    assert pep610.to_dict(direct_url)["subdirectory"] == "app"  # pyrefly: ignore[not-required-key-access]
 
 
 def test_no_file(tmp_path: Path) -> None:

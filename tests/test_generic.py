@@ -8,7 +8,7 @@ from importlib.metadata import Distribution
 from hypothesis import HealthCheck, given, settings
 from hypothesis_jsonschema import from_schema
 
-from pep610 import read_from_distribution, write_to_distribution
+from pep610 import parse, read_from_distribution, to_dict, write_to_distribution
 
 if t.TYPE_CHECKING:
     import pytest
@@ -26,4 +26,7 @@ def test_generic(tmp_path_factory: pytest.TempPathFactory, value: DirectUrlDict)
     dist_path = tmp_path_factory.mktemp("pep610")
     dist = Distribution.at(dist_path)
     _ = write_to_distribution(dist, value)
-    assert read_from_distribution(dist) is not None
+    result = read_from_distribution(dist)
+    assert result is not None
+    # The schema allows extra keys, which are dropped, so compare after a second round trip
+    assert parse(to_dict(result)) == result

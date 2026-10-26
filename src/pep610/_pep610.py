@@ -5,7 +5,7 @@ import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from importlib.metadata import distribution
-from typing import TYPE_CHECKING, ClassVar, NamedTuple, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, NamedTuple, TypeVar
 
 if TYPE_CHECKING:
     from importlib.metadata import Distribution, PathDistribution
@@ -21,6 +21,12 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 DIRECT_URL_METADATA_NAME = "direct_url.json"
+
+_INFO_KEYS: tuple[Literal["archive_info", "dir_info", "vcs_info"], ...] = (
+    "archive_info",
+    "dir_info",
+    "vcs_info",
+)
 
 
 class DirectUrlValidationError(Exception):
@@ -47,6 +53,8 @@ class VCSInfo:
         commit_id: The exact commit/revision number that was/is to be installed.
         requested_revision: A branch/tag/ref/commit/revision/etc (in a format
             compatible with the VCS).
+        resolved_revision: The revision that ``requested_revision`` resolved to.
+        resolved_revision_type: The type of the resolved revision, e.g. ``tag``.
     """
 
     key: ClassVar[str] = "vcs_info"
@@ -203,7 +211,7 @@ class DirInfo:
 
     key: ClassVar[str] = "dir_info"
 
-    editable: bool | None
+    editable: bool | None = None
 
     def is_editable(self: Self) -> bool:
         """Distribution is editable?
@@ -316,7 +324,7 @@ def to_dict(data: DirectUrl) -> DirectUrlDict:
     return data.to_dict()
 
 
-def parse(data: DirectUrlDict) -> DirectUrl:
+def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any]
     """Parse the direct URL data.
 
     Args:
@@ -326,7 +334,9 @@ def parse(data: DirectUrlDict) -> DirectUrl:
         The parsed direct URL data.
 
     Raises:
-        DirectUrlValidationError: If the direct URL data does not contain a recognized info key.
+        DirectUrlValidationError: If the data is malformed: ``url`` is missing, there is not
+            exactly one of ``archive_info``, ``dir_info`` or ``vcs_info``, or a required field
+            is missing or invalid.
 
     .. code-block:: pycon
 
@@ -342,54 +352,67 @@ def parse(data: DirectUrlDict) -> DirectUrl:
         ... )
         DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
     """  # ruff:ignore[line-too-long]
-    if (
-        "archive_info" in data
-        and (archive_info := data["archive_info"]) is not None  # type: ignore[redundant-expr]
-        and isinstance(archive_info, dict)
-    ):
-        hashes = archive_info.get("hashes")
+    if not isinstance(data, Mapping):
+        msg = "Direct URL data must be a JSON object"  # type: ignore[unreachable]
+        raise DirectUrlValidationError(msg)
+
+    if not isinstance(url := data.get("url"), str):
+        msg = "Direct URL data must contain a string 'url'"
+        raise DirectUrlValidationError(msg)
+
+    present = [key for key in _INFO_KEYS if data.get(key) is not None]
+    if len(present) != 1:
+        msg = (
+            "Direct URL data must contain exactly one of 'archive_info', 'dir_info', "
+            f"or 'vcs_info', found: {present or 'none'}"  # pyrefly: ignore[implicit-bool]
+        )
+        raise DirectUrlValidationError(msg)
+
+    key = present[0]
+    info = data[key]
+    if not isinstance(info, Mapping):
+        msg = f"'{key}' must be an object"
+        raise DirectUrlValidationError(msg)
+
+    subdirectory = data.get("subdirectory")
+
+    if key == ArchiveInfo.key:
         hash_data = None
-        if (hash_value := archive_info.get("hash")) is not None:
-            hash_data = HashData(*hash_value.split("=", 1)) if hash_value else None  # pyrefly: ignore[implicit-bool]
+        if hash_value := info.get("hash"):  # pyrefly: ignore[implicit-bool]
+            algorithm, sep, digest = hash_value.partition("=")  # pyrefly: ignore[unknown-attribute-access, unknown-variable-type]
+            if not sep:
+                msg = "'archive_info.hash' must have the form '<algorithm>=<digest>'"
+                raise DirectUrlValidationError(msg)
+            hash_data = HashData(algorithm, digest)  # pyrefly: ignore[unknown-argument-type]
 
         return DirectUrl(
-            url=data["url"],
-            info=ArchiveInfo(hashes=hashes, hash=hash_data),
-            subdirectory=data.get("subdirectory"),
+            url=url,
+            info=ArchiveInfo(hashes=info.get("hashes"), hash=hash_data),
+            subdirectory=subdirectory,
         )
 
-    if (
-        "dir_info" in data
-        and (dir_info := data["dir_info"]) is not None  # type: ignore[redundant-expr]
-        and isinstance(dir_info, dict)
-    ):
+    if key == DirInfo.key:
         return DirectUrl(
-            url=data["url"],
-            info=DirInfo(
-                editable=dir_info.get("editable"),
-            ),
-            subdirectory=data.get("subdirectory"),
+            url=url,
+            info=DirInfo(editable=info.get("editable")),
+            subdirectory=subdirectory,
         )
 
-    if (
-        "vcs_info" in data
-        and (vcs_info := data["vcs_info"]) is not None  # type: ignore[redundant-expr]
-        and isinstance(vcs_info, dict)
-    ):
-        return DirectUrl(
-            url=data["url"],
-            info=VCSInfo(
-                vcs=vcs_info["vcs"],
-                commit_id=vcs_info["commit_id"],
-                requested_revision=vcs_info.get("requested_revision"),
-                resolved_revision=vcs_info.get("resolved_revision"),
-                resolved_revision_type=vcs_info.get("resolved_revision_type"),
-            ),
-            subdirectory=data.get("subdirectory"),
-        )
+    if "vcs" not in info or "commit_id" not in info:
+        msg = "'vcs_info' must contain 'vcs' and 'commit_id'"
+        raise DirectUrlValidationError(msg)
 
-    msg = "Direct URL data does not contain 'archive_info', 'dir_info', or 'vcs_info'"
-    raise DirectUrlValidationError(msg)
+    return DirectUrl(
+        url=url,
+        info=VCSInfo(
+            vcs=info["vcs"],  # pyrefly: ignore[unknown-argument-type]
+            commit_id=info["commit_id"],  # pyrefly: ignore[unknown-argument-type]
+            requested_revision=info.get("requested_revision"),
+            resolved_revision=info.get("resolved_revision"),
+            resolved_revision_type=info.get("resolved_revision_type"),
+        ),
+        subdirectory=subdirectory,
+    )
 
 
 def read_from_distribution(dist: Distribution) -> DirectUrl | None:
@@ -401,13 +424,21 @@ def read_from_distribution(dist: Distribution) -> DirectUrl | None:
     Returns:
         The parsed PEP 610 data or ``None`` if the file is not found.
 
+    Raises:
+        DirectUrlValidationError: If the file is not valid JSON or not valid direct URL data.
+
     >>> import importlib.metadata
     >>> dist = importlib.metadata.distribution("pep610")
     >>> read_from_distribution(dist)  # doctest: +SKIP
     DirData(url='file:///home/user/pep610', dir_info=DirInfo(editable=False))
     """
-    if (contents := dist.read_text("direct_url.json")) is not None:
-        return parse(json.loads(contents))
+    if (contents := dist.read_text(DIRECT_URL_METADATA_NAME)) is not None:
+        try:
+            data = json.loads(contents)
+        except json.JSONDecodeError as exc:
+            msg = f"{DIRECT_URL_METADATA_NAME} is not valid JSON"
+            raise DirectUrlValidationError(msg) from exc
+        return parse(data)
 
     return None
 
@@ -420,6 +451,10 @@ def is_editable(distribution_name: str) -> bool:
 
     Returns:
         Whether the distribution is editable.
+
+    Note:
+        :class:`importlib.metadata.PackageNotFoundError` propagates if the distribution is not
+        installed.
 
     >>> is_editable("pep610")  # doctest: +SKIP
     False
