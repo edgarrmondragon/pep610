@@ -16,7 +16,7 @@ jobs:
     name: Update schema
     runs-on: ubuntu-slim
     permissions:
-      contents: write  # Allow the workflow to push changes to the repository
+      contents: read  # to check out the repository
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -24,15 +24,45 @@ jobs:
       - name: Update schema
         run: |
           curl -o tests/fixtures/direct_url.schema.json https://packaging.python.org/en/latest/specifications/schemas/direct-url.schema.json
-      - name: Commit changes
-        continue-on-error: true
-        id: commit
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: generate-token
+        with:
+          client-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${APP_USERNAME}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          APP_USERNAME: ${{ steps.generate-token.outputs.app-slug }}
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          APP_USER_ID: ${{ steps.get-user-id.outputs.user-id }}
+          APP_USERNAME: ${{ steps.generate-token.outputs.app-slug }}
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch_name="chore/update-direct-url-schema"
+
+          if git diff --quiet -- tests/fixtures/direct_url.schema.json; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git config user.name "${APP_USERNAME}[bot]"
+          git config user.email "${APP_USER_ID}+${APP_USERNAME}[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git checkout -b "$branch_name"
           git add tests/fixtures/direct_url.schema.json
-          git commit -m "chore: update direct_url.schema.json"
-      - name: Push changes
-        if: steps.commit.outcome == 'success'
-        run: |
-          git push
+          git commit -m "chore: Update direct_url.schema.json"
+          git push --force origin "$branch_name"
+
+          if [ -z "$(gh pr list --head "$branch_name" --json number --jq '.[0].number')" ]; then
+            gh pr create \
+              --title "chore: Update direct_url.schema.json" \
+              --body "Update the \`direct_url.json\` schema from [packaging.python.org](https://packaging.python.org/en/latest/specifications/schemas/direct-url.schema.json)." \
+              --base main \
+              --label skip-changelog
+          fi
