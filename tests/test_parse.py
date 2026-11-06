@@ -398,7 +398,9 @@ def test_no_file(tmp_path: Path) -> None:
 def _get_direct_url_packages(report: dict[str, t.Any]) -> dict[str, pep610.DirectUrl]:  # pyrefly: ignore[explicit-any]
     """Get direct URL packages from a pip install report."""
     return {
+        # pyrefly: ignore[explicit-any-use]
         package["metadata"]["name"]: pep610.parse(package["download_info"])
+        # pyrefly: ignore[explicit-any-use]
         for package in report["install"]
         if package["is_direct"]
     }

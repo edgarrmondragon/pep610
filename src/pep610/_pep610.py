@@ -369,6 +369,7 @@ def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any
         raise DirectUrlValidationError(msg)
 
     key = present[0]
+    # pyrefly: ignore[explicit-any-use]
     info = data[key]
     if not isinstance(info, Mapping):
         msg = f"'{key}' must be an object"
@@ -378,7 +379,7 @@ def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any
 
     if key == ArchiveInfo.key:
         hash_data = None
-        if hash_value := info.get("hash"):  # pyrefly: ignore[implicit-bool]
+        if hash_value := info.get("hash"):  # pyrefly: ignore[implicit-bool, partially-unknown-type]
             algorithm, sep, digest = hash_value.partition("=")  # pyrefly: ignore[unknown-attribute-access, unknown-variable-type]
             if not sep:
                 msg = "'archive_info.hash' must have the form '<algorithm>=<digest>'"
@@ -387,6 +388,7 @@ def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any
 
         return DirectUrl(
             url=url,
+            # pyrefly: ignore[partially-unknown-type]
             info=ArchiveInfo(hashes=info.get("hashes"), hash=hash_data),
             subdirectory=subdirectory,
         )
@@ -394,10 +396,12 @@ def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any
     if key == DirInfo.key:
         return DirectUrl(
             url=url,
+            # pyrefly: ignore[partially-unknown-type]
             info=DirInfo(editable=info.get("editable")),
             subdirectory=subdirectory,
         )
 
+    # pyrefly: ignore[partially-unknown-type]
     if "vcs" not in info or "commit_id" not in info:
         msg = "'vcs_info' must contain 'vcs' and 'commit_id'"
         raise DirectUrlValidationError(msg)
@@ -405,10 +409,13 @@ def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any
     return DirectUrl(
         url=url,
         info=VCSInfo(
-            vcs=info["vcs"],  # pyrefly: ignore[unknown-argument-type]
-            commit_id=info["commit_id"],  # pyrefly: ignore[unknown-argument-type]
+            vcs=info["vcs"],  # pyrefly: ignore[partially-unknown-type, unknown-argument-type]
+            commit_id=info["commit_id"],  # pyrefly: ignore[partially-unknown-type, unknown-argument-type]
+            # pyrefly: ignore[partially-unknown-type]
             requested_revision=info.get("requested_revision"),
+            # pyrefly: ignore[partially-unknown-type]
             resolved_revision=info.get("resolved_revision"),
+            # pyrefly: ignore[partially-unknown-type]
             resolved_revision_type=info.get("resolved_revision_type"),
         ),
         subdirectory=subdirectory,
@@ -434,10 +441,12 @@ def read_from_distribution(dist: Distribution) -> DirectUrl | None:
     """
     if (contents := dist.read_text(DIRECT_URL_METADATA_NAME)) is not None:
         try:
+            # pyrefly: ignore[explicit-any-use]
             data = json.loads(contents)
         except json.JSONDecodeError as exc:
             msg = f"{DIRECT_URL_METADATA_NAME} is not valid JSON"
             raise DirectUrlValidationError(msg) from exc
+        # pyrefly: ignore[explicit-any-use]
         return parse(data)
 
     return None

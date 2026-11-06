@@ -48,9 +48,7 @@ docs = [
 lint = [ "ruff>=0.17" ]
 testing = [
   "coverage[toml]>=7.17",
-  # hypothesis-jsonschema 0.23.1 uses `many.more`, removed in hypothesis 6.170.10
-  "hypothesis>=6.170,<6.170.10",
-  "hypothesis-jsonschema>=0.23",
+  "hypothesis-jsonschema>=0.23.2",
   "pytest>=9",
 ]
 typing = [
@@ -206,7 +204,7 @@ show_missing = true
 [tool.tox]
 requires = [ "tox>=4.65", "tox-uv>=1.36.1" ]
 env_list = [
-  { prefix = "3.", start = 11 },
+  { prefix = "3.", start = 11, stop = 16 },
   "coverage",
   "docs",
   "doctest",
@@ -278,6 +276,13 @@ dependency_groups = [ "testing", "typing" ]
 commands = [
   [ "mypy", "src/pep610", "tests" ],
   [
+    "ty",
+    "check",
+    "src/pep610",
+    "tests",
+    { replace = "if", condition = "env.GITHUB_ACTIONS == 'true'", then = [ "--output-format=github" ], else = [], extend = true }
+  ],
+  [
     "pyrefly",
     "coverage",
     "check",
@@ -287,13 +292,6 @@ commands = [
   ],
   [
     "pyrefly",
-    "check",
-    "src/pep610",
-    "tests",
-    { replace = "if", condition = "env.GITHUB_ACTIONS == 'true'", then = [ "--output-format=github" ], else = [], extend = true }
-  ],
-  [
-    "ty",
     "check",
     "src/pep610",
     "tests",

@@ -20,7 +20,7 @@ SCHEMA: dict[str, t.Any] = json.loads(SCHEMA_FILE.read_text())  # pyrefly: ignor
 
 
 @settings(suppress_health_check=[HealthCheck.too_slow])
-@given(from_schema(SCHEMA))
+@given(from_schema(SCHEMA))  # pyrefly: ignore[partially-unknown-type]
 def test_generic(tmp_path_factory: pytest.TempPathFactory, value: DirectUrlDict) -> None:
     """Test parsing a local directory."""
     dist_path = tmp_path_factory.mktemp("pep610")
