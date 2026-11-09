@@ -310,7 +310,7 @@ def test_unknown_url_type(tmp_path: Path) -> None:
     """Test that an unknown URL type is read back as None."""
     data: DirectUrlDict = {  # type: ignore[typeddict-unknown-key]
         "url": "unknown:///home/user/project",
-        "unknown_info": {},  # pyrefly: ignore[bad-typed-dict-key]  # ty:ignore[invalid-key]
+        "unknown_info": {},  # pyrefly: ignore[bad-typed-dict-key]  # ty:ignore[unknown-typed-dict-constructor-key]
     }
     dist = Distribution.at(tmp_path)
     _ = pep610.write_to_distribution(dist, data)
