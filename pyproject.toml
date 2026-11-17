@@ -151,6 +151,10 @@ pydocstyle.convention = "google"
 max_supported_python = "3.16"
 table_format = "long"
 
+[tool.typos]
+[tool.typos.default.extend-words]
+certifi = "certifi"  # https://pypi.org/project/certifi/
+
 [tool.mypy]
 warn_redundant_casts = true
 warn_unused_ignores = true

@@ -18,13 +18,13 @@ jobs:
     permissions:
       contents: read  # to check out the repository
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: Update schema
         run: |
           curl -o tests/fixtures/direct_url.schema.json https://packaging.python.org/en/latest/specifications/schemas/direct-url.schema.json
-      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+      - uses: actions/create-github-app-token@v3.3.0
         id: generate-token
         with:
           client-id: ${{ vars.APP_ID }}
