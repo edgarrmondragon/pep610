@@ -87,7 +87,7 @@ class VCSInfo:
             requested_revision=self.requested_revision,
             resolved_revision=self.resolved_revision,
             resolved_revision_type=self.resolved_revision_type,
-        )  # ty:ignore[invalid-return-type]
+        )  # ty:ignore[invalid-explicit-return]
 
 
 class HashData(NamedTuple):
@@ -196,7 +196,7 @@ class ArchiveInfo:
         return _filter_none(  # type: ignore[return-value]
             hashes=self.hashes,
             hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",  # pyrefly: ignore[implicit-bool]
-        )  # ty:ignore[invalid-return-type]
+        )  # ty:ignore[invalid-explicit-return]
 
 
 @dataclass
@@ -254,7 +254,7 @@ class DirInfo:
                 >>> dir_info.to_dict()
                 {'editable': True}
         """
-        return _filter_none(editable=self.editable)  # type: ignore[return-value]  # ty:ignore[invalid-return-type]
+        return _filter_none(editable=self.editable)  # type: ignore[return-value]  # ty:ignore[invalid-explicit-return]
 
 
 @dataclass
@@ -291,7 +291,7 @@ class DirectUrl:
         """  # ruff:ignore[line-too-long]
         res = _filter_none(url=self.url, subdirectory=self.subdirectory)
         res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]  # ty:ignore[invalid-assignment]
-        return res  # type: ignore[return-value]  # ty:ignore[invalid-return-type]
+        return res  # type: ignore[return-value]  # ty:ignore[invalid-explicit-return]
 
     def to_json(self) -> str:
         """Convert the data to a JSON string.
