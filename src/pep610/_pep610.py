@@ -81,7 +81,7 @@ class VCSInfo:
             >>> vcs_info.to_dict()
             {'vcs': 'git', 'commit_id': '4f42225e91a0be634625c09e84dd29ea82b85e27', 'requested_revision': 'main'}
         """  # ruff:ignore[line-too-long]
-        return _filter_none(  # type: ignore[return-value]
+        return _filter_none(  # type: ignore[return-value] # pyrefly: ignore[bad-return]
             vcs=self.vcs,
             commit_id=self.commit_id,
             requested_revision=self.requested_revision,
@@ -193,7 +193,7 @@ class ArchiveInfo:
             >>> archive_info.to_dict()
             {'hashes': {'sha256': '1dc6b5a470a1bde68946f263f1af1515a2574a150a30d6ce02c6ff742fcc0db9', 'md5': 'c4e0f0a1e0a5e708c8e3e3c4cbe2e85f'}}
         """  # ruff:ignore[line-too-long]
-        return _filter_none(  # type: ignore[return-value]
+        return _filter_none(  # type: ignore[return-value] # pyrefly: ignore[bad-return]
             hashes=self.hashes,
             hash=self.hash and f"{self.hash.algorithm}={self.hash.value}",  # pyrefly: ignore[implicit-bool]
         )  # ty:ignore[invalid-explicit-return]
@@ -254,7 +254,7 @@ class DirInfo:
                 >>> dir_info.to_dict()
                 {'editable': True}
         """
-        return _filter_none(editable=self.editable)  # type: ignore[return-value]  # ty:ignore[invalid-explicit-return]
+        return _filter_none(editable=self.editable)  # type: ignore[return-value]  # ty:ignore[invalid-explicit-return] # pyrefly: ignore[bad-return]
 
 
 @dataclass
@@ -290,8 +290,8 @@ class DirectUrl:
             {'url': 'file:///home/user/pep610', 'subdirectory': 'app', 'dir_info': {'editable': False}}
         """  # ruff:ignore[line-too-long]
         res = _filter_none(url=self.url, subdirectory=self.subdirectory)
-        res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]  # ty:ignore[invalid-assignment]
-        return res  # type: ignore[return-value]  # ty:ignore[invalid-explicit-return]
+        res[self.info.key] = self.info.to_dict()  # type: ignore[assignment]  # ty:ignore[invalid-assignment] # pyrefly: ignore[unsupported-operation]
+        return res  # type: ignore[return-value]  # ty:ignore[invalid-explicit-return] # pyrefly: ignore[bad-return]
 
     def to_json(self) -> str:
         """Convert the data to a JSON string.
@@ -352,7 +352,7 @@ def parse(data: Mapping[str, Any]) -> DirectUrl:  # pyrefly: ignore[explicit-any
         ... )
         DirectUrl(url='https://github.com/pypa/packaging', info=VCSInfo(vcs='git', commit_id='4f42225e91a0be634625c09e84dd29ea82b85e27', requested_revision='main', resolved_revision=None, resolved_revision_type=None), subdirectory=None)
     """  # ruff:ignore[line-too-long]
-    if not isinstance(data, Mapping):
+    if not isinstance(data, Mapping):  # pyrefly: ignore[redundant-type-check]
         msg = "Direct URL data must be a JSON object"  # type: ignore[unreachable]
         raise DirectUrlValidationError(msg)
 
@@ -484,4 +484,4 @@ def write_to_distribution(dist: PathDistribution, data: DirectUrlDict | DirectUr
         The number of bytes written.
     """
     to_write = json.dumps(data, sort_keys=True) if isinstance(data, Mapping) else data.to_json()
-    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # ty:ignore[missing-attribute]  # ruff: ignore[private-member-access]
+    return dist._path.joinpath(DIRECT_URL_METADATA_NAME).write_text(to_write)  # type: ignore[attr-defined,no-any-return]  # ty:ignore[missing-attribute]  # ruff: ignore[private-member-access] # pyrefly: ignore[missing-attribute]

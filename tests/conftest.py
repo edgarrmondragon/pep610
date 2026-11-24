@@ -128,4 +128,4 @@ def pytest_report_header() -> list[str]:
 @pytest.fixture
 def pip_install_report() -> dict[str, t.Any]:  # pyrefly: ignore[explicit-any]
     """Return the parsed JSON report of a pip install command."""
-    return json.loads(PIP_INSTALL_REPORT)  # type: ignore[no-any-return]
+    return json.loads(PIP_INSTALL_REPORT)  # type: ignore[no-any-return] # pyrefly: ignore[no-any-return-explicit]

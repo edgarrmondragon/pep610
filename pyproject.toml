@@ -164,6 +164,7 @@ strict = true
 warn_unused_configs = true
 
 [tool.pyrefly]
+enabled-ignores = [ "pyrefly" ]
 preset = "all"
 [tool.pyrefly.errors]
 unused-type-ignore = "warn"
